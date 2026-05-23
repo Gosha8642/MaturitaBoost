@@ -9,21 +9,24 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ---------- Config ----------
-const TOTAL_TIME = 15.0;
-const ZONE_10 = 5.0;
-const ZONE_5  = 10.0;
-const ZONE_2  = 13.0;
+// ---------- Difficulty presets ----------
+const DIFFICULTIES = {
+    easy:   { label: "🟢 Ľahký",   totalTime: 25.0, zone10: 8.0,  zone5: 16.0, zone2: 21.0 },
+    medium: { label: "🟡 Stredný", totalTime: 15.0, zone10: 5.0,  zone5: 10.0, zone2: 13.0 },
+    hard:   { label: "🔴 Ťažký",   totalTime: 8.0,  zone10: 2.5,  zone5: 5.0,  zone2: 7.0  },
+};
+
+let difficulty = DIFFICULTIES.medium; // default
+
 const MAX_MULT = 5;
 
 // ---------- State ----------
 const state = {
-    snippets: [],          // [{ id, content, exam_id }]
+    snippets: [],
     seenIds: new Set(),
-    current: null,         // { id, content, questions[] }
+    current: null,
     ukazkaNumber: 0,
     sessionTotalScore: 0,
-    // per-game
     questions: [],
     qIdx: 0,
     score: 0,
@@ -38,18 +41,21 @@ const state = {
 };
 
 const screens = {
-    loading: document.getElementById("screen-loading"),
-    reading: document.getElementById("screen-reading"),
-    playing: document.getElementById("screen-playing"),
-    stats:   document.getElementById("screen-stats"),
+    loading:    document.getElementById("screen-loading"),
+    difficulty: document.getElementById("screen-difficulty"),
+    reading:    document.getElementById("screen-reading"),
+    playing:    document.getElementById("screen-playing"),
+    stats:      document.getElementById("screen-stats"),
 };
 
 function showScreen(name) {
-    Object.entries(screens).forEach(([k, el]) => el.classList.toggle("active", k === name));
+    Object.entries(screens).forEach(([k, el]) => {
+        if (el) el.classList.toggle("active", k === name);
+    });
 }
 
 // ===========================================================================
-// LOAD SNIPPETS (all available ukázky from all exams)
+// LOAD SNIPPETS
 // ===========================================================================
 async function loadSnippets() {
     showScreen("loading");
@@ -59,7 +65,6 @@ async function loadSnippets() {
         .select("id, content, exam_id");
 
     if (error) {
-        console.error("[fast] snippets fetch error", error);
         showError("Chyba pri načítaní ukážok: " + error.message);
         return;
     }
@@ -69,7 +74,7 @@ async function loadSnippets() {
     }
 
     state.snippets = data;
-    console.log(`[fast] Loaded ${state.snippets.length} snippets`);
+    console.log("[fast] Loaded " + state.snippets.length + " snippets");
 }
 
 async function loadQuestionsForSnippet(snippetId) {
@@ -83,7 +88,6 @@ async function loadQuestionsForSnippet(snippetId) {
         return [];
     }
 
-    // Pre Fast Game potrebujeme len 'choice' otázky
     return (data || [])
         .filter(r => r.question_type === "choice" && r.options && r.correct_answers)
         .map(r => ({
@@ -95,9 +99,35 @@ async function loadQuestionsForSnippet(snippetId) {
 
 function showError(msg) {
     const el = document.getElementById("screen-loading");
-    el.innerHTML = `<div class="loader-card"><p style="font-size:18px">⚠️ ${msg}</p><a href="./index.html" class="btn" style="margin-top:14px">Späť na mapu</a></div>`;
+    el.innerHTML = "<div class=\"loader-card\"><p style=\"font-size:18px\">⚠️ " + msg + "</p><a href=\"./index.html\" class=\"btn\" style=\"margin-top:14px\">Späť na mapu</a></div>";
     showScreen("loading");
 }
+
+// ===========================================================================
+// DIFFICULTY SCREEN
+// ===========================================================================
+function showDifficultyScreen() {
+    showScreen("difficulty");
+}
+
+document.querySelectorAll(".diff-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const key = btn.dataset.diff;
+        difficulty = DIFFICULTIES[key];
+
+        // update rules panel text
+        document.getElementById("rules-time").textContent = difficulty.totalTime;
+        document.getElementById("rules-z10").textContent = difficulty.zone10;
+        document.getElementById("rules-z5").textContent = difficulty.zone10 + "–" + difficulty.zone5;
+        document.getElementById("rules-z2").textContent = difficulty.zone5 + "–" + difficulty.zone2;
+
+        // highlight selected
+        document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+
+        startReading();
+    });
+});
 
 // ===========================================================================
 // FLOW
@@ -120,7 +150,6 @@ async function startReading() {
     const snippet = await pickRandomSnippet();
     if (!snippet) { showError("Nepodarilo sa načítať ukážku."); return; }
     if (!snippet.questions || snippet.questions.length === 0) {
-        // ukážka has no choice questions — skip and try another
         if (state.snippets.length > 1) return startReading();
         showError("Pre dostupné ukážky nie sú žiadne otázky typu 'choice'.");
         return;
@@ -130,8 +159,14 @@ async function startReading() {
     state.ukazkaNumber += 1;
 
     document.getElementById("ukazka-number").textContent = state.ukazkaNumber;
-    document.getElementById("ukazka-title").textContent = `Ukážka ${state.ukazkaNumber}`;
+    document.getElementById("ukazka-title").textContent = "Ukážka " + state.ukazkaNumber;
     document.getElementById("ukazka-text").textContent = snippet.content;
+
+    // sync rules panel with current difficulty
+    document.getElementById("rules-time").textContent = difficulty.totalTime;
+    document.getElementById("rules-z10").textContent = difficulty.zone10;
+    document.getElementById("rules-z5").textContent = difficulty.zone10 + "–" + difficulty.zone5;
+    document.getElementById("rules-z2").textContent = difficulty.zone5 + "–" + difficulty.zone2;
 
     showScreen("reading");
 }
@@ -153,6 +188,13 @@ function startGame() {
 
     document.getElementById("hud-q-total").textContent = state.questions.length;
     showScreen("playing");
+
+    // Fill ukážka column with full snippet text
+    const hintEl = document.getElementById("ukazka-hint-text");
+    if (hintEl && state.current) {
+        hintEl.textContent = state.current.content || "";
+    }
+
     renderQuestion();
 }
 
@@ -174,9 +216,9 @@ function renderQuestion() {
         btn.className = "choice-btn";
         btn.type = "button";
         btn.dataset.key = key;
-        btn.style.animationDelay = `${i * 60}ms`;
-        btn.setAttribute("data-testid", `choice-${key}`);
-        btn.innerHTML = `<span class="choice-key">${key}</span><span class="choice-text">${escapeHTML(val)}</span>`;
+        btn.style.animationDelay = i * 60 + "ms";
+        btn.setAttribute("data-testid", "choice-" + key);
+        btn.innerHTML = "<span class=\"choice-key\">" + key + "</span><span class=\"choice-text\">" + escapeHTML(val) + "</span>";
         btn.addEventListener("click", () => handleAnswer(key, btn));
         grid.appendChild(btn);
     });
@@ -195,8 +237,8 @@ function startTimer() {
 
     function tick(now) {
         const elapsed = (now - state.startedAt) / 1000;
-        const remaining = Math.max(0, TOTAL_TIME - elapsed);
-        const percent = (remaining / TOTAL_TIME) * 100;
+        const remaining = Math.max(0, difficulty.totalTime - elapsed);
+        const percent = (remaining / difficulty.totalTime) * 100;
         fill.style.width = percent + "%";
 
         const pts = pointsForTime(elapsed);
@@ -204,7 +246,7 @@ function startTimer() {
         secEl.textContent = remaining.toFixed(1);
         fill.className = "timer-fill zone-color-" + pts;
 
-        if (elapsed >= TOTAL_TIME) { timeoutAnswer(); return; }
+        if (elapsed >= difficulty.totalTime) { timeoutAnswer(); return; }
         state.rafId = requestAnimationFrame(tick);
     }
     state.rafId = requestAnimationFrame(tick);
@@ -216,9 +258,9 @@ function stopTimer() {
 }
 
 function pointsForTime(elapsed) {
-    if (elapsed < ZONE_10) return 10;
-    if (elapsed < ZONE_5)  return 5;
-    if (elapsed < ZONE_2)  return 2;
+    if (elapsed < difficulty.zone10) return 10;
+    if (elapsed < difficulty.zone5)  return 5;
+    if (elapsed < difficulty.zone2)  return 2;
     return 0;
 }
 
@@ -241,14 +283,16 @@ function handleAnswer(key, btn) {
         if (state.streak > state.bestStreak) state.bestStreak = state.streak;
 
         btn.classList.add("correct");
-        showFloating(`+${got}${mult > 1 ? ` (×${mult})` : ""}`, "correct");
+        showFloating("+" + got + (mult > 1 ? " (×" + mult + ")" : ""), "correct");
+        triggerStreakFlash(state.streak);
     } else {
         btn.classList.add("wrong");
-        const right = document.querySelector(`.choice-btn[data-key="${q.correct}"]`);
+        const right = document.querySelector(".choice-btn[data-key=\"" + q.correct + "\"]");
         if (right) right.classList.add("reveal-correct");
         state.wrongCount += 1;
         state.streak = 0;
         showFloating("+0 · streak reset", "wrong");
+        triggerStreakFlash(0);
     }
     updateStreakUI();
     document.getElementById("hud-score").textContent = state.score;
@@ -261,13 +305,14 @@ function timeoutAnswer() {
     stopTimer();
 
     const q = state.questions[state.qIdx];
-    state.times.push(TOTAL_TIME);
+    state.times.push(difficulty.totalTime);
     state.wrongCount += 1;
     state.streak = 0;
-    const right = document.querySelector(`.choice-btn[data-key="${q.correct}"]`);
+    const right = document.querySelector(".choice-btn[data-key=\"" + q.correct + "\"]");
     if (right) right.classList.add("reveal-correct");
     showFloating("⏱️ Čas vypršal!", "wrong");
     updateStreakUI();
+    triggerStreakFlash(0);
     setTimeout(nextQuestion, 1000);
 }
 
@@ -276,15 +321,187 @@ function nextQuestion() {
     renderQuestion();
 }
 
+// ===========================================================================
+// STREAK FLASH — full-screen edge glow + floating badge
+// ===========================================================================
+
+const STREAK_LABELS = ["", "🔥 Streak!", "🔥🔥 x2!", "💥 x3!", "⚡ x4!!", "🌋 x5!!!"];
+
+function streakClass(n) {
+    if (n >= 5) return "streak-5";
+    if (n >= 4) return "streak-4";
+    if (n >= 3) return "streak-3";
+    if (n >= 2) return "streak-2";
+    return "streak-1";
+}
+
+function triggerStreakFlash(streak) {
+    updateStreakBg(streak);
+    if (streak > 0) spawnStreakBadge(streak);
+}
+
+function updateStreakBg(streak) {
+    const body = document.body;
+    body.classList.remove("streak-bg-1","streak-bg-2","streak-bg-3","streak-bg-4","streak-bg-5");
+    if (streak >= 1) body.classList.add("streak-bg-" + Math.min(streak, 5));
+    // Start/stop fire animation
+    if (streak >= 3) startFire(streak);
+    else stopFire();
+}
+
+// ===========================================================================
+// FIRE CANVAS
+// ===========================================================================
+let fireAnim = null;
+let fireIntensity = 0; // 0..1 target
+let fireIntensityCur = 0;
+
+function startFire(streak) {
+    const targets = { 3: 0.38, 4: 0.68, 5: 1.0 };
+    fireIntensity = targets[Math.min(streak, 5)] ?? 1.0;
+
+    const canvas = document.getElementById("streak-fire-canvas");
+    if (!canvas) return;
+
+    // If already running, just update intensity
+    if (fireAnim) return;
+
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = Math.floor(window.innerHeight * 0.40);
+    }
+    resize();
+
+    const ctx = canvas.getContext("2d");
+
+    // Doom-style fire palette: transparent → deep red → orange → yellow
+    const palette = [];
+    for (let i = 0; i < 256; i++) {
+        let r, g, b, a;
+        if (i < 20)       { r=0;   g=0;  b=0;  a=0; }
+        else if (i < 80)  { r=Math.floor((i-20)*4); g=0;  b=0; a=Math.floor((i-20)*3); }
+        else if (i < 140) { r=240; g=Math.floor((i-80)*3); b=0; a=180+Math.floor((i-80)*1.2); }
+        else if (i < 200) { r=255; g=140+Math.floor((i-140)*1.9); b=0; a=220; }
+        else              { r=255; g=220; b=Math.floor((i-200)*5); a=230; }
+        palette.push([Math.min(r,255), Math.min(g,255), Math.min(b,255), Math.min(a,255)]);
+    }
+
+    const SCALE = 4;
+    let W = canvas.width, H = canvas.height;
+    let COLS = Math.ceil(W / SCALE);
+    let ROWS = Math.ceil(H / SCALE) + 2;
+    let fire = new Uint8Array(COLS * ROWS);
+    let imgData = ctx.createImageData(W, H);
+
+    function seedBottom() {
+        const t = fireIntensityCur;
+        const base = (ROWS - 1) * COLS;
+        for (let x = 0; x < COLS; x++) {
+            fire[base + x] = Math.random() < t
+                ? Math.floor(160 + Math.random() * 95 * t)
+                : Math.floor(Math.random() * 30);
+        }
+    }
+
+    function spreadFire() {
+        for (let y = 0; y < ROWS - 1; y++) {
+            for (let x = 0; x < COLS; x++) {
+                const below = (y + 1) * COLS + x;
+                const decay = Math.floor(Math.random() * 3);
+                const drift = Math.floor(Math.random() * 3) - 1;
+                const dst = y * COLS + x + drift;
+                if (dst >= y * COLS && dst < (y + 1) * COLS) {
+                    fire[dst] = Math.max(0, fire[below] - decay);
+                } else {
+                    fire[y * COLS + x] = Math.max(0, fire[below] - decay);
+                }
+            }
+        }
+    }
+
+    function render() {
+        fireIntensityCur += (fireIntensity - fireIntensityCur) * 0.05;
+
+        // Re-check canvas size
+        const newW = window.innerWidth;
+        const newH = Math.floor(window.innerHeight * 0.40);
+        if (newW !== W || newH !== H) {
+            canvas.width = newW; canvas.height = newH;
+            W = newW; H = newH;
+            COLS = Math.ceil(W / SCALE); ROWS = Math.ceil(H / SCALE) + 2;
+            fire = new Uint8Array(COLS * ROWS);
+            imgData = ctx.createImageData(W, H);
+        }
+
+        seedBottom();
+        spreadFire();
+
+        // Render: row 0 = top of canvas (coolest), last row = bottom (hottest)
+        for (let y = 0; y < H; y++) {
+            const gridY = Math.floor(y / SCALE);
+            // Fade alpha toward top of canvas
+            const topFade = y / H;
+            for (let x = 0; x < W; x++) {
+                const gridX = Math.floor(x / SCALE);
+                const heat = fire[gridY * COLS + gridX] ?? 0;
+                const [r, g, b, a] = palette[heat] ?? [0,0,0,0];
+                const px = (y * W + x) * 4;
+                imgData.data[px]   = r;
+                imgData.data[px+1] = g;
+                imgData.data[px+2] = b;
+                imgData.data[px+3] = Math.floor(a * topFade);
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+        fireAnim = requestAnimationFrame(render);
+    }
+
+    fireAnim = requestAnimationFrame(render);
+}
+
+function stopFire() {
+    if (fireAnim) { cancelAnimationFrame(fireAnim); fireAnim = null; }
+    fireIntensityCur = 0;
+    const canvas = document.getElementById("streak-fire-canvas");
+    if (canvas) {
+        if (canvas._resizeHandler) window.removeEventListener("resize", canvas._resizeHandler);
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.classList.remove("cinematic");
+    }
+}
+
+function spawnStreakBadge(streak) {
+    const label = STREAK_LABELS[Math.min(streak, 5)] || ("🔥 x" + streak + "!");
+    const cls   = "s" + Math.min(streak, 5);
+
+    const badge = document.createElement("div");
+    badge.className = "streak-badge-popup " + cls;
+    badge.textContent = label;
+
+    // Random position: avoid very edges (10%–80% horizontal, 15%–70% vertical)
+    const x = 10 + Math.random() * 70;
+    const y = 15 + Math.random() * 55;
+    badge.style.left = x + "vw";
+    badge.style.top  = y + "vh";
+
+    document.body.appendChild(badge);
+
+    // Remove after animation
+    setTimeout(() => badge.remove(), 1000);
+}
+
 function updateStreakUI() {
-    const el = document.getElementById("hud-streak");
+    const el   = document.getElementById("hud-streak");
     const mult = document.getElementById("hud-mult");
     const pill = document.getElementById("streak-pill");
     el.textContent = state.streak;
     const nextMult = Math.min(MAX_MULT, state.streak + 1);
     mult.textContent = "×" + nextMult;
-    pill.classList.toggle("hot", state.streak >= 2);
+    pill.classList.toggle("hot",     state.streak >= 2);
     pill.classList.toggle("blazing", state.streak >= 4);
+
+    updateStreakBg(state.streak);
 }
 
 function showFloating(text, kind) {
@@ -300,25 +517,58 @@ function showFloating(text, kind) {
 function endUkazka() {
     state.sessionTotalScore += state.score;
 
-    const totalQ = state.questions.length || 1;
-    const avgTime = state.times.length ? (state.times.reduce((a, b) => a + b, 0) / state.times.length) : 0;
+    const totalQ   = state.questions.length || 1;
+    const avgTime  = state.times.length ? (state.times.reduce((a, b) => a + b, 0) / state.times.length) : 0;
     const accuracy = Math.round((state.correctCount / totalQ) * 100);
 
-    document.getElementById("stats-score").textContent = state.score;
-    document.getElementById("stats-correct").textContent = state.correctCount;
-    document.getElementById("stats-wrong").textContent = state.wrongCount;
-    document.getElementById("stats-streak").textContent = state.bestStreak;
-    document.getElementById("stats-avg-time").textContent = avgTime.toFixed(1);
-    document.getElementById("stats-accuracy").textContent = accuracy;
+    document.getElementById("stats-score").textContent         = state.score;
+    document.getElementById("stats-correct").textContent       = state.correctCount;
+    document.getElementById("stats-wrong").textContent         = state.wrongCount;
+    document.getElementById("stats-streak").textContent        = state.bestStreak;
+    document.getElementById("stats-avg-time").textContent      = avgTime.toFixed(1);
+    document.getElementById("stats-accuracy").textContent      = accuracy;
     document.getElementById("stats-total-session").textContent = state.sessionTotalScore;
 
-    showScreen("stats");
-    saveScoreToLeaderboard(state.score);
+    const hasStreak = state.bestStreak >= 1;
+    const panels = [
+        document.querySelector(".game-hud"),
+        document.querySelector(".timer-wrap"),
+        document.getElementById("question-card"),
+        document.querySelector(".ukazka-col"),
+    ].filter(Boolean);
+
+    function doShowStats() {
+        panels.forEach(el => {
+            el.classList.remove("game-cinematic-out", "game-fade-out");
+            el.style.opacity = "";
+        });
+        updateStreakBg(0);
+        stopFire();
+        showScreen("stats");
+        saveScoreToLeaderboard(state.score);
+    }
+
+    if (hasStreak) {
+        // Activate max streak background (stage 5) — that's it
+        updateStreakBg(5);
+
+        // Panels fly out with drama
+        panels.forEach((el, i) => {
+            el.style.animationDelay = (i * 80) + "ms";
+            el.classList.add("game-cinematic-out");
+        });
+
+        setTimeout(doShowStats, 1400);
+    } else {
+        // No streak — everything just fades out quietly, ukážka included
+        panels.forEach(el => el.classList.add("game-fade-out"));
+        setTimeout(doShowStats, 750);
+    }
 }
 
 async function saveScoreToLeaderboard(delta) {
     try {
-        const name = localStorage.getItem("player_name");
+        const name      = localStorage.getItem("player_name");
         const sessionId = localStorage.getItem("leaderboard_session_id");
         if (!name || !sessionId || !delta || delta <= 0) return;
         await sb.rpc("upsert_score_session", {
@@ -340,9 +590,9 @@ function escapeHTML(s) {
 
 // ---------- Init ----------
 document.getElementById("start-game-btn").addEventListener("click", startGame);
-document.getElementById("next-ukazka-btn").addEventListener("click", () => startReading());
+document.getElementById("next-ukazka-btn").addEventListener("click", () => showDifficultyScreen());
 
 (async function init() {
     await loadSnippets();
-    if (state.snippets.length > 0) await startReading();
+    if (state.snippets.length > 0) showDifficultyScreen();
 })();

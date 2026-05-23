@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Game · MaturitaBoost</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="fast-body">
+
+    <div class="container">
+        <header>
+            <h1>⚡ MaturitaBoost · Fast Game</h1>
+            <div class="header-actions">
+                <a href="./index.html" class="btn btn-ghost" data-testid="back-to-map">
+                    <span>🗺️</span><span>Späť na mapu</span>
+                </a>
+                <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" title="Prepnúť tému">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+    </div>
+
+    <main class="fast-main">
+
+        <!-- ====== LOADING ====== -->
+        <section id="screen-loading" class="fast-screen active">
+            <div class="loader-card">
+                <div class="loader-spinner"></div>
+                <p>Načítavam ukážku…</p>
+            </div>
+        </section>
+
+        <!-- ====== READING ====== -->
+        <section id="screen-reading" class="fast-screen">
+            <div class="reading-card">
+                <div class="reading-header">
+                    <div class="reading-badge">📖 Ukážka <span id="ukazka-number">1</span></div>
+                    <h2 id="ukazka-title">Prečítaj si ukážku</h2>
+                </div>
+
+                <!-- RULES PANEL on top of ukázka -->
+                <div class="rules-panel">
+                    <div class="rules-panel-title">⚡ Pravidlá Fast Game</div>
+                    <ul class="rules-list">
+                        <li>⏱️ Máš <strong>15 sekúnd</strong> na každú otázku</li>
+                        <li>🟢 <strong>0–5s</strong> → 10 bodov · 🟡 <strong>5–10s</strong> → 5 bodov · 🟠 <strong>10–13s</strong> → 2 body · 🔴 <strong>13–15s</strong> → 0</li>
+                        <li>❌ Nesprávna odpoveď → ďalšia otázka okamžite</li>
+                        <li>🔥 <strong>Streak bonus</strong>: 2× za 2 správne v rade, max 5×</li>
+                    </ul>
+                </div>
+
+                <div class="ukazka-text-wrap">
+                    <p id="ukazka-text" class="ukazka-text"></p>
+                </div>
+
+                <button id="start-game-btn" class="btn btn-large" type="button" data-testid="start-fast-game-btn">
+                    <span>🚀</span>
+                    <span>Prečítal som ukážku a som pripravený hrať</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ====== PLAYING ====== -->
+        <section id="screen-playing" class="fast-screen">
+            <div class="game-hud">
+                <div class="hud-pill">
+                    <div class="hud-label">SKÓRE</div>
+                    <div class="hud-value" id="hud-score">0</div>
+                </div>
+                <div class="hud-pill streak-pill" id="streak-pill">
+                    <div class="hud-label">STREAK</div>
+                    <div class="hud-value">
+                        <span id="hud-streak">0</span>
+                        <span class="streak-mult" id="hud-mult">×1</span>
+                    </div>
+                </div>
+                <div class="hud-pill">
+                    <div class="hud-label">OTÁZKA</div>
+                    <div class="hud-value"><span id="hud-q-current">1</span>/<span id="hud-q-total">5</span></div>
+                </div>
+            </div>
+
+            <!-- TIMER BAR -->
+            <div class="timer-wrap">
+                <div class="timer-zones">
+                    <div class="timer-zone zone-0" style="flex: 2"><span>0</span></div>
+                    <div class="timer-zone zone-2" style="flex: 3"><span>2</span></div>
+                    <div class="timer-zone zone-5" style="flex: 5"><span>5</span></div>
+                    <div class="timer-zone zone-10" style="flex: 5"><span>10</span></div>
+                </div>
+                <div class="timer-bar">
+                    <div class="timer-fill" id="timer-fill"></div>
+                </div>
+                <div class="timer-meta">
+                    <span class="timer-points-now">Aktuálne: <strong id="timer-points">10</strong> b</span>
+                    <span class="timer-seconds"><span id="timer-seconds">15.0</span>s</span>
+                </div>
+            </div>
+
+            <div class="question-card" id="question-card">
+                <div class="question-text" id="question-text"></div>
+                <div class="choices-grid" id="choices-grid"></div>
+            </div>
+
+            <!-- floating feedback -->
+            <div id="floating-feedback" class="floating-feedback"></div>
+        </section>
+
+        <!-- ====== STATS ====== -->
+        <section id="screen-stats" class="fast-screen">
+            <div class="stats-card">
+                <div class="stats-trophy">🏆</div>
+                <h2>Ukážka dokončená!</h2>
+                <p class="stats-subtitle">Tu sú tvoje výsledky:</p>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-box-icon">⭐</div>
+                        <div class="stat-box-label">Skóre</div>
+                        <div class="stat-box-value" id="stats-score">0</div>
+                    </div>
+                    <div class="stat-box correct-box">
+                        <div class="stat-box-icon">✅</div>
+                        <div class="stat-box-label">Správne</div>
+                        <div class="stat-box-value" id="stats-correct">0</div>
+                    </div>
+                    <div class="stat-box wrong-box">
+                        <div class="stat-box-icon">❌</div>
+                        <div class="stat-box-label">Nesprávne</div>
+                        <div class="stat-box-value" id="stats-wrong">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">🔥</div>
+                        <div class="stat-box-label">Najdlhší streak</div>
+                        <div class="stat-box-value" id="stats-streak">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">⏱️</div>
+                        <div class="stat-box-label">Priemerný čas</div>
+                        <div class="stat-box-value"><span id="stats-avg-time">0.0</span>s</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">📊</div>
+                        <div class="stat-box-label">Úspešnosť</div>
+                        <div class="stat-box-value"><span id="stats-accuracy">0</span>%</div>
+                    </div>
+                </div>
+
+                <div class="stats-total-game">
+                    <div>Celkové skóre v session:</div>
+                    <div class="stats-total-value" id="stats-total-session">0</div>
+                </div>
+
+                <div class="stats-actions">
+                    <button id="next-ukazka-btn" class="btn btn-large" type="button" data-testid="next-ukazka-btn">
+                        <span>➡️</span><span>Ďalšia ukážka</span>
+                    </button>
+                    <a href="./index.html" class="btn btn-ghost btn-large" data-testid="exit-to-map">
+                        <span>🗺️</span><span>Späť na mapu</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Theme toggle (shared logic) -->
+    <script>
+        (function initTheme() {
+            const saved = localStorage.getItem("theme") || "dark";
+            document.documentElement.setAttribute("data-theme", saved);
+            const icon = document.getElementById("theme-icon");
+            if (icon) icon.textContent = saved === "light" ? "☀️" : "🌙";
+        })();
+        document.getElementById("theme-toggle")?.addEventListener("click", () => {
+            const cur = document.documentElement.getAttribute("data-theme") || "dark";
+            const next = cur === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            document.getElementById("theme-icon").textContent = next === "light" ? "☀️" : "🌙";
+        });
+    </script>
+
+    <script type="module" src="./fast.js"></script>
+</body>
+</html>

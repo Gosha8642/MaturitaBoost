@@ -1,0 +1,13 @@
+{
+  "name": "maturitaboost",
+  "version": "1.0.0",
+  "description": "MaturitaBoost – Slovak matura exam practice app",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "eslint fast.js questions_sets/"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  }
+}

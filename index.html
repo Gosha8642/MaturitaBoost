@@ -78,27 +78,89 @@
 
     <!-- AUTH MODAL -->
     <div id="auth-modal" class="popup" style="display:none">
-        <div class="popup-content" style="max-width:360px">
-            <span class="close" onclick="closeAuthModal()">&times;</span>
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="modal-tab-login" type="button" onclick="switchModalTab('login')">🔑 Prihlásiť</button>
-                <button class="auth-tab" id="modal-tab-register" type="button" onclick="switchModalTab('register')">🚀 Registrovať</button>
+        <div class="auth-modal-card">
+            <button class="auth-modal-close" onclick="closeAuthModal()" type="button" aria-label="Zavrieť">&times;</button>
+
+            <!-- Logo / branding -->
+            <div class="auth-modal-brand">
+                <span class="auth-modal-logo">🚀</span>
+                <span class="auth-modal-logo-text">MaturitaBoost</span>
             </div>
+
+            <!-- Tab switcher -->
+            <div class="auth-modal-tabs">
+                <button class="auth-modal-tab active" id="modal-tab-login" type="button" onclick="switchModalTab('login')">Prihlásiť sa</button>
+                <button class="auth-modal-tab" id="modal-tab-register" type="button" onclick="switchModalTab('register')">Registrovať sa</button>
+            </div>
+
             <!-- LOGIN -->
-            <div id="modal-form-login" class="auth-form">
-                <input id="modal-email-login" type="email" placeholder="E-mail" autocomplete="email" />
-                <input id="modal-password-login" type="password" placeholder="Heslo" autocomplete="current-password" />
-                <button id="modal-login-btn" type="button" class="auth-btn auth-btn-primary">🔑 Prihlásiť sa</button>
-                <div id="modal-status-login" class="auth-status"></div>
+            <div id="modal-form-login" class="auth-modal-form">
+                <h2 class="auth-modal-title">Vitaj späť 👋</h2>
+                <p class="auth-modal-sub">Prihláste sa do svojho účtu a sledujte rebríček.</p>
+                <div class="auth-field">
+                    <label class="auth-label">E-mail</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon">✉️</span>
+                        <input id="modal-email-login" type="email" placeholder="vas@email.sk" autocomplete="email" />
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Heslo</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon">🔒</span>
+                        <input id="modal-password-login" type="password" placeholder="Vaše heslo" autocomplete="current-password" />
+                    </div>
+                </div>
+                <button id="modal-login-btn" type="button" class="auth-modal-submit">
+                    <span>Prihlásiť sa</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+                <div id="modal-status-login" class="auth-modal-status"></div>
             </div>
+
             <!-- REGISTER -->
-            <div id="modal-form-register" class="auth-form" style="display:none">
-                <input id="modal-name-register" type="text" placeholder="Meno hráča" autocomplete="nickname" />
-                <input id="modal-email-register" type="email" placeholder="E-mail" autocomplete="email" />
-                <input id="modal-password-register" type="password" placeholder="Heslo (min. 6 znakov)" autocomplete="new-password" />
-                <button id="modal-register-btn" type="button" class="auth-btn auth-btn-primary">🚀 Registrovať sa</button>
-                <div id="modal-status-register" class="auth-status"></div>
+            <div id="modal-form-register" class="auth-modal-form" style="display:none">
+                <h2 class="auth-modal-title">Vytvorte účet ✨</h2>
+                <p class="auth-modal-sub">Zaregistrujte sa a objavte sa v rebríčku najlepších hráčov.</p>
+                <div class="auth-field">
+                    <label class="auth-label">Meno hráča</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon">🎮</span>
+                        <input id="modal-name-register" type="text" placeholder="Vaše herné meno" autocomplete="nickname" />
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">E-mail</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon">✉️</span>
+                        <input id="modal-email-register" type="email" placeholder="vas@email.sk" autocomplete="email" />
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Heslo</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon">🔒</span>
+                        <input id="modal-password-register" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                    </div>
+                </div>
+                <button id="modal-register-btn" type="button" class="auth-modal-submit">
+                    <span>Registrovať sa</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+                <div id="modal-status-register" class="auth-modal-status"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- EMAIL CONFIRM TOAST -->
+    <div id="email-confirm-toast" class="email-toast" style="display:none">
+        <div class="email-toast-inner">
+            <div class="email-toast-icon">📬</div>
+            <div class="email-toast-body">
+                <div class="email-toast-title">Skontrolujte svoju schránku!</div>
+                <div class="email-toast-msg">Poslali sme vám potvrdzovací e-mail. Kliknite na odkaz v e-maile a váš účet bude aktivovaný.</div>
+            </div>
+            <button class="email-toast-close" type="button" onclick="document.getElementById('email-confirm-toast').style.display='none'">&times;</button>
         </div>
     </div>
 
@@ -627,7 +689,14 @@
             });
             if (error) { setModalStatus("register", error.message, true); return; }
             if (data.user && !data.session) {
-                setModalStatus("register", "✅ Skontroluj e-mail a potvrď registráciu.");
+                setModalStatus("register", "");
+                closeAuthModal();
+                // Show email confirm toast
+                const toast = document.getElementById("email-confirm-toast");
+                if (toast) {
+                    toast.style.display = "flex";
+                    setTimeout(() => { toast.style.display = "none"; }, 8000);
+                }
             } else if (data.session) {
                 setModalStatus("register", "");
                 updateAuthUI(data.user);

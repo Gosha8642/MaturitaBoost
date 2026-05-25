@@ -266,18 +266,42 @@
     <div id="sidebar">
         <h3>🏆 Leaderboard</h3>
 
-        <!-- Logged IN: show player info compactly -->
+        <!-- Logged IN: beautiful profile card -->
         <div id="sidebar-logged-in" style="display:none">
-            <div class="player-box">
-                <div class="auth-user-row">
-                    <span class="auth-avatar" id="auth-avatar">🧑</span>
-                    <div class="auth-user-info">
-                        <div class="auth-user-name" id="auth-display-name">Hráč</div>
-                        <div class="auth-user-email" id="auth-display-email"></div>
+            <div class="profile-card">
+                <div class="profile-card-bg"></div>
+                <div class="profile-card-content">
+                    <div class="profile-avatar-wrap">
+                        <div class="profile-avatar" id="profile-avatar-letter">?</div>
+                        <div class="profile-rank-badge" id="profile-rank-badge" style="display:none">#<span id="profile-rank-num">-</span></div>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="auth-display-name">Hrac</div>
+                        <div class="profile-email" id="auth-display-email"></div>
                     </div>
                 </div>
-                <div id="name-status" class="auth-status"></div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-icon">🗺️</div>
+                        <div class="profile-stat-val" id="profile-best-map">-</div>
+                        <div class="profile-stat-label">Mapa</div>
+                    </div>
+                    <div class="profile-stat-divider"></div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-icon">⚡</div>
+                        <div class="profile-stat-val" id="profile-best-fast">-</div>
+                        <div class="profile-stat-label">Fast Game</div>
+                    </div>
+                    <div class="profile-stat-divider"></div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-icon">🏆</div>
+                        <div class="profile-stat-val" id="profile-place">-</div>
+                        <div class="profile-stat-label">Miesto</div>
+                    </div>
+                </div>
+                <button id="profile-logout-btn" type="button" class="profile-logout-btn">Odhlasit sa</button>
             </div>
+            <div id="name-status" class="auth-status" style="text-align:center;margin-top:4px"></div>
         </div>
 
         <!-- hidden input kept for compatibility with existing upsertScore logic -->
@@ -469,10 +493,10 @@
 
         for (const key in q.choices) {
             $("choices").innerHTML += `
-                <div class="choice">
+                <label class="choice">
                   <input type="radio" name="answer" value="${key}">
-                  ${key}: ${q.choices[key]}
-                </div>`;
+                  <span>${key}: ${q.choices[key]}</span>
+                </label>`;
         }
 
         $("submit-answer").onclick = function () {
@@ -718,6 +742,12 @@
             updateAuthUI(null);
         });
 
+        // PROFILE LOGOUT
+        document.getElementById("profile-logout-btn")?.addEventListener("click", async () => {
+            await sb.auth.signOut();
+            updateAuthUI(null);
+        });
+
         // ===================== AUTH STATE =====================
         let currentUser = null;
 
@@ -726,16 +756,13 @@
             const nameInput = document.getElementById("player-name");
             const statusEl = document.getElementById("name-status");
 
-            // Header widget
             const headerOut = document.getElementById("header-auth-logged-out");
             const headerIn = document.getElementById("header-auth-logged-in");
-            // Sidebar
             const sidebarIn = document.getElementById("sidebar-logged-in");
-            // Leaderboard blur
             const blurOverlay = document.getElementById("leaderboard-blur-overlay");
 
             if (user) {
-                const displayName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Hráč";
+                const displayName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Hrac";
 
                 // Header
                 if (headerOut) headerOut.style.display = "none";
@@ -743,34 +770,85 @@
                 const headerUsername = document.getElementById("header-username");
                 if (headerUsername) headerUsername.textContent = displayName;
 
-                // Sidebar
+                // Sidebar profile card
                 if (sidebarIn) sidebarIn.style.display = "block";
                 document.getElementById("auth-display-name").textContent = displayName;
                 document.getElementById("auth-display-email").textContent = user.email;
+
+                // Avatar letter
+                const avatarEl = document.getElementById("profile-avatar-letter");
+                if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
 
                 // Remove leaderboard blur
                 if (blurOverlay) blurOverlay.style.display = "none";
                 const lbList = document.getElementById("leaderboard");
                 if (lbList) { lbList.style.filter = "none"; lbList.style.pointerEvents = ""; }
 
-                // Hidden input for compat
                 if (nameInput) nameInput.value = displayName;
                 localStorage.setItem("player_name", displayName);
                 if (statusEl) statusEl.textContent = "";
+
+                // Load profile stats async
+                loadProfileStats(displayName);
             } else {
-                // Header
                 if (headerOut) headerOut.style.display = "flex";
                 if (headerIn) headerIn.style.display = "none";
-
-                // Sidebar
                 if (sidebarIn) sidebarIn.style.display = "none";
-
-                // Show leaderboard blur
                 if (blurOverlay) blurOverlay.style.display = "flex";
                 const lbList = document.getElementById("leaderboard");
                 if (lbList) { lbList.style.filter = "blur(6px)"; lbList.style.pointerEvents = "none"; }
-
                 if (nameInput) nameInput.value = "";
+            }
+        }
+
+        async function loadProfileStats(name) {
+            try {
+                // Best score in leaderboard (map game)
+                const { data: lbData } = await sb
+                    .from("leaderboard")
+                    .select("name, score")
+                    .order("score", { ascending: false });
+
+                if (lbData) {
+                    const idx = lbData.findIndex(r => r.name === name);
+                    const myRow = lbData[idx];
+
+                    // Best map score
+                    const mapVal = document.getElementById("profile-best-map");
+                    if (mapVal) mapVal.textContent = myRow ? myRow.score : "0";
+
+                    // Rank
+                    const placeEl = document.getElementById("profile-place");
+                    const rankBadge = document.getElementById("profile-rank-badge");
+                    const rankNum = document.getElementById("profile-rank-num");
+                    if (idx >= 0) {
+                        const rank = idx + 1;
+                        const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+                        if (placeEl) placeEl.textContent = medal;
+                        if (rankBadge) { rankBadge.style.display = "flex"; }
+                        if (rankNum) rankNum.textContent = rank;
+                    } else {
+                        if (placeEl) placeEl.textContent = "-";
+                    }
+                }
+
+                // Best fast game score — try fast_leaderboard or leaderboard with source tag
+                // Fast game uses same leaderboard table via upsert_score_session RPC
+                // so we read separate fast_scores table if exists, otherwise show "-"
+                const { data: fastData, error: fastErr } = await sb
+                    .from("fast_leaderboard")
+                    .select("score")
+                    .eq("name", name)
+                    .maybeSingle();
+
+                const fastVal = document.getElementById("profile-best-fast");
+                if (!fastErr && fastData) {
+                    if (fastVal) fastVal.textContent = fastData.score;
+                } else {
+                    if (fastVal) fastVal.textContent = "0";
+                }
+            } catch(e) {
+                console.warn("loadProfileStats error:", e);
             }
         }
 

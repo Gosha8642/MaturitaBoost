@@ -1549,3 +1549,252 @@ body[class*="streak-bg-"] .ukazka-col {
 #streak-fire-canvas {
     z-index: 1 !important;
 }
+
+/* ===================== AUTH PANEL ===================== */
+#auth-panel {
+    margin-bottom: 12px;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 7px 0;
+    border: 1px solid var(--color-border, #444);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text, #eee);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+}
+
+.auth-tab.active {
+    background: var(--color-accent, #7c3aed);
+    border-color: var(--color-accent, #7c3aed);
+    color: #fff;
+}
+
+.auth-tab:not(.active):hover {
+    background: var(--color-surface-hover, rgba(255,255,255,0.07));
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.auth-form input {
+    padding: 8px 10px;
+    border: 1px solid var(--color-border, #444);
+    border-radius: 8px;
+    background: var(--color-surface, rgba(255,255,255,0.05));
+    color: var(--color-text, #eee);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.auth-form input:focus {
+    border-color: var(--color-accent, #7c3aed);
+}
+
+.auth-btn {
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: opacity 0.15s, background 0.15s;
+}
+
+.auth-btn:hover { opacity: 0.88; }
+
+.auth-btn-primary {
+    background: var(--color-accent, #7c3aed);
+    color: #fff;
+}
+
+.auth-btn-ghost {
+    background: transparent;
+    border: 1px solid var(--color-border, #555);
+    color: var(--color-text, #ccc);
+    font-size: 0.82rem;
+    padding: 6px 10px;
+    margin-top: 4px;
+}
+
+.auth-status {
+    font-size: 0.8rem;
+    min-height: 18px;
+    color: var(--color-correct, #43a047);
+}
+
+/* Logged-in user row */
+.auth-user-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.auth-avatar {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.auth-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.auth-user-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-text, #eee);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.auth-user-email {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #999);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Leaderboard medal styling */
+#leaderboard li:first-child { color: #ffd700; font-weight: 700; }
+#leaderboard li:nth-child(2) { color: #c0c0c0; font-weight: 600; }
+#leaderboard li:nth-child(3) { color: #cd7f32; font-weight: 600; }
+
+/* ===== HEADER AUTH WIDGET ===== */
+#header-auth-widget {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#header-auth-logged-out {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#header-auth-logged-in {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-auth {
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: var(--color-primary, #6c63ff);
+    color: #fff;
+    transition: opacity .15s;
+    white-space: nowrap;
+}
+
+.btn-auth:hover { opacity: 0.85; }
+
+.btn-auth-outline {
+    background: transparent;
+    border: 1.5px solid var(--color-primary, #6c63ff);
+    color: var(--color-primary, #6c63ff);
+}
+
+.btn-auth-ghost {
+    background: transparent;
+    color: var(--color-text-muted, #aaa);
+    font-size: 1rem;
+    padding: 4px 8px;
+}
+
+.header-avatar {
+    font-size: 1.2rem;
+}
+
+.header-username {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text, #eee);
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ===== LEADERBOARD BLUR OVERLAY ===== */
+#leaderboard-wrap {
+    position: relative;
+    min-height: 120px;
+}
+
+#leaderboard-blur-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    z-index: 10;
+    border-radius: 10px;
+}
+
+#leaderboard-wrap > ul {
+    transition: filter .3s;
+}
+
+#leaderboard-blur-overlay ~ ul,
+#leaderboard-wrap:has(#leaderboard-blur-overlay[style*="flex"]) #leaderboard {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* When overlay is visible, blur the list */
+#leaderboard-wrap:has(#leaderboard-blur-overlay:not([style*="display: none"])) #leaderboard {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+}
+
+.lb-blur-msg {
+    background: var(--color-surface, rgba(30,30,40,0.92));
+    border: 1.5px solid var(--color-border, rgba(255,255,255,0.08));
+    border-radius: 14px;
+    padding: 20px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+.lb-blur-msg span {
+    font-size: 2rem;
+}
+
+.lb-blur-msg p {
+    font-size: 0.88rem;
+    color: var(--color-text-muted, #bbb);
+    margin: 0;
+}

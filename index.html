@@ -17,6 +17,20 @@
                 <button id="rules-btn" class="btn" type="button" title="Pravidlá hry">
                     <span>📖</span><span>Pravidlá</span>
                 </button>
+                <!-- AUTH HEADER WIDGET -->
+                <div id="header-auth-widget">
+                    <!-- Logged out: show Login/Register buttons -->
+                    <div id="header-auth-logged-out">
+                        <button id="header-login-btn" class="btn btn-auth" type="button" onclick="openAuthModal('login')">🔑 Prihlásiť</button>
+                        <button id="header-register-btn" class="btn btn-auth btn-auth-outline" type="button" onclick="openAuthModal('register')">🚀 Registrovať</button>
+                    </div>
+                    <!-- Logged in: show avatar + name + logout -->
+                    <div id="header-auth-logged-in" style="display:none">
+                        <span class="header-avatar" id="header-avatar">🧑</span>
+                        <span class="header-username" id="header-username">Hráč</span>
+                        <button id="header-logout-btn" class="btn btn-auth btn-auth-ghost" type="button">🚪</button>
+                    </div>
+                </div>
                 <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" title="Prepnúť tému">
                     <span id="theme-icon">🌙</span>
                 </button>
@@ -62,7 +76,33 @@
         </div>
     </div>
 
-    <div class="app-layout">
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="popup" style="display:none">
+        <div class="popup-content" style="max-width:360px">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="modal-tab-login" type="button" onclick="switchModalTab('login')">🔑 Prihlásiť</button>
+                <button class="auth-tab" id="modal-tab-register" type="button" onclick="switchModalTab('register')">🚀 Registrovať</button>
+            </div>
+            <!-- LOGIN -->
+            <div id="modal-form-login" class="auth-form">
+                <input id="modal-email-login" type="email" placeholder="E-mail" autocomplete="email" />
+                <input id="modal-password-login" type="password" placeholder="Heslo" autocomplete="current-password" />
+                <button id="modal-login-btn" type="button" class="auth-btn auth-btn-primary">🔑 Prihlásiť sa</button>
+                <div id="modal-status-login" class="auth-status"></div>
+            </div>
+            <!-- REGISTER -->
+            <div id="modal-form-register" class="auth-form" style="display:none">
+                <input id="modal-name-register" type="text" placeholder="Meno hráča" autocomplete="nickname" />
+                <input id="modal-email-register" type="email" placeholder="E-mail" autocomplete="email" />
+                <input id="modal-password-register" type="password" placeholder="Heslo (min. 6 znakov)" autocomplete="new-password" />
+                <button id="modal-register-btn" type="button" class="auth-btn auth-btn-primary">🚀 Registrovať sa</button>
+                <div id="modal-status-register" class="auth-status"></div>
+            </div>
+        </div>
+    </div>
+
+
         <div class="main-stage">
             <div class="content">
                 <div class="game-ui">
@@ -164,15 +204,34 @@
     <div id="sidebar">
         <h3>🏆 Leaderboard</h3>
 
-        <div class="player-box">
-            <label for="player-name">Meno hráča</label>
-            <input id="player-name" type="text" placeholder="Zadaj meno" />
-            <button id="save-name-btn" type="button">💾 Uložiť meno</button>
-            <div id="name-status"></div>
-            <div id="session-hint"></div>
+        <!-- Logged IN: show player info compactly -->
+        <div id="sidebar-logged-in" style="display:none">
+            <div class="player-box">
+                <div class="auth-user-row">
+                    <span class="auth-avatar" id="auth-avatar">🧑</span>
+                    <div class="auth-user-info">
+                        <div class="auth-user-name" id="auth-display-name">Hráč</div>
+                        <div class="auth-user-email" id="auth-display-email"></div>
+                    </div>
+                </div>
+                <div id="name-status" class="auth-status"></div>
+            </div>
         </div>
 
-        <ul id="leaderboard"></ul>
+        <!-- hidden input kept for compatibility with existing upsertScore logic -->
+        <input id="player-name" type="hidden" />
+
+        <!-- Leaderboard with blur overlay when logged out -->
+        <div id="leaderboard-wrap" style="position:relative">
+            <ul id="leaderboard"></ul>
+            <div id="leaderboard-blur-overlay">
+                <div class="lb-blur-msg">
+                    <span>🔒</span>
+                    <p>Prihláste sa pre zobrazenie rebríčka</p>
+                    <button class="btn btn-auth" type="button" onclick="openAuthModal('login')">🔑 Prihlásiť sa</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -506,40 +565,163 @@
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         window.sb = sb;
 
-        // ===================== SESSION ID (unique per user run) =====================
+        // ===================== SESSION ID =====================
         const SESSION_KEY = "leaderboard_session_id";
         let sessionId = localStorage.getItem(SESSION_KEY);
         if (!sessionId) {
             sessionId = crypto.randomUUID();
             localStorage.setItem(SESSION_KEY, sessionId);
         }
-        const sessionHintEl = document.getElementById("session-hint");
-        if (sessionHintEl) sessionHintEl.textContent = `session: ${sessionId.slice(0, 8)}…`;
 
+        // ===================== AUTH MODAL =====================
+        window.openAuthModal = function(tab) {
+            document.getElementById("auth-modal").style.display = "flex";
+            switchModalTab(tab || "login");
+        };
+        window.closeAuthModal = function() {
+            document.getElementById("auth-modal").style.display = "none";
+        };
+        document.getElementById("auth-modal")?.addEventListener("click", (e) => {
+            if (e.target.id === "auth-modal") closeAuthModal();
+        });
+
+        window.switchModalTab = function(tab) {
+            document.getElementById("modal-form-login").style.display = tab === "login" ? "block" : "none";
+            document.getElementById("modal-form-register").style.display = tab === "register" ? "block" : "none";
+            document.getElementById("modal-tab-login").classList.toggle("active", tab === "login");
+            document.getElementById("modal-tab-register").classList.toggle("active", tab === "register");
+        };
+
+        function setModalStatus(form, msg, isError = false) {
+            const el = document.getElementById(form === "login" ? "modal-status-login" : "modal-status-register");
+            if (!el) return;
+            el.textContent = msg;
+            el.style.color = isError ? "var(--color-wrong, #e53935)" : "var(--color-correct, #43a047)";
+        }
+
+        // LOGIN via modal
+        document.getElementById("modal-login-btn")?.addEventListener("click", async () => {
+            const email = document.getElementById("modal-email-login").value.trim();
+            const password = document.getElementById("modal-password-login").value;
+            if (!email || !password) { setModalStatus("login", "Vyplň e-mail a heslo.", true); return; }
+            setModalStatus("login", "Prihlasovanie…");
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) { setModalStatus("login", error.message, true); return; }
+            setModalStatus("login", "");
+            updateAuthUI(data.user);
+            closeAuthModal();
+        });
+
+        // REGISTER via modal
+        document.getElementById("modal-register-btn")?.addEventListener("click", async () => {
+            const name = document.getElementById("modal-name-register").value.trim();
+            const email = document.getElementById("modal-email-register").value.trim();
+            const password = document.getElementById("modal-password-register").value;
+            if (!name) { setModalStatus("register", "Zadaj meno hráča.", true); return; }
+            if (!email) { setModalStatus("register", "Zadaj e-mail.", true); return; }
+            if (password.length < 6) { setModalStatus("register", "Heslo musí mať aspoň 6 znakov.", true); return; }
+            setModalStatus("register", "Registrujem…");
+            const { data, error } = await sb.auth.signUp({
+                email, password,
+                options: { data: { display_name: name } }
+            });
+            if (error) { setModalStatus("register", error.message, true); return; }
+            if (data.user && !data.session) {
+                setModalStatus("register", "✅ Skontroluj e-mail a potvrď registráciu.");
+            } else if (data.session) {
+                setModalStatus("register", "");
+                updateAuthUI(data.user);
+                closeAuthModal();
+            }
+        });
+
+        // Enter key support
+        document.getElementById("modal-password-login")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") document.getElementById("modal-login-btn")?.click();
+        });
+        document.getElementById("modal-password-register")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") document.getElementById("modal-register-btn")?.click();
+        });
+
+        // HEADER LOGOUT
+        document.getElementById("header-logout-btn")?.addEventListener("click", async () => {
+            await sb.auth.signOut();
+            updateAuthUI(null);
+        });
+
+        // ===================== AUTH STATE =====================
+        let currentUser = null;
+
+        function updateAuthUI(user) {
+            currentUser = user;
+            const nameInput = document.getElementById("player-name");
+            const statusEl = document.getElementById("name-status");
+
+            // Header widget
+            const headerOut = document.getElementById("header-auth-logged-out");
+            const headerIn = document.getElementById("header-auth-logged-in");
+            // Sidebar
+            const sidebarIn = document.getElementById("sidebar-logged-in");
+            // Leaderboard blur
+            const blurOverlay = document.getElementById("leaderboard-blur-overlay");
+
+            if (user) {
+                const displayName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Hráč";
+
+                // Header
+                if (headerOut) headerOut.style.display = "none";
+                if (headerIn) headerIn.style.display = "flex";
+                const headerUsername = document.getElementById("header-username");
+                if (headerUsername) headerUsername.textContent = displayName;
+
+                // Sidebar
+                if (sidebarIn) sidebarIn.style.display = "block";
+                document.getElementById("auth-display-name").textContent = displayName;
+                document.getElementById("auth-display-email").textContent = user.email;
+
+                // Remove leaderboard blur
+                if (blurOverlay) blurOverlay.style.display = "none";
+                const lbList = document.getElementById("leaderboard");
+                if (lbList) { lbList.style.filter = "none"; lbList.style.pointerEvents = ""; }
+
+                // Hidden input for compat
+                if (nameInput) nameInput.value = displayName;
+                localStorage.setItem("player_name", displayName);
+                if (statusEl) statusEl.textContent = "";
+            } else {
+                // Header
+                if (headerOut) headerOut.style.display = "flex";
+                if (headerIn) headerIn.style.display = "none";
+
+                // Sidebar
+                if (sidebarIn) sidebarIn.style.display = "none";
+
+                // Show leaderboard blur
+                if (blurOverlay) blurOverlay.style.display = "flex";
+                const lbList = document.getElementById("leaderboard");
+                if (lbList) { lbList.style.filter = "blur(6px)"; lbList.style.pointerEvents = "none"; }
+
+                if (nameInput) nameInput.value = "";
+            }
+        }
+
+        // Restore session on load
+        sb.auth.getSession().then(({ data: { session } }) => {
+            updateAuthUI(session?.user ?? null);
+        });
+
+        sb.auth.onAuthStateChange((_event, session) => {
+            updateAuthUI(session?.user ?? null);
+        });
+
+        // ===================== PLAYER NAME (compat) =====================
         const nameInput = document.getElementById("player-name");
-        const saveBtn = document.getElementById("save-name-btn");
         const statusEl = document.getElementById("name-status");
-
-        const savedName = localStorage.getItem("player_name");
-        if (savedName && nameInput) nameInput.value = savedName;
 
         function setStatus(msg) { if (statusEl) statusEl.textContent = msg || ""; }
         function getPlayerName() { return (nameInput?.value || "").trim(); }
 
-        function saveName() {
-            const name = getPlayerName();
-            if (!name) { setStatus("Najprv zadaj meno."); return false; }
-            localStorage.setItem("player_name", name);
-            setStatus(`Meno uložené: ${name}`);
-            return true;
-        }
-
-        saveBtn?.addEventListener("click", saveName);
-        nameInput?.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") { e.preventDefault(); saveName(); }
-        });
-        nameInput?.addEventListener("blur", () => { if (getPlayerName()) saveName(); });
-
+        // ===================== LEADERBOARD =====================
         async function loadLeaderboard() {
             const { data, error } = await sb
                 .from("leaderboard")
@@ -551,29 +733,58 @@
             const ul = document.getElementById("leaderboard");
             if (!ul) return;
             ul.innerHTML = "";
-            data.forEach(row => {
+            data.forEach((row, i) => {
                 const li = document.createElement("li");
-                li.textContent = `${row.name} — ${row.score}`;
+                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
+                li.textContent = `${medal} ${row.name} — ${row.score}`;
                 ul.appendChild(li);
             });
         }
 
         let lastWriteAt = 0;
+        let sessionScore = 0; // track current session total for best-score upsert
+
         async function upsertScore(delta = 10) {
             const name = getPlayerName();
-            if (!name) { setStatus("Najprv zadaj meno."); return; }
+            if (!name) {
+                setStatus("Najprv sa prihlás.");
+                return;
+            }
             if (!Number.isFinite(delta) || delta <= 0) return;
             const now = Date.now();
             if (now - lastWriteAt < 250) return;
             lastWriteAt = now;
 
-            const { error } = await sb.rpc("upsert_score_session", {
-                p_session_id: sessionId,
-                p_name: name,
-                p_delta: delta
-            });
-            if (error) { console.error("upsert_score_session error:", error); return; }
-            setStatus(`Skóre uložené: +${delta}`);
+            // Accumulate session score
+            sessionScore += delta;
+
+            // Try to get existing best score for this player
+            const { data: existing } = await sb
+                .from("leaderboard")
+                .select("score")
+                .eq("name", name)
+                .maybeSingle();
+
+            const existingBest = existing?.score ?? 0;
+
+            // Only write if current session score beats the best
+            if (sessionScore > existingBest) {
+                const { error } = await sb
+                    .from("leaderboard")
+                    .upsert({ name, score: sessionScore }, { onConflict: "name" });
+
+                if (error) {
+                    // Fallback to RPC if available
+                    await sb.rpc("upsert_score_session", {
+                        p_session_id: sessionId,
+                        p_name: name,
+                        p_delta: delta
+                    }).catch(e => console.error("rpc fallback error:", e));
+                }
+            }
+
+            setStatus(`+${delta} ⭐`);
+            setTimeout(() => setStatus(""), 2000);
             await loadLeaderboard();
         }
         window.upsertScore = upsertScore;

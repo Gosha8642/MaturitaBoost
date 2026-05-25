@@ -989,9 +989,9 @@
                     if (rankEl) rankEl.textContent = "–";
                 }
             }
-            const { data: fastData } = await sb.from("fast_leaderboard").select("score").eq("name", name).maybeSingle();
+            const { data: fastRow } = await sb.from("leaderboard").select("fast_score").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
             const fastEl = document.getElementById("pm-stat-fast");
-            if (fastEl) fastEl.textContent = fastData?.score ?? "0";
+            if (fastEl) fastEl.textContent = fastRow?.fast_score ?? "0";
         }
 
         // ===================== AUTH STATE =====================
@@ -1080,21 +1080,17 @@
                     }
                 }
 
-                // Best fast game score — try fast_leaderboard or leaderboard with source tag
-                // Fast game uses same leaderboard table via upsert_score_session RPC
-                // so we read separate fast_scores table if exists, otherwise show "-"
-                const { data: fastData, error: fastErr } = await sb
-                    .from("fast_leaderboard")
-                    .select("score")
+                // Best fast score — read fast_score column from leaderboard
+                const { data: fastData } = await sb
+                    .from("leaderboard")
+                    .select("fast_score")
                     .eq("name", name)
+                    .order("score", { ascending: false })
+                    .limit(1)
                     .maybeSingle();
 
                 const fastVal = document.getElementById("profile-best-fast");
-                if (!fastErr && fastData) {
-                    if (fastVal) fastVal.textContent = fastData.score;
-                } else {
-                    if (fastVal) fastVal.textContent = "0";
-                }
+                if (fastVal) fastVal.textContent = fastData?.fast_score ?? "0";
             } catch(e) {
                 console.warn("loadProfileStats error:", e);
             }
@@ -1118,22 +1114,28 @@
 
         // ===================== LEADERBOARD =====================
         async function loadLeaderboard() {
-            const [lbRes, fastRes] = await Promise.all([
-                sb.from("leaderboard").select("name, score").order("score", { ascending: false }).limit(10),
-                sb.from("fast_leaderboard").select("name, score"),
-            ]);
+            const { data, error } = await sb
+                .from("leaderboard")
+                .select("name, score, fast_score")
+                .order("score", { ascending: false });
 
-            if (lbRes.error) { console.error("loadLeaderboard error:", lbRes.error); return; }
-            const fastMap = {};
-            (fastRes.data || []).forEach(r => { fastMap[r.name] = r.score; });
+            if (error) { console.error("loadLeaderboard error:", error); return; }
+
+            // Deduplicate: keep best map score per name (first occurrence since sorted desc)
+            const seen = new Set();
+            const rows = [];
+            for (const row of (data || [])) {
+                if (!seen.has(row.name)) { seen.add(row.name); rows.push(row); }
+                if (rows.length >= 10) break;
+            }
 
             const ul = document.getElementById("leaderboard");
             if (!ul) return;
             ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">🗺️ Mapa</span><span class="lb-col-fast" title="Fast Game">⚡ Fast</span></li>`;
-            lbRes.data.forEach((row, i) => {
+            rows.forEach((row, i) => {
                 const li = document.createElement("li");
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
-                const fastScore = fastMap[row.name] != null ? fastMap[row.name] : "–";
+                const fastScore = row.fast_score != null ? row.fast_score : "–";
                 li.innerHTML = `<span class="lb-col-name">${medal} ${row.name}</span><span class="lb-col-map">${row.score}</span><span class="lb-col-fast">${fastScore}</span>`;
                 ul.appendChild(li);
             });

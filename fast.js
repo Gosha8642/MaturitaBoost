@@ -571,22 +571,36 @@ async function saveScoreToLeaderboard(score) {
         const name = localStorage.getItem("player_name");
         if (!name || !score || score <= 0) return;
 
-        // Read existing best fast score for this player
+        // Read existing best fast_score for this player from leaderboard
         const { data: existing } = await sb
-            .from("fast_leaderboard")
-            .select("score")
+            .from("leaderboard")
+            .select("fast_score")
             .eq("name", name)
+            .order("score", { ascending: false })
+            .limit(1)
             .maybeSingle();
 
-        const existingBest = existing?.score ?? 0;
+        const existingBest = existing?.fast_score ?? 0;
 
-        // Only update if this session's score beats the previous best
+        // Only update if this score beats the previous best
         if (score > existingBest) {
-            const { error } = await sb
-                .from("fast_leaderboard")
-                .upsert({ name, score }, { onConflict: "name" });
-            if (error) console.warn("[fast] fast_leaderboard upsert error", error.message);
-            else console.log("[fast] New best fast score saved:", score);
+            // Update fast_score on the row with the highest map score for this name
+            const { data: topRow } = await sb
+                .from("leaderboard")
+                .select("id")
+                .eq("name", name)
+                .order("score", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (topRow) {
+                const { error } = await sb
+                    .from("leaderboard")
+                    .update({ fast_score: score })
+                    .eq("id", topRow.id);
+                if (error) console.warn("[fast] fast_score update error", error.message);
+                else console.log("[fast] New best fast score saved:", score);
+            }
         } else {
             console.log("[fast] Score", score, "did not beat best", existingBest, "— not saving");
         }

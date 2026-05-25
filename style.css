@@ -612,11 +612,32 @@ input.open-answer-input {
     background: var(--btn-ghost-bg);
     color: var(--sidebar-text);
     font-size: 14px;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
     transition: transform 0.2s;
 }
 #leaderboard li:hover { transform: translateX(4px); }
+#leaderboard li.lb-header-row {
+    background: transparent;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.55;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+}
+#leaderboard li.lb-header-row:hover { transform: none; }
+.lb-col-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-col-map, .lb-col-fast {
+    text-align: right;
+    min-width: 44px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.lb-col-fast { color: var(--accent, #f59e0b); }
 
 /* ============================================================
    FOOTER
@@ -1687,9 +1708,9 @@ body[class*="streak-bg-"] .ukazka-col {
 }
 
 /* Leaderboard medal styling */
-#leaderboard li:first-child { color: #ffd700; font-weight: 700; }
-#leaderboard li:nth-child(2) { color: #c0c0c0; font-weight: 600; }
-#leaderboard li:nth-child(3) { color: #cd7f32; font-weight: 600; }
+#leaderboard li:nth-child(2) { color: #ffd700; font-weight: 700; }
+#leaderboard li:nth-child(3) { color: #c0c0c0; font-weight: 600; }
+#leaderboard li:nth-child(4) { color: #cd7f32; font-weight: 600; }
 
 /* ===== HEADER AUTH WIDGET ===== */
 #header-auth-widget {

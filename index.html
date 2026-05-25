@@ -1118,20 +1118,23 @@
 
         // ===================== LEADERBOARD =====================
         async function loadLeaderboard() {
-            const { data, error } = await sb
-                .from("leaderboard")
-                .select("name, score")
-                .order("score", { ascending: false })
-                .limit(10);
+            const [lbRes, fastRes] = await Promise.all([
+                sb.from("leaderboard").select("name, score").order("score", { ascending: false }).limit(10),
+                sb.from("fast_leaderboard").select("name, score"),
+            ]);
 
-            if (error) { console.error("loadLeaderboard error:", error); return; }
+            if (lbRes.error) { console.error("loadLeaderboard error:", lbRes.error); return; }
+            const fastMap = {};
+            (fastRes.data || []).forEach(r => { fastMap[r.name] = r.score; });
+
             const ul = document.getElementById("leaderboard");
             if (!ul) return;
-            ul.innerHTML = "";
-            data.forEach((row, i) => {
+            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">🗺️ Mapa</span><span class="lb-col-fast" title="Fast Game">⚡ Fast</span></li>`;
+            lbRes.data.forEach((row, i) => {
                 const li = document.createElement("li");
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
-                li.textContent = `${medal} ${row.name} — ${row.score}`;
+                const fastScore = fastMap[row.name] != null ? fastMap[row.name] : "–";
+                li.innerHTML = `<span class="lb-col-name">${medal} ${row.name}</span><span class="lb-col-map">${row.score}</span><span class="lb-col-fast">${fastScore}</span>`;
                 ul.appendChild(li);
             });
         }

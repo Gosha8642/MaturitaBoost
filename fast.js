@@ -566,16 +566,30 @@ function endUkazka() {
     }
 }
 
-async function saveScoreToLeaderboard(delta) {
+async function saveScoreToLeaderboard(score) {
     try {
-        const name      = localStorage.getItem("player_name");
-        const sessionId = localStorage.getItem("leaderboard_session_id");
-        if (!name || !sessionId || !delta || delta <= 0) return;
-        await sb.rpc("upsert_score_session", {
-            p_session_id: sessionId,
-            p_name: name,
-            p_delta: delta,
-        });
+        const name = localStorage.getItem("player_name");
+        if (!name || !score || score <= 0) return;
+
+        // Read existing best fast score for this player
+        const { data: existing } = await sb
+            .from("fast_leaderboard")
+            .select("score")
+            .eq("name", name)
+            .maybeSingle();
+
+        const existingBest = existing?.score ?? 0;
+
+        // Only update if this session's score beats the previous best
+        if (score > existingBest) {
+            const { error } = await sb
+                .from("fast_leaderboard")
+                .upsert({ name, score }, { onConflict: "name" });
+            if (error) console.warn("[fast] fast_leaderboard upsert error", error.message);
+            else console.log("[fast] New best fast score saved:", score);
+        } else {
+            console.log("[fast] Score", score, "did not beat best", existingBest, "— not saving");
+        }
     } catch (e) {
         console.warn("[fast] save score failed", e?.message || e);
     }

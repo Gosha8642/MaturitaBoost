@@ -2248,3 +2248,209 @@ body[class*="streak-bg-"] .ukazka-col {
     border-color: rgba(239,68,68,0.3);
     color: #fca5a5;
 }
+
+/* ===== HEADER PROFILE BUTTON ===== */
+.header-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 6px;
+    border: 1.5px solid rgba(124,58,237,0.35);
+    border-radius: 999px;
+    background: rgba(124,58,237,0.1);
+    color: var(--color-text, #eee);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    white-space: nowrap;
+}
+.header-profile-btn:hover {
+    background: rgba(124,58,237,0.22);
+    border-color: rgba(124,58,237,0.6);
+    transform: translateY(-1px);
+}
+
+.header-profile-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #9f5aff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.header-profile-chevron {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-left: -2px;
+}
+
+/* ===== PROFILE MODAL ===== */
+.profile-modal-card {
+    position: relative;
+    background: var(--color-bg, #13121a);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 440px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+    animation: authModalIn 0.25s cubic-bezier(.4,0,.2,1);
+}
+
+/* Banner */
+.profile-modal-banner {
+    position: relative;
+    background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #9f5aff 100%);
+    padding: 32px 28px 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    overflow: hidden;
+}
+
+.profile-modal-banner-blob {
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.profile-modal-avatar-big {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 3px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    letter-spacing: -1px;
+}
+
+.profile-modal-banner-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-modal-username {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-modal-email {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    margin-top: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Stats */
+.profile-modal-stats {
+    display: flex;
+    align-items: stretch;
+    background: rgba(124,58,237,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.pm-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 16px 8px;
+}
+
+.pm-stat-sep {
+    width: 1px;
+    background: rgba(255,255,255,0.07);
+    margin: 12px 0;
+}
+
+.pm-stat-val {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1;
+}
+
+.pm-stat-lbl {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* Body */
+.profile-modal-body {
+    padding: 24px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pm-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: -4px;
+}
+
+.pm-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+    margin: 6px 0;
+}
+
+.pm-field-hint {
+    font-size: 0.76rem;
+    min-height: 16px;
+    margin-top: 2px;
+    transition: color 0.2s;
+}
+
+.pm-nick-check {
+    position: absolute;
+    right: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.pm-btn-secondary {
+    background: rgba(124,58,237,0.15) !important;
+    box-shadow: none !important;
+    border: 1.5px solid rgba(124,58,237,0.4);
+}
+.pm-btn-secondary:hover {
+    background: rgba(124,58,237,0.28) !important;
+    transform: translateY(-2px);
+}

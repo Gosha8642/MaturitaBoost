@@ -24,10 +24,13 @@
                         <button id="header-login-btn" class="btn btn-auth" type="button" onclick="openAuthModal('login')">🔑 Prihlásiť</button>
                         <button id="header-register-btn" class="btn btn-auth btn-auth-outline" type="button" onclick="openAuthModal('register')">🚀 Registrovať</button>
                     </div>
-                    <!-- Logged in: show avatar + name + logout -->
+                    <!-- Logged in: show avatar + name clickable -->
                     <div id="header-auth-logged-in" style="display:none">
-                        <span class="header-avatar" id="header-avatar">🧑</span>
-                        <span class="header-username" id="header-username">Hráč</span>
+                        <button class="header-profile-btn" type="button" onclick="openProfileModal()" title="Môj profil">
+                            <div class="header-profile-avatar" id="header-profile-avatar">?</div>
+                            <span class="header-username" id="header-username">Hráč</span>
+                            <span class="header-profile-chevron">▾</span>
+                        </button>
                         <button id="header-logout-btn" class="btn btn-auth btn-auth-ghost" type="button">🚪</button>
                     </div>
                 </div>
@@ -148,6 +151,92 @@
                     <span class="auth-submit-arrow">→</span>
                 </button>
                 <div id="modal-status-register" class="auth-modal-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="popup" style="display:none">
+        <div class="profile-modal-card">
+            <button class="auth-modal-close" onclick="closeProfileModal()" type="button">&times;</button>
+
+            <!-- Header gradient banner -->
+            <div class="profile-modal-banner">
+                <div class="profile-modal-banner-blob"></div>
+                <div class="profile-modal-avatar-big" id="pm-avatar-letter">?</div>
+                <div class="profile-modal-banner-info">
+                    <div class="profile-modal-username" id="pm-username">Hráč</div>
+                    <div class="profile-modal-email" id="pm-email"></div>
+                </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="profile-modal-stats">
+                <div class="pm-stat">
+                    <div class="pm-stat-val" id="pm-stat-map">–</div>
+                    <div class="pm-stat-lbl">🗺️ Mapa</div>
+                </div>
+                <div class="pm-stat-sep"></div>
+                <div class="pm-stat">
+                    <div class="pm-stat-val" id="pm-stat-fast">–</div>
+                    <div class="pm-stat-lbl">⚡ Fast Game</div>
+                </div>
+                <div class="pm-stat-sep"></div>
+                <div class="pm-stat">
+                    <div class="pm-stat-val" id="pm-stat-rank">–</div>
+                    <div class="pm-stat-lbl">🏆 Miesto</div>
+                </div>
+            </div>
+
+            <!-- Edit section -->
+            <div class="profile-modal-body">
+                <div class="pm-section-title">✏️ Upraviť profil</div>
+
+                <div class="auth-field">
+                    <label class="auth-label">Herné meno</label>
+                    <div class="auth-input-wrap" style="position:relative">
+                        <span class="auth-input-icon">🎮</span>
+                        <input id="pm-nick-input" type="text" placeholder="Vaše herné meno" autocomplete="off" />
+                        <span class="pm-nick-check" id="pm-nick-check"></span>
+                    </div>
+                    <div class="pm-field-hint" id="pm-nick-hint"></div>
+                </div>
+
+                <button id="pm-save-nick-btn" type="button" class="auth-modal-submit" style="margin-top:4px">
+                    <span>Uložiť meno</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+
+                <div class="pm-divider"></div>
+
+                <div class="pm-section-title">🔒 Zmena hesla</div>
+
+                <div class="auth-field">
+                    <label class="auth-label">Nové heslo</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon">🔒</span>
+                        <input id="pm-new-password" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Potvrdiť heslo</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon">✅</span>
+                        <input id="pm-confirm-password" type="password" placeholder="Zopakujte heslo" autocomplete="new-password" />
+                    </div>
+                </div>
+                <button id="pm-save-pass-btn" type="button" class="auth-modal-submit pm-btn-secondary" style="margin-top:4px">
+                    <span>Zmeniť heslo</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+
+                <div id="pm-status" class="auth-modal-status" style="text-align:center;margin-top:8px;font-size:0.85rem"></div>
+
+                <div class="pm-divider"></div>
+
+                <button id="pm-logout-btn" type="button" class="profile-logout-btn" style="width:100%;margin:0">
+                    🚪 Odhlásiť sa
+                </button>
             </div>
         </div>
     </div>
@@ -706,6 +795,19 @@
             if (!name) { setModalStatus("register", "Zadaj meno hráča.", true); return; }
             if (!email) { setModalStatus("register", "Zadaj e-mail.", true); return; }
             if (password.length < 6) { setModalStatus("register", "Heslo musí mať aspoň 6 znakov.", true); return; }
+
+            // Check nick uniqueness in leaderboard table
+            setModalStatus("register", "Kontrolujem meno…");
+            const { data: existing } = await sb
+                .from("leaderboard")
+                .select("name")
+                .ilike("name", name)
+                .maybeSingle();
+            if (existing) {
+                setModalStatus("register", "Toto meno je už obsadené. Vyber iné.", true);
+                return;
+            }
+
             setModalStatus("register", "Registrujem…");
             const { data, error } = await sb.auth.signUp({
                 email, password,
@@ -715,7 +817,6 @@
             if (data.user && !data.session) {
                 setModalStatus("register", "");
                 closeAuthModal();
-                // Show email confirm toast
                 const toast = document.getElementById("email-confirm-toast");
                 if (toast) {
                     toast.style.display = "flex";
@@ -742,11 +843,156 @@
             updateAuthUI(null);
         });
 
-        // PROFILE LOGOUT
+        // PROFILE LOGOUT (sidebar card)
         document.getElementById("profile-logout-btn")?.addEventListener("click", async () => {
             await sb.auth.signOut();
             updateAuthUI(null);
         });
+
+        // ===================== PROFILE MODAL =====================
+        window.openProfileModal = function() {
+            const modal = document.getElementById("profile-modal");
+            if (!modal || !currentUser) return;
+            const displayName = currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Hráč";
+            // Populate fields
+            document.getElementById("pm-avatar-letter").textContent = displayName.charAt(0).toUpperCase();
+            document.getElementById("pm-username").textContent = displayName;
+            document.getElementById("pm-email").textContent = currentUser.email;
+            document.getElementById("pm-nick-input").value = displayName;
+            document.getElementById("pm-status").textContent = "";
+            document.getElementById("pm-nick-hint").textContent = "";
+            document.getElementById("pm-nick-check").textContent = "";
+            document.getElementById("pm-new-password").value = "";
+            document.getElementById("pm-confirm-password").value = "";
+            // Load stats
+            loadProfileModalStats(displayName);
+            modal.style.display = "flex";
+        };
+
+        window.closeProfileModal = function() {
+            document.getElementById("profile-modal").style.display = "none";
+        };
+
+        document.getElementById("profile-modal")?.addEventListener("click", (e) => {
+            if (e.target.id === "profile-modal") closeProfileModal();
+        });
+
+        // PM LOGOUT
+        document.getElementById("pm-logout-btn")?.addEventListener("click", async () => {
+            await sb.auth.signOut();
+            closeProfileModal();
+            updateAuthUI(null);
+        });
+
+        // Nick availability check with debounce
+        let nickCheckTimer = null;
+        document.getElementById("pm-nick-input")?.addEventListener("input", () => {
+            clearTimeout(nickCheckTimer);
+            const val = document.getElementById("pm-nick-input").value.trim();
+            const hint = document.getElementById("pm-nick-hint");
+            const check = document.getElementById("pm-nick-check");
+            if (!val) { hint.textContent = ""; check.textContent = ""; return; }
+            const currentName = currentUser?.user_metadata?.display_name || "";
+            if (val.toLowerCase() === currentName.toLowerCase()) {
+                hint.textContent = "Toto je vaše súčasné meno.";
+                hint.style.color = "rgba(255,255,255,0.4)";
+                check.textContent = "✓";
+                check.style.color = "#43a047";
+                return;
+            }
+            check.textContent = "…";
+            check.style.color = "rgba(255,255,255,0.4)";
+            nickCheckTimer = setTimeout(async () => {
+                const { data } = await sb.from("leaderboard").select("name").ilike("name", val).maybeSingle();
+                if (data) {
+                    hint.textContent = "Toto meno je už obsadené.";
+                    hint.style.color = "#e53935";
+                    check.textContent = "✗";
+                    check.style.color = "#e53935";
+                } else {
+                    hint.textContent = "Meno je voľné!";
+                    hint.style.color = "#43a047";
+                    check.textContent = "✓";
+                    check.style.color = "#43a047";
+                }
+            }, 500);
+        });
+
+        // Save nick
+        document.getElementById("pm-save-nick-btn")?.addEventListener("click", async () => {
+            const newName = document.getElementById("pm-nick-input").value.trim();
+            const pmStatus = document.getElementById("pm-status");
+            if (!newName) { pmStatus.textContent = "Zadaj meno."; pmStatus.style.color = "#e53935"; return; }
+            const currentName = currentUser?.user_metadata?.display_name || "";
+            if (newName.toLowerCase() === currentName.toLowerCase()) {
+                pmStatus.textContent = "Meno je rovnaké.";
+                pmStatus.style.color = "rgba(255,255,255,0.5)";
+                return;
+            }
+            // Check uniqueness
+            const { data: taken } = await sb.from("leaderboard").select("name").ilike("name", newName).maybeSingle();
+            if (taken) {
+                pmStatus.textContent = "Toto meno je obsadené.";
+                pmStatus.style.color = "#e53935";
+                return;
+            }
+            pmStatus.textContent = "Ukladám…";
+            pmStatus.style.color = "rgba(255,255,255,0.5)";
+
+            // Update auth metadata
+            const { error: authErr } = await sb.auth.updateUser({ data: { display_name: newName } });
+            if (authErr) { pmStatus.textContent = authErr.message; pmStatus.style.color = "#e53935"; return; }
+
+            // Update leaderboard name if exists
+            await sb.from("leaderboard").update({ name: newName }).eq("name", currentName).catch(() => {});
+
+            // Refresh user
+            const { data: { user } } = await sb.auth.getUser();
+            updateAuthUI(user);
+            document.getElementById("pm-username").textContent = newName;
+            document.getElementById("pm-avatar-letter").textContent = newName.charAt(0).toUpperCase();
+            pmStatus.textContent = "✅ Meno bolo zmenené!";
+            pmStatus.style.color = "#43a047";
+            setTimeout(() => { if(pmStatus) pmStatus.textContent = ""; }, 3000);
+        });
+
+        // Save password
+        document.getElementById("pm-save-pass-btn")?.addEventListener("click", async () => {
+            const pass1 = document.getElementById("pm-new-password").value;
+            const pass2 = document.getElementById("pm-confirm-password").value;
+            const pmStatus = document.getElementById("pm-status");
+            if (pass1.length < 6) { pmStatus.textContent = "Heslo musí mať aspoň 6 znakov."; pmStatus.style.color = "#e53935"; return; }
+            if (pass1 !== pass2) { pmStatus.textContent = "Heslá sa nezhodujú."; pmStatus.style.color = "#e53935"; return; }
+            pmStatus.textContent = "Mením heslo…";
+            pmStatus.style.color = "rgba(255,255,255,0.5)";
+            const { error } = await sb.auth.updateUser({ password: pass1 });
+            if (error) { pmStatus.textContent = error.message; pmStatus.style.color = "#e53935"; return; }
+            document.getElementById("pm-new-password").value = "";
+            document.getElementById("pm-confirm-password").value = "";
+            pmStatus.textContent = "✅ Heslo bolo zmenené!";
+            pmStatus.style.color = "#43a047";
+            setTimeout(() => { if(pmStatus) pmStatus.textContent = ""; }, 3000);
+        });
+
+        async function loadProfileModalStats(name) {
+            const { data: lbData } = await sb.from("leaderboard").select("name, score").order("score", { ascending: false });
+            if (lbData) {
+                const idx = lbData.findIndex(r => r.name === name);
+                const myRow = lbData[idx];
+                const mapEl = document.getElementById("pm-stat-map");
+                const rankEl = document.getElementById("pm-stat-rank");
+                if (mapEl) mapEl.textContent = myRow ? myRow.score : "0";
+                if (idx >= 0) {
+                    const rank = idx + 1;
+                    if (rankEl) rankEl.textContent = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+                } else {
+                    if (rankEl) rankEl.textContent = "–";
+                }
+            }
+            const { data: fastData } = await sb.from("fast_leaderboard").select("score").eq("name", name).maybeSingle();
+            const fastEl = document.getElementById("pm-stat-fast");
+            if (fastEl) fastEl.textContent = fastData?.score ?? "0";
+        }
 
         // ===================== AUTH STATE =====================
         let currentUser = null;
@@ -769,6 +1015,8 @@
                 if (headerIn) headerIn.style.display = "flex";
                 const headerUsername = document.getElementById("header-username");
                 if (headerUsername) headerUsername.textContent = displayName;
+                const headerProfileAvatar = document.getElementById("header-profile-avatar");
+                if (headerProfileAvatar) headerProfileAvatar.textContent = displayName.charAt(0).toUpperCase();
 
                 // Sidebar profile card
                 if (sidebarIn) sidebarIn.style.display = "block";

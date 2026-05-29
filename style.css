@@ -2987,6 +2987,57 @@ body[class*="streak-bg-"] .ukazka-col {
 }
 .pp-close-btn:hover { background: rgba(255,255,255,0.15); }
 
+/* ── Player profile skins collection ── */
+.pp-skins-section {
+    padding: 12px 16px 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: auto;
+}
+.pp-skins-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.pp-skins-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.pp-skin-thumb {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+    cursor: default;
+    transition: border-color 0.15s, transform 0.15s;
+    flex-shrink: 0;
+}
+.pp-skin-thumb:hover { transform: scale(1.12); border-color: rgba(255,255,255,0.3); }
+.pp-skin-thumb.pp-skin-active {
+    border-color: #a78bfa;
+    box-shadow: 0 0 8px rgba(167,139,250,0.5);
+}
+.pp-skin-thumb canvas { display: block; }
+
+/* ── Footer email copy button ── */
+.footer-email {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    color: #a78bfa;
+    transition: color 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.footer-email:hover { color: #c4b5fd; text-decoration: underline; }
+.footer-email strong { color: inherit; }
+
 /* ── Secret skin card shimmer ── */
 .skin-card-fs[data-rarity="legendary"] {
     box-shadow: 0 0 0 1px rgba(251,146,60,0.4), 0 4px 20px rgba(251,146,60,0.2);

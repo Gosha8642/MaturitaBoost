@@ -450,9 +450,15 @@
                 <div class="footer-links">
                     <span class="footer-school">📍 SPŠD Košice · Hlavná 113</span>
                     <span class="footer-sep">·</span>
-                    <a href="mailto:maturitaboostsupport@gmail.com" class="footer-email">
+                    <button type="button" class="footer-email" id="copy-email-btn" onclick="
+                        navigator.clipboard.writeText('maturitaboostsupport@gmail.com').then(() => {
+                            const btn = document.getElementById('copy-email-btn');
+                            btn.innerHTML = '<span>✅</span> <strong>Skopírované!</strong>';
+                            setTimeout(() => { btn.innerHTML = \'<span>✉️</span> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>\'; }, 2000);
+                        });
+                    ">
                         <span>✉️</span> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>
-                    </a>
+                    </button>
                 </div>
                 <div class="footer-copy">© 2025 MaturitaBoost. Všetky práva vyhradené.</div>
             </div>
@@ -1412,7 +1418,10 @@ function buildShop(coins) {
                 const name = localStorage.getItem("player_name");
                 if (!name) return;
                 const { data: topRow } = await sb.from("leaderboard").select("id").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
-                if (topRow) await sb.from("leaderboard").update({ active_skin: skinId }).eq("id", topRow.id);
+                if (topRow) {
+                    const owned = getOwnedSkins();
+                    await sb.from("leaderboard").update({ active_skin: skinId, owned_skins: owned }).eq("id", topRow.id);
+                }
             } catch(e) { console.warn("saveActiveSkinToDb error:", e); }
         }
 
@@ -1446,11 +1455,11 @@ function buildShop(coins) {
             modal.style.display = "flex";
             document.body.style.overflow = "hidden";
 
-            // Fetch bio (and confirm skin) from Supabase in background
+            // Fetch bio, skin, owned_skins from Supabase in background
             const bioEl = document.getElementById("pp-bio");
             if (bioEl) bioEl.textContent = "…";
             try {
-                const { data: row } = await sb.from("leaderboard").select("bio, active_skin").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
+                const { data: row } = await sb.from("leaderboard").select("bio, active_skin, owned_skins").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
                 if (bioEl) bioEl.textContent = row?.bio || "—";
                 // If DB has a different skin than what we showed, update
                 const dbSkin = row?.active_skin || skin;
@@ -1458,9 +1467,35 @@ function buildShop(coins) {
                     drawAvatar(avatarC, dbSkin, 64);
                     if (charC) drawCharacter(charC, dbSkin, 5);
                 }
+                // Render skins collection
+                const ownedRaw = row?.owned_skins || ["default"];
+                const owned = Array.isArray(ownedRaw) ? ownedRaw : JSON.parse(ownedRaw || '["default"]');
+                renderPlayerSkinsGrid(owned, dbSkin);
             } catch(e) {
                 if (bioEl) bioEl.textContent = "—";
+                renderPlayerSkinsGrid(["default"], skin);
             }
+        }
+
+        function renderPlayerSkinsGrid(owned, activeSkin) {
+            const grid = document.getElementById("pp-skins-grid");
+            if (!grid) return;
+            grid.innerHTML = "";
+            // Show only owned non-secret skins
+            const ownedSkins = SKINS.filter(s => owned.includes(s.id) && !s.secret);
+            if (ownedSkins.length === 0) {
+                grid.innerHTML = "<span style='color:#555;font-size:0.75rem'>Žiadne skiny</span>";
+                return;
+            }
+            ownedSkins.forEach(skin => {
+                const wrap = document.createElement("div");
+                wrap.className = "pp-skin-thumb" + (skin.id === activeSkin ? " pp-skin-active" : "");
+                wrap.title = skin.name;
+                const c = document.createElement("canvas");
+                drawAvatar(c, skin.id, 32);
+                wrap.appendChild(c);
+                grid.appendChild(wrap);
+            });
         }
 
         function closePlayerProfile() {
@@ -1712,11 +1747,15 @@ function buildShop(coins) {
                     </div>
                 </div>
 
-                <!-- RIGHT: character -->
+                <!-- RIGHT: character + skins -->
                 <div class="pp-right">
                     <div class="pp-right-bg"></div>
                     <div class="pp-char-label">Charakter</div>
                     <canvas id="pp-char-canvas" class="pp-char-canvas"></canvas>
+                    <div class="pp-skins-section">
+                        <div class="pp-skins-label">🎒 Kolekcia</div>
+                        <div id="pp-skins-grid" class="pp-skins-grid"></div>
+                    </div>
                 </div>
             </div>
             </div>

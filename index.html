@@ -180,11 +180,6 @@
                     </div>
                     <div class="pm-stat-sep"></div>
                     <div class="pm-stat">
-                        <div class="pm-stat-val" id="pm-stat-fast">–</div>
-                        <div class="pm-stat-lbl">⚡ Fast 🪙</div>
-                    </div>
-                    <div class="pm-stat-sep"></div>
-                    <div class="pm-stat">
                         <div class="pm-stat-val" id="pm-stat-rank">–</div>
                         <div class="pm-stat-lbl">🏆 Miesto</div>
                     </div>
@@ -206,6 +201,19 @@
 
                     <button id="pm-save-nick-btn" type="button" class="auth-modal-submit" style="margin-top:4px">
                         <span>Uložiť meno</span>
+                        <span class="auth-submit-arrow">→</span>
+                    </button>
+
+                    <div class="pm-divider"></div>
+
+                    <div class="pm-section-title">📝 O mne</div>
+                    <div class="auth-field">
+                        <label class="auth-label">Popis profilu</label>
+                        <textarea id="pm-bio-input" placeholder="Napíš niečo o sebe…" maxlength="160" rows="3" style="width:100%;background:var(--input-bg,rgba(255,255,255,0.06));border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:var(--text);font-size:0.9rem;resize:none;font-family:inherit;box-sizing:border-box;outline:none"></textarea>
+                        <div style="text-align:right;font-size:0.72rem;color:var(--text-muted);margin-top:3px"><span id="pm-bio-count">0</span>/160</div>
+                    </div>
+                    <button id="pm-save-bio-btn" type="button" class="auth-modal-submit pm-btn-secondary" style="margin-top:4px">
+                        <span>Uložiť popis</span>
                         <span class="auth-submit-arrow">→</span>
                     </button>
 
@@ -396,12 +404,6 @@
                         <div class="profile-stat-icon">🗺️</div>
                         <div class="profile-stat-val" id="profile-best-map">-</div>
                         <div class="profile-stat-label">🗺️ Mapa 🪙</div>
-                    </div>
-                    <div class="profile-stat-divider"></div>
-                    <div class="profile-stat">
-                        <div class="profile-stat-icon">⚡</div>
-                        <div class="profile-stat-val" id="profile-best-fast">-</div>
-                        <div class="profile-stat-label">⚡ Fast 🪙</div>
                     </div>
                     <div class="profile-stat-divider"></div>
                     <div class="profile-stat">
@@ -846,6 +848,7 @@ function buildShop(coins) {
       setActiveSkin(btn.dataset.id);
       buildShop(coins);
       refreshAllAvatars();
+      saveActiveSkinToDb(btn.dataset.id);
     });
   });
 
@@ -880,6 +883,7 @@ function buildShop(coins) {
       setActiveSkin(btn.dataset.id);
       buildShop(coins);
       refreshAllAvatars();
+      saveActiveSkinToDb(btn.dataset.id);
     });
   });
 }
@@ -1017,8 +1021,9 @@ function buildShop(coins) {
             document.getElementById("pm-nick-check").textContent = "";
             document.getElementById("pm-new-password").value = "";
             document.getElementById("pm-confirm-password").value = "";
-            // Load stats
+            // Load stats + sync active skin to DB
             loadProfileModalStats(displayName);
+            saveActiveSkinToDb(getActiveSkin());
             const mapCoins = parseInt(document.getElementById("profile-best-map")?.textContent) || 0;
             buildShop(mapCoins);
             refreshAllAvatars();
@@ -1132,7 +1137,7 @@ function buildShop(coins) {
         });
 
         async function loadProfileModalStats(name) {
-            const { data: lbData } = await sb.from("leaderboard").select("name, score").order("score", { ascending: false });
+            const { data: lbData } = await sb.from("leaderboard").select("name, score, bio").order("score", { ascending: false });
             if (lbData) {
                 const idx = lbData.findIndex(r => r.name === name);
                 const myRow = lbData[idx];
@@ -1145,9 +1150,14 @@ function buildShop(coins) {
                 } else {
                     if (rankEl) rankEl.textContent = "–";
                 }
+                // Load bio into textarea
+                const bioInput = document.getElementById("pm-bio-input");
+                const bioCount = document.getElementById("pm-bio-count");
+                if (bioInput && myRow) {
+                    bioInput.value = myRow.bio || "";
+                    if (bioCount) bioCount.textContent = bioInput.value.length;
+                }
             }
-            const fastEl = document.getElementById("pm-stat-fast");
-            if (fastEl) fastEl.closest(".pm-stat-item") && fastEl.closest(".pm-stat-item").remove();
         }
 
         // ===================== AUTH STATE =====================
@@ -1262,7 +1272,7 @@ function buildShop(coins) {
         async function loadLeaderboard() {
             const { data, error } = await sb
                 .from("leaderboard")
-                .select("name, score")
+                .select("name, score, active_skin")
                 .order("score", { ascending: false });
 
             if (error) { console.error("loadLeaderboard error:", error); return; }
@@ -1283,13 +1293,16 @@ function buildShop(coins) {
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
                 const avatarC = document.createElement("canvas");
                 const playerName = localStorage.getItem("player_name");
-                const lbSkin = (row.name === playerName) ? getActiveSkin() : "default";
+                const lbSkin = (row.name === playerName) ? getActiveSkin() : (row.active_skin || "default");
                 drawAvatar(avatarC, lbSkin, 22);
                 avatarC.style.cssText = "border-radius:50%;flex-shrink:0;vertical-align:middle;";
                 li.innerHTML = `<span class="lb-col-name"></span><span class="lb-col-map">${row.score}</span>`;
                 const nameSpan = li.querySelector(".lb-col-name");
                 nameSpan.appendChild(avatarC);
                 nameSpan.insertAdjacentText("beforeend", " " + medal + " " + row.name);
+                li.style.cursor = "pointer";
+                li.title = "Zobraziť profil";
+                li.addEventListener("click", () => openPlayerProfile(row.name, row.score, i + 1, row.active_skin || "default"));
                 ul.appendChild(li);
             });
         }
@@ -1325,16 +1338,105 @@ function buildShop(coins) {
                     .update({ score: newScore })
                     .eq("id", existing.id);
             } else {
-                // No row yet — insert new
+                // No row yet — insert new (include active skin)
                 await sb
                     .from("leaderboard")
-                    .insert({ name, score: delta });
+                    .insert({ name, score: delta, active_skin: getActiveSkin() });
             }
 
             setStatus(`🪙+${delta}`);
             setTimeout(() => setStatus(""), 2000);
             await loadLeaderboard();
         }
+
+        // ===== PLAYER PROFILE MODAL =====
+        async function saveActiveSkinToDb(skinId) {
+            try {
+                const name = localStorage.getItem("player_name");
+                if (!name) return;
+                const { data: topRow } = await sb.from("leaderboard").select("id").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
+                if (topRow) await sb.from("leaderboard").update({ active_skin: skinId }).eq("id", topRow.id);
+            } catch(e) { console.warn("saveActiveSkinToDb error:", e); }
+        }
+
+        async function openPlayerProfile(name, score, rank, knownSkin) {
+            const modal = document.getElementById("player-profile-modal");
+            if (!modal) return;
+
+            document.getElementById("pp-name").textContent = name;
+            document.getElementById("pp-score").textContent = score != null ? score : "–";
+
+            const medals = ["🥇","🥈","🥉"];
+            const rankLabel = rank <= 3 ? medals[rank - 1] + " #" + rank : "#" + rank;
+            document.getElementById("pp-rank-badge").textContent = rankLabel;
+            document.getElementById("pp-place").textContent = rankLabel;
+
+            // Use knownSkin immediately (from leaderboard data), then fetch bio
+            let skin = knownSkin || "default";
+
+            // Draw immediately with known skin - no waiting
+            const avatarC = document.getElementById("pp-avatar");
+            drawAvatar(avatarC, skin, 64);
+            const charC = document.getElementById("pp-char-canvas");
+            if (charC) {
+                const scale = 5;
+                const charW = 16 * scale, charH = 32 * scale;
+                charC.width = charW; charC.height = charH;
+                charC.style.width = charW + "px"; charC.style.height = charH + "px";
+                drawCharacter(charC, skin, scale);
+            }
+
+            modal.style.display = "flex";
+            document.body.style.overflow = "hidden";
+
+            // Fetch bio (and confirm skin) from Supabase in background
+            const bioEl = document.getElementById("pp-bio");
+            if (bioEl) bioEl.textContent = "…";
+            try {
+                const { data: row } = await sb.from("leaderboard").select("bio, active_skin").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
+                if (bioEl) bioEl.textContent = row?.bio || "—";
+                // If DB has a different skin than what we showed, update
+                const dbSkin = row?.active_skin || skin;
+                if (dbSkin !== skin) {
+                    drawAvatar(avatarC, dbSkin, 64);
+                    if (charC) drawCharacter(charC, dbSkin, 5);
+                }
+            } catch(e) {
+                if (bioEl) bioEl.textContent = "—";
+            }
+        }
+
+        function closePlayerProfile() {
+            const modal = document.getElementById("player-profile-modal");
+            if (modal) modal.style.display = "none";
+            document.body.style.overflow = "";
+        }
+        window.closePlayerProfile = closePlayerProfile;
+        window.openPlayerProfile = openPlayerProfile;
+
+        // Bio save
+        document.getElementById("pm-bio-input")?.addEventListener("input", function() {
+            const count = document.getElementById("pm-bio-count");
+            if (count) count.textContent = this.value.length;
+        });
+
+        document.getElementById("pm-save-bio-btn")?.addEventListener("click", async () => {
+            const bio = document.getElementById("pm-bio-input")?.value?.trim() ?? "";
+            const pmStatus = document.getElementById("pm-status");
+            const name = currentUser?.user_metadata?.display_name || localStorage.getItem("player_name");
+            if (!name) { if(pmStatus){ pmStatus.textContent = "Nie si prihlásený."; pmStatus.style.color="#e53935"; } return; }
+            if(pmStatus){ pmStatus.textContent = "Ukladám…"; pmStatus.style.color="rgba(255,255,255,0.5)"; }
+            try {
+                const { data: topRow } = await sb.from("leaderboard").select("id").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
+                if (topRow) {
+                    const { error } = await sb.from("leaderboard").update({ bio }).eq("id", topRow.id);
+                    if (error) throw error;
+                }
+                if(pmStatus){ pmStatus.textContent = "✅ Popis uložený!"; pmStatus.style.color="#4caf50"; }
+            } catch(e) {
+                if(pmStatus){ pmStatus.textContent = "Chyba: " + (e?.message || e); pmStatus.style.color="#e53935"; }
+            }
+        });
         window.upsertScore = upsertScore;
 
         // Deduct coins from leaderboard.score in Supabase when buying a skin
@@ -1459,6 +1561,54 @@ function buildShop(coins) {
             await fetchUkazky();
         });
     </script>
+
+        <!-- ===== PLAYER PROFILE MODAL ===== -->
+        <div id="player-profile-modal" class="popup" style="display:none" onclick="if(event.target===this)closePlayerProfile()">
+            <div class="pp-card-wrap" style="position:relative">
+            <div class="pp-card">
+                <button onclick="closePlayerProfile()" class="pp-close-btn" aria-label="Zavrieť" style="position:absolute;top:12px;right:12px;z-index:100;">×</button>
+
+                <!-- LEFT: info -->
+                <div class="pp-left">
+                    <!-- Banner with avatar -->
+                    <div class="pp-banner">
+                        <div class="pp-banner-blob"></div>
+                        <canvas id="pp-avatar" width="64" height="64" class="pp-avatar"></canvas>
+                        <div class="pp-banner-info">
+                            <div id="pp-name" class="pp-username"></div>
+                            <div id="pp-rank-badge" class="pp-rank-badge"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="pp-stats">
+                        <div class="pp-stat">
+                            <div class="pp-stat-val" id="pp-score">–</div>
+                            <div class="pp-stat-lbl">🪙 Mince</div>
+                        </div>
+                        <div class="pp-stat-sep"></div>
+                        <div class="pp-stat">
+                            <div class="pp-stat-val" id="pp-place">–</div>
+                            <div class="pp-stat-lbl">🏆 Miesto</div>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="pp-bio-wrap">
+                        <div class="pp-bio-label">📝 O hráčovi</div>
+                        <div id="pp-bio" class="pp-bio-text">—</div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: character -->
+                <div class="pp-right">
+                    <div class="pp-right-bg"></div>
+                    <div class="pp-char-label">Charakter</div>
+                    <canvas id="pp-char-canvas" class="pp-char-canvas"></canvas>
+                </div>
+            </div>
+            </div>
+        </div>
 </body>
 
 </html>

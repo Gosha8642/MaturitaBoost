@@ -2861,3 +2861,177 @@ body[class*="streak-bg-"] .ukazka-col {
     image-rendering: crisp-edges;
     border-radius: 50%;
 }
+
+/* ===== PLAYER PROFILE MODAL ===== */
+.pp-card {
+    display: flex;
+    flex-direction: row;
+    width: min(720px, calc(100vw - 32px));
+    max-height: min(520px, calc(100vh - 48px));
+    background: var(--popup-bg, #1a1828);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 28px 70px rgba(0,0,0,0.5);
+    animation: popupIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    z-index: 1;
+}
+
+.pp-card-wrap {
+    position: relative;
+    overflow: visible;
+    display: inline-block;
+}
+
+.pp-close-btn {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.18);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--text, #fff);
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    transition: background 0.18s, transform 0.15s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.pp-close-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* LEFT column */
+.pp-left {
+    flex: 0 0 58%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--color-bg, #13121a);
+    border-right: 1px solid rgba(255,255,255,0.07);
+}
+
+.pp-banner {
+    padding: 28px 24px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    background: linear-gradient(135deg, rgba(124,58,237,0.15) 0%, transparent 60%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.pp-banner-blob {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 10% 50%, rgba(99,102,241,0.12) 0%, transparent 60%);
+    pointer-events: none;
+}
+.pp-avatar {
+    border-radius: 50%;
+    border: 3px solid rgba(124,58,237,0.5);
+    flex-shrink: 0;
+    position: relative; z-index: 1;
+}
+.pp-banner-info { position: relative; z-index: 1; }
+.pp-username {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text, #fff);
+    letter-spacing: -0.01em;
+}
+.pp-rank-badge {
+    font-size: 0.82rem;
+    color: var(--accent, #a78bfa);
+    margin-top: 3px;
+    font-weight: 600;
+}
+
+.pp-stats {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    gap: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.pp-stat { flex: 1; text-align: center; }
+.pp-stat-val {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--accent, #a78bfa);
+}
+.pp-stat-lbl {
+    font-size: 0.72rem;
+    color: var(--text-muted, rgba(255,255,255,0.45));
+    margin-top: 3px;
+}
+.pp-stat-sep {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.08);
+    flex-shrink: 0;
+}
+
+.pp-bio-wrap {
+    padding: 18px 24px 24px;
+    flex: 1;
+}
+.pp-bio-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted, rgba(255,255,255,0.4));
+    margin-bottom: 8px;
+}
+.pp-bio-text {
+    font-size: 0.92rem;
+    color: var(--text, #fff);
+    line-height: 1.6;
+    opacity: 0.85;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* RIGHT column */
+.pp-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px;
+    position: relative;
+    background: linear-gradient(160deg, #0f0d1a 0%, #1a1028 50%, #120d1e 100%);
+    overflow: hidden;
+}
+.pp-right-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(124,58,237,0.18) 0%, transparent 60%);
+    pointer-events: none;
+}
+.pp-char-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
+}
+.pp-char-canvas {
+    position: relative; z-index: 1;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 8px 24px rgba(124,58,237,0.35));
+}
+
+@media (max-width: 600px) {
+    .pp-card {
+        flex-direction: column;
+        max-height: calc(100vh - 32px);
+        border-radius: 18px;
+    }
+    .pp-left { flex: none; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .pp-right { min-height: 180px; padding: 16px; }
+}

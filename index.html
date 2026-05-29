@@ -1307,7 +1307,6 @@ function buildShop(coins) {
         }
 
         let lastWriteAt = 0;
-        let sessionScore = 0; // track current session total for best-score upsert
 
         async function upsertScore(delta = 10) {
             const name = getPlayerName();
@@ -1320,35 +1319,31 @@ function buildShop(coins) {
             if (now - lastWriteAt < 250) return;
             lastWriteAt = now;
 
-            // Accumulate session score
-            sessionScore += delta;
-
-            // Try to get existing best score for this player
+            // Get current score from DB, then add delta
             const { data: existing } = await sb
                 .from("leaderboard")
-                .select("score")
+                .select("id, score")
                 .eq("name", name)
+                .order("score", { ascending: false })
+                .limit(1)
                 .maybeSingle();
 
-            const existingBest = existing?.score ?? 0;
+            const newScore = (existing?.score ?? 0) + delta;
 
-            // Only write if current session score beats the best
-            if (sessionScore > existingBest) {
-                const { error } = await sb
+            if (existing?.id) {
+                // Row exists — just increment
+                await sb
                     .from("leaderboard")
-                    .upsert({ name, score: sessionScore }, { onConflict: "name" });
-
-                if (error) {
-                    // Fallback to RPC if available
-                    await sb.rpc("upsert_score_session", {
-                        p_session_id: sessionId,
-                        p_name: name,
-                        p_delta: delta
-                    }).catch(e => console.error("rpc fallback error:", e));
-                }
+                    .update({ score: newScore })
+                    .eq("id", existing.id);
+            } else {
+                // No row yet — insert new
+                await sb
+                    .from("leaderboard")
+                    .insert({ name, score: delta });
             }
 
-            setStatus(`+${delta} ⭐`);
+            setStatus(`🪙+${delta}`);
             setTimeout(() => setStatus(""), 2000);
             await loadLeaderboard();
         }
@@ -1378,9 +1373,6 @@ function buildShop(coins) {
                     .eq("id", row.id);
 
                 if (updateErr) return { ok: false, reason: updateErr.message };
-
-                // Also update sessionScore so upsertScore doesn't overwrite with old value
-                sessionScore = Math.max(0, sessionScore - amount);
 
                 return { ok: true };
             } catch (e) {

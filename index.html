@@ -851,7 +851,7 @@ function buildShop(coins) {
 
   // Buy buttons
   grid.querySelectorAll(".skin-btn.buy").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const result = buySkin(btn.dataset.id, coins);
       if (!result.ok) {
         if (result.reason === "Not enough coins") {
@@ -860,6 +860,22 @@ function buildShop(coins) {
         }
         return;
       }
+
+      // Deduct coins in Supabase
+      btn.textContent = "⏳...";
+      btn.disabled = true;
+      const spent = await window.spendCoins(result.cost);
+      if (!spent.ok) {
+        // Rollback localStorage purchase
+        const owned = JSON.parse(localStorage.getItem("mb_owned_skins") || '["default"]');
+        const idx = owned.indexOf(btn.dataset.id);
+        if (idx > -1) owned.splice(idx, 1);
+        localStorage.setItem("mb_owned_skins", JSON.stringify(owned));
+        btn.textContent = "❌ Chyba";
+        setTimeout(() => { btn.textContent = "🪙 " + btn.dataset.price; btn.disabled = false; }, 2000);
+        return;
+      }
+
       coins -= result.cost;
       setActiveSkin(btn.dataset.id);
       buildShop(coins);
@@ -1337,6 +1353,41 @@ function buildShop(coins) {
             await loadLeaderboard();
         }
         window.upsertScore = upsertScore;
+
+        // Deduct coins from leaderboard.score in Supabase when buying a skin
+        async function spendCoins(amount) {
+            try {
+                const name = getPlayerName();
+                if (!name) return { ok: false, reason: "Not logged in" };
+
+                // Get current best row for this player
+                const { data: row, error: fetchErr } = await sb
+                    .from("leaderboard")
+                    .select("id, score")
+                    .eq("name", name)
+                    .order("score", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (fetchErr || !row) return { ok: false, reason: "Row not found" };
+                if (row.score < amount) return { ok: false, reason: "Not enough coins" };
+
+                const { error: updateErr } = await sb
+                    .from("leaderboard")
+                    .update({ score: row.score - amount })
+                    .eq("id", row.id);
+
+                if (updateErr) return { ok: false, reason: updateErr.message };
+
+                // Also update sessionScore so upsertScore doesn't overwrite with old value
+                sessionScore = Math.max(0, sessionScore - amount);
+
+                return { ok: true };
+            } catch (e) {
+                return { ok: false, reason: e?.message || "Unknown error" };
+            }
+        }
+        window.spendCoins = spendCoins;
 
         // ===================== UKAZKY (snippets) + QUESTIONS =====================
         async function fetchUkazky() {

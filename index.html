@@ -1146,9 +1146,8 @@ function buildShop(coins) {
                     if (rankEl) rankEl.textContent = "–";
                 }
             }
-            const { data: fastRow } = await sb.from("leaderboard").select("fast_score").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
             const fastEl = document.getElementById("pm-stat-fast");
-            if (fastEl) fastEl.textContent = fastRow?.fast_score ?? "0";
+            if (fastEl) fastEl.closest(".pm-stat-item") && fastEl.closest(".pm-stat-item").remove();
         }
 
         // ===================== AUTH STATE =====================
@@ -1237,17 +1236,7 @@ function buildShop(coins) {
                     }
                 }
 
-                // Best fast score — read fast_score column from leaderboard
-                const { data: fastData } = await sb
-                    .from("leaderboard")
-                    .select("fast_score")
-                    .eq("name", name)
-                    .order("score", { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-
-                const fastVal = document.getElementById("profile-best-fast");
-                if (fastVal) fastVal.textContent = fastData?.fast_score ?? "0";
+                // Fast game coins now go to main score
             } catch(e) {
                 console.warn("loadProfileStats error:", e);
             }
@@ -1273,7 +1262,7 @@ function buildShop(coins) {
         async function loadLeaderboard() {
             const { data, error } = await sb
                 .from("leaderboard")
-                .select("name, score, fast_score")
+                .select("name, score")
                 .order("score", { ascending: false });
 
             if (error) { console.error("loadLeaderboard error:", error); return; }
@@ -1288,17 +1277,16 @@ function buildShop(coins) {
 
             const ul = document.getElementById("leaderboard");
             if (!ul) return;
-            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">🗺️ Mapa 🪙</span><span class="lb-col-fast" title="Fast Game">⚡ Fast 🪙</span></li>`;
+            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">🗺️ Mapa 🪙</span></li>`;
             rows.forEach((row, i) => {
                 const li = document.createElement("li");
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
-                const fastScore = row.fast_score != null ? row.fast_score : "–";
                 const avatarC = document.createElement("canvas");
                 const playerName = localStorage.getItem("player_name");
                 const lbSkin = (row.name === playerName) ? getActiveSkin() : "default";
                 drawAvatar(avatarC, lbSkin, 22);
                 avatarC.style.cssText = "border-radius:50%;flex-shrink:0;vertical-align:middle;";
-                li.innerHTML = `<span class="lb-col-name"></span><span class="lb-col-map">${row.score}</span><span class="lb-col-fast">${fastScore}</span>`;
+                li.innerHTML = `<span class="lb-col-name"></span><span class="lb-col-map">${row.score}</span>`;
                 const nameSpan = li.querySelector(".lb-col-name");
                 nameSpan.appendChild(avatarC);
                 nameSpan.insertAdjacentText("beforeend", " " + medal + " " + row.name);

@@ -578,38 +578,30 @@ async function saveScoreToLeaderboard(score) {
         const name = localStorage.getItem("player_name");
         if (!name || !score || score <= 0) return;
 
-        // Read existing best fast_score for this player from leaderboard
-        const { data: existing } = await sb
+        // Try to add coins to existing row
+        const { data: topRow } = await sb
             .from("leaderboard")
-            .select("fast_score")
+            .select("id, score")
             .eq("name", name)
             .order("score", { ascending: false })
             .limit(1)
             .maybeSingle();
 
-        const existingBest = existing?.fast_score ?? 0;
-
-        // Only update if this score beats the previous best
-        if (score > existingBest) {
-            // Update fast_score on the row with the highest map score for this name
-            const { data: topRow } = await sb
+        if (topRow) {
+            // Add fast game coins to main score
+            const { error } = await sb
                 .from("leaderboard")
-                .select("id")
-                .eq("name", name)
-                .order("score", { ascending: false })
-                .limit(1)
-                .maybeSingle();
-
-            if (topRow) {
-                const { error } = await sb
-                    .from("leaderboard")
-                    .update({ fast_score: score })
-                    .eq("id", topRow.id);
-                if (error) console.warn("[fast] fast_score update error", error.message);
-                else console.log("[fast] New best fast score saved:", score);
-            }
+                .update({ score: topRow.score + score })
+                .eq("id", topRow.id);
+            if (error) console.warn("[fast] score update error", error.message);
+            else console.log("[fast] Added", score, "coins to main score. New total:", topRow.score + score);
         } else {
-            console.log("[fast] Score", score, "did not beat best", existingBest, "— not saving");
+            // No existing row — insert new one with this score
+            const { error } = await sb
+                .from("leaderboard")
+                .insert({ name, score });
+            if (error) console.warn("[fast] insert error", error.message);
+            else console.log("[fast] Created new leaderboard entry with", score, "coins");
         }
     } catch (e) {
         console.warn("[fast] save score failed", e?.message || e);

@@ -294,13 +294,13 @@
                             <div class="stat-value"><span id="score">0</span></div>
                         </div>
                     </div>
-                    <div class="stat-pill">
-                        <span class="stat-icon">📍</span>
-                        <div>
-                            <div class="stat-label">Navštívené</div>
-                            <div class="stat-value"><span id="visited">0</span></div>
-                        </div>
-                    </div>
+
+                </div>
+
+                <!-- Next ukážka banner (hidden by default) -->
+                <div id="next-ukazka-banner" style="display:none;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-radius:14px;padding:14px 22px;margin-bottom:12px;display:none;align-items:center;justify-content:space-between;gap:12px;animation:fadeIn 0.4s ease;">
+                    <span style="font-size:1rem;font-weight:600">🎉 Všetky otázky zodpovedané!</span>
+                    <button id="next-ukazka-btn" type="button" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);color:#fff;padding:8px 18px;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.95rem;white-space:nowrap;">Ďalšia ukážka →</button>
                 </div>
 
                 <div class="controls" style="margin-bottom:8px;">
@@ -439,8 +439,23 @@
     </div>
 
     <div class="footer">
-        <footer>
-            <p>made by spsd ke hlavna 113</p>
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <span class="footer-logo">🚀</span>
+                    <span class="footer-name">MaturitaBoost</span>
+                </div>
+                <div class="footer-tagline">Priprav sa na maturitu. Hravo.</div>
+                <div class="footer-divider"></div>
+                <div class="footer-links">
+                    <span class="footer-school">📍 SPŠD Košice · Hlavná 113</span>
+                    <span class="footer-sep">·</span>
+                    <a href="mailto:maturitaboostsupport@gmail.com" class="footer-email">
+                        <span>✉️</span> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>
+                    </a>
+                </div>
+                <div class="footer-copy">© 2025 MaturitaBoost. Všetky práva vyhradené.</div>
+            </div>
         </footer>
     </div>
     <script>
@@ -539,13 +554,34 @@
 
     function updateUI() {
         $("score").innerText = score;
-        $("visited").innerText = visitedCities.size;
         $("score").classList.remove("score-anim");
         void $("score").offsetWidth;
         $("score").classList.add("score-anim");
     }
 
+    function resetMapState() {
+        attempts = {};
+        answeredCities = new Set();
+        visitedCities = new Set();
+        currentCity = null;
+        currentPoint = null;
+        document.querySelectorAll(".point").forEach(p => {
+            p.classList.remove("correct", "wrong");
+        });
+        const banner = document.getElementById("next-ukazka-banner");
+        if (banner) banner.style.display = "none";
+    }
+
+    function checkAllAnswered() {
+        const cityKeys = Object.keys(questions).filter(k => k !== "text");
+        if (cityKeys.length === 0) return;
+        const allDone = cityKeys.every(k => answeredCities.has(k));
+        const banner = document.getElementById("next-ukazka-banner");
+        if (banner) banner.style.display = allDone ? "flex" : "none";
+    }
+
     function useQuestionSet(setObj) {
+        resetMapState();
         if (setObj) questions = setObj;
         document.querySelectorAll(".text").forEach(p => {
             p.innerHTML = (questions && questions.text) ? questions.text : "";
@@ -554,6 +590,21 @@
     }
     window.markPointsWithoutQuestions = markPointsWithoutQuestions;
     window.useQuestionSet = useQuestionSet;
+
+    // Next ukážka button
+    document.getElementById("next-ukazka-btn")?.addEventListener("click", () => {
+        const sel = document.getElementById("question-set-select");
+        if (!sel) return;
+        const idx = sel.selectedIndex;
+        if (idx < sel.options.length - 1) {
+            sel.selectedIndex = idx + 1;
+            sel.dispatchEvent(new Event("change"));
+        } else {
+            // last one - wrap to first
+            sel.selectedIndex = 0;
+            sel.dispatchEvent(new Event("change"));
+        }
+    });
 
     document.querySelectorAll(".point").forEach(p => {
         p.addEventListener("click", () => showTask(p.dataset.city, p));
@@ -632,10 +683,11 @@
                 currentPoint.classList.remove("wrong");
                 currentPoint.classList.add("correct");
                 $("feedback").innerText = pts ? `Správne! 🪙+${pts}` : "Správne! (0 🪙)";
-                answeredCities.add(currentCity);
+                answeredCities.add(currentCity); checkAllAnswered();
             } else {
                 chosen.classList.add("wrong");
                 currentPoint.classList.add("wrong");
+                answeredCities.add(currentCity); checkAllAnswered();
                 $("feedback").innerText = "Nesprávne, skús znova";
             }
 
@@ -711,9 +763,10 @@
             currentPoint.classList.remove("wrong");
             currentPoint.classList.add("correct");
             $("feedback").innerText = `Správne (${percent}%)! 🪙+${pts}`;
-            answeredCities.add(currentCity);
+            answeredCities.add(currentCity); checkAllAnswered();
         } else {
             currentPoint.classList.add("wrong");
+            answeredCities.add(currentCity); checkAllAnswered();
             $("feedback").innerText = "Niektoré odpovede sú zlé";
         }
 
@@ -744,10 +797,11 @@
                 currentPoint.classList.remove("wrong");
                 currentPoint.classList.add("correct");
                 $("feedback").innerText = `Správne! 🪙+${pts}`;
-                answeredCities.add(currentCity);
+                answeredCities.add(currentCity); checkAllAnswered();
             } else {
                 inp.style.background = "#ffcdd2";
                 currentPoint.classList.add("wrong");
+                answeredCities.add(currentCity); checkAllAnswered();
                 $("feedback").innerText = "Nesprávne";
             }
 

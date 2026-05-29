@@ -27,7 +27,7 @@
                     <!-- Logged in: show avatar + name clickable -->
                     <div id="header-auth-logged-in" style="display:none">
                         <button class="header-profile-btn" type="button" onclick="openProfileModal()" title="Môj profil">
-                            <div class="header-profile-avatar" id="header-profile-avatar">?</div>
+                            <div class="header-profile-avatar" id="header-profile-avatar" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;border-radius:50%;"></div>
                             <span class="header-username" id="header-username">Hráč</span>
                             <span class="header-profile-chevron">▾</span>
                         </button>
@@ -156,87 +156,109 @@
     </div>
 
     <!-- PROFILE MODAL -->
-    <div id="profile-modal" class="popup" style="display:none">
-        <div class="profile-modal-card">
-            <button class="auth-modal-close" onclick="closeProfileModal()" type="button">&times;</button>
+    <div id="profile-modal" class="popup profile-modal-fullscreen" style="display:none">
+        <div class="profile-modal-card pm-fullscreen-card">
+            <button class="auth-modal-close pm-close-fs" onclick="closeProfileModal()" type="button">&times;</button>
 
-            <!-- Header gradient banner -->
-            <div class="profile-modal-banner">
-                <div class="profile-modal-banner-blob"></div>
-                <div class="profile-modal-avatar-big" id="pm-avatar-letter">?</div>
-                <div class="profile-modal-banner-info">
-                    <div class="profile-modal-username" id="pm-username">Hráč</div>
-                    <div class="profile-modal-email" id="pm-email"></div>
+            <!-- LEFT COLUMN -->
+            <div class="pm-col pm-col-left">
+                <!-- Header gradient banner -->
+                <div class="profile-modal-banner">
+                    <div class="profile-modal-banner-blob"></div>
+                    <div class="profile-modal-avatar-big" id="pm-avatar-letter"></div>
+                    <div class="profile-modal-banner-info">
+                        <div class="profile-modal-username" id="pm-username">Hráč</div>
+                        <div class="profile-modal-email" id="pm-email"></div>
+                    </div>
+                </div>
+
+                <!-- Stats row -->
+                <div class="profile-modal-stats">
+                    <div class="pm-stat">
+                        <div class="pm-stat-val" id="pm-stat-map">–</div>
+                        <div class="pm-stat-lbl">🗺️ Mapa 🪙</div>
+                    </div>
+                    <div class="pm-stat-sep"></div>
+                    <div class="pm-stat">
+                        <div class="pm-stat-val" id="pm-stat-fast">–</div>
+                        <div class="pm-stat-lbl">⚡ Fast 🪙</div>
+                    </div>
+                    <div class="pm-stat-sep"></div>
+                    <div class="pm-stat">
+                        <div class="pm-stat-val" id="pm-stat-rank">–</div>
+                        <div class="pm-stat-lbl">🏆 Miesto</div>
+                    </div>
+                </div>
+
+                <!-- Edit section -->
+                <div class="profile-modal-body">
+                    <div class="pm-section-title">✏️ Upraviť profil</div>
+
+                    <div class="auth-field">
+                        <label class="auth-label">Herné meno</label>
+                        <div class="auth-input-wrap" style="position:relative">
+                            <span class="auth-input-icon">🎮</span>
+                            <input id="pm-nick-input" type="text" placeholder="Vaše herné meno" autocomplete="off" />
+                            <span class="pm-nick-check" id="pm-nick-check"></span>
+                        </div>
+                        <div class="pm-field-hint" id="pm-nick-hint"></div>
+                    </div>
+
+                    <button id="pm-save-nick-btn" type="button" class="auth-modal-submit" style="margin-top:4px">
+                        <span>Uložiť meno</span>
+                        <span class="auth-submit-arrow">→</span>
+                    </button>
+
+                    <div class="pm-divider"></div>
+
+                    <div class="pm-section-title">🔒 Zmena hesla</div>
+
+                    <div class="auth-field">
+                        <label class="auth-label">Nové heslo</label>
+                        <div class="auth-input-wrap">
+                            <span class="auth-input-icon">🔒</span>
+                            <input id="pm-new-password" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                        </div>
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label">Potvrdiť heslo</label>
+                        <div class="auth-input-wrap">
+                            <span class="auth-input-icon">✅</span>
+                            <input id="pm-confirm-password" type="password" placeholder="Zopakujte heslo" autocomplete="new-password" />
+                        </div>
+                    </div>
+                    <button id="pm-save-pass-btn" type="button" class="auth-modal-submit pm-btn-secondary" style="margin-top:4px">
+                        <span>Zmeniť heslo</span>
+                        <span class="auth-submit-arrow">→</span>
+                    </button>
+
+                    <div id="pm-status" class="auth-modal-status" style="text-align:center;margin-top:8px;font-size:0.85rem"></div>
+
+                    <div class="pm-divider"></div>
+
+                    <button id="pm-logout-btn" type="button" class="profile-logout-btn" style="width:100%;margin:0">
+                        🚪 Odhlásiť sa
+                    </button>
                 </div>
             </div>
 
-            <!-- Stats row -->
-            <div class="profile-modal-stats">
-                <div class="pm-stat">
-                    <div class="pm-stat-val" id="pm-stat-map">–</div>
-                    <div class="pm-stat-lbl">🗺️ Mapa 🪙</div>
-                </div>
-                <div class="pm-stat-sep"></div>
-                <div class="pm-stat">
-                    <div class="pm-stat-val" id="pm-stat-fast">–</div>
-                    <div class="pm-stat-lbl">⚡ Fast 🪙</div>
-                </div>
-                <div class="pm-stat-sep"></div>
-                <div class="pm-stat">
-                    <div class="pm-stat-val" id="pm-stat-rank">–</div>
-                    <div class="pm-stat-lbl">🏆 Miesto</div>
-                </div>
-            </div>
-
-            <!-- Edit section -->
-            <div class="profile-modal-body">
-                <div class="pm-section-title">✏️ Upraviť profil</div>
-
-                <div class="auth-field">
-                    <label class="auth-label">Herné meno</label>
-                    <div class="auth-input-wrap" style="position:relative">
-                        <span class="auth-input-icon">🎮</span>
-                        <input id="pm-nick-input" type="text" placeholder="Vaše herné meno" autocomplete="off" />
-                        <span class="pm-nick-check" id="pm-nick-check"></span>
-                    </div>
-                    <div class="pm-field-hint" id="pm-nick-hint"></div>
+            <!-- RIGHT COLUMN: Character -->
+            <div class="pm-col pm-col-right">
+                <div class="pm-char-header">
+                    <div class="pm-char-title">🎮 Môj charakter</div>
+                    <div class="pm-char-coins-badge"><span id="pm-coins-display">–</span> 🪙</div>
                 </div>
 
-                <button id="pm-save-nick-btn" type="button" class="auth-modal-submit" style="margin-top:4px">
-                    <span>Uložiť meno</span>
-                    <span class="auth-submit-arrow">→</span>
-                </button>
-
-                <div class="pm-divider"></div>
-
-                <div class="pm-section-title">🔒 Zmena hesla</div>
-
-                <div class="auth-field">
-                    <label class="auth-label">Nové heslo</label>
-                    <div class="auth-input-wrap">
-                        <span class="auth-input-icon">🔒</span>
-                        <input id="pm-new-password" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
-                    </div>
+                <!-- Big animated character showcase -->
+                <div class="pm-char-stage">
+                    <div class="pm-char-stage-bg"></div>
+                    <canvas id="char-preview-canvas" class="char-preview-canvas-big"></canvas>
+                    <div class="pm-char-name-badge" id="pm-active-skin-name">Študent</div>
                 </div>
-                <div class="auth-field">
-                    <label class="auth-label">Potvrdiť heslo</label>
-                    <div class="auth-input-wrap">
-                        <span class="auth-input-icon">✅</span>
-                        <input id="pm-confirm-password" type="password" placeholder="Zopakujte heslo" autocomplete="new-password" />
-                    </div>
-                </div>
-                <button id="pm-save-pass-btn" type="button" class="auth-modal-submit pm-btn-secondary" style="margin-top:4px">
-                    <span>Zmeniť heslo</span>
-                    <span class="auth-submit-arrow">→</span>
-                </button>
 
-                <div id="pm-status" class="auth-modal-status" style="text-align:center;margin-top:8px;font-size:0.85rem"></div>
-
-                <div class="pm-divider"></div>
-
-                <button id="pm-logout-btn" type="button" class="profile-logout-btn" style="width:100%;margin:0">
-                    🚪 Odhlásiť sa
-                </button>
+                <!-- Skin grid -->
+                <div class="pm-skins-label">Vyber skin:</div>
+                <div id="skin-shop-grid" class="skin-shop-grid-fs"></div>
             </div>
         </div>
     </div>
@@ -361,7 +383,7 @@
                 <div class="profile-card-bg"></div>
                 <div class="profile-card-content">
                     <div class="profile-avatar-wrap">
-                        <div class="profile-avatar" id="profile-avatar-letter">?</div>
+                        <div class="profile-avatar" id="profile-avatar-letter" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;"></div>
                         <div class="profile-rank-badge" id="profile-rank-badge" style="display:none">#<span id="profile-rank-num">-</span></div>
                     </div>
                     <div class="profile-info">
@@ -732,6 +754,120 @@
     }
 </script>
     <script type="module">
+import { SKINS, drawCharacter, drawAvatar, getOwnedSkins, getActiveSkin, setActiveSkin, buySkin, RARITY_COLORS } from "./character.js";
+
+// ---------- CHARACTER HELPERS ----------
+function refreshAllAvatars() {
+  const active = getActiveSkin();
+  // Header avatar
+  const hdr = document.getElementById("header-profile-avatar");
+  if (hdr) {
+    const c = document.createElement("canvas");
+    drawAvatar(c, active, 28);
+    hdr.innerHTML = "";
+    hdr.appendChild(c);
+  }
+  // Sidebar avatar
+  const sav = document.getElementById("profile-avatar-letter");
+  if (sav) {
+    const c = document.createElement("canvas");
+    drawAvatar(c, active, 52);
+    sav.innerHTML = "";
+    sav.appendChild(c);
+  }
+  // Profile modal avatar
+  const mav = document.getElementById("pm-avatar-letter");
+  if (mav) {
+    const c = document.createElement("canvas");
+    drawAvatar(c, active, 72);
+    mav.innerHTML = "";
+    mav.appendChild(c);
+  }
+  // Big character preview in shop
+  const preview = document.getElementById("char-preview-canvas");
+  if (preview) drawCharacter(preview, active, 5);
+}
+
+function buildShop(coins) {
+  const owned  = getOwnedSkins();
+  const active = getActiveSkin();
+  const grid   = document.getElementById("skin-shop-grid");
+  if (!grid) return;
+
+  // Update coins display
+  const coinsEl = document.getElementById("pm-coins-display");
+  if (coinsEl) coinsEl.textContent = coins;
+
+  // Update active skin name badge
+  const activeSkin = SKINS.find(s => s.id === active);
+  const nameBadge = document.getElementById("pm-active-skin-name");
+  if (nameBadge && activeSkin) nameBadge.textContent = activeSkin.name;
+
+  grid.innerHTML = "";
+  SKINS.forEach(skin => {
+    const isOwned  = owned.includes(skin.id);
+    const isActive = skin.id === active;
+    const rar      = RARITY_COLORS[skin.rarity];
+    const card     = document.createElement("div");
+    card.className = "skin-card-fs" + (isActive ? " skin-active" : "");
+    card.dataset.skinId = skin.id;
+
+    const previewC = document.createElement("canvas");
+    drawCharacter(previewC, skin.id, 2);
+
+    const rarBadge = `<span class="skin-rarity" style="background:${rar.bg};color:${rar.text}">${rar.label}</span>`;
+    const btnHtml  = isActive
+      ? `<button class="skin-btn equipped" disabled>✓ Equipped</button>`
+      : isOwned
+        ? `<button class="skin-btn owned" data-id="${skin.id}">Equip</button>`
+        : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">🪙 ${skin.price}</button>`;
+
+    card.innerHTML = `<div class="skin-preview"></div>${rarBadge}<div class="skin-name">${skin.name}</div><div class="skin-desc">${skin.desc}</div>${btnHtml}`;
+    card.querySelector(".skin-preview").appendChild(previewC);
+    grid.appendChild(card);
+
+    // Click card = preview in big showcase
+    card.addEventListener("click", (e) => {
+      if (e.target.classList.contains("skin-btn")) return;
+      const previewBig = document.getElementById("char-preview-canvas");
+      if (previewBig) drawCharacter(previewBig, skin.id, 5);
+      const nb = document.getElementById("pm-active-skin-name");
+      if (nb) nb.textContent = skin.name;
+    });
+  });
+
+  // Update big preview
+  const previewBig = document.getElementById("char-preview-canvas");
+  if (previewBig) drawCharacter(previewBig, active, 5);
+
+  // Equip buttons
+  grid.querySelectorAll(".skin-btn.owned").forEach(btn => {
+    btn.addEventListener("click", () => {
+      setActiveSkin(btn.dataset.id);
+      buildShop(coins);
+      refreshAllAvatars();
+    });
+  });
+
+  // Buy buttons
+  grid.querySelectorAll(".skin-btn.buy").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const result = buySkin(btn.dataset.id, coins);
+      if (!result.ok) {
+        if (result.reason === "Not enough coins") {
+          btn.textContent = "❌ Málo 🪙";
+          setTimeout(() => { btn.textContent = "🪙 " + btn.dataset.price; }, 1500);
+        }
+        return;
+      }
+      coins -= result.cost;
+      setActiveSkin(btn.dataset.id);
+      buildShop(coins);
+      refreshAllAvatars();
+    });
+  });
+}
+
         import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
         const SUPABASE_URL = "https://yyzvddiorocquktqlpep.supabase.co";
@@ -855,7 +991,8 @@
             if (!modal || !currentUser) return;
             const displayName = currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Hráč";
             // Populate fields
-            document.getElementById("pm-avatar-letter").textContent = displayName.charAt(0).toUpperCase();
+            document.getElementById("pm-avatar-letter").textContent = "";
+            refreshAllAvatars();
             document.getElementById("pm-username").textContent = displayName;
             document.getElementById("pm-email").textContent = currentUser.email;
             document.getElementById("pm-nick-input").value = displayName;
@@ -866,7 +1003,11 @@
             document.getElementById("pm-confirm-password").value = "";
             // Load stats
             loadProfileModalStats(displayName);
+            const mapCoins = parseInt(document.getElementById("profile-best-map")?.textContent) || 0;
+            buildShop(mapCoins);
+            refreshAllAvatars();
             modal.style.display = "flex";
+            modal.style.alignItems = "stretch";
         };
 
         window.closeProfileModal = function() {
@@ -1016,7 +1157,7 @@
                 const headerUsername = document.getElementById("header-username");
                 if (headerUsername) headerUsername.textContent = displayName;
                 const headerProfileAvatar = document.getElementById("header-profile-avatar");
-                if (headerProfileAvatar) headerProfileAvatar.textContent = displayName.charAt(0).toUpperCase();
+                if (headerProfileAvatar) headerProfileAvatar.textContent = "";
 
                 // Sidebar profile card
                 if (sidebarIn) sidebarIn.style.display = "block";
@@ -1025,7 +1166,7 @@
 
                 // Avatar letter
                 const avatarEl = document.getElementById("profile-avatar-letter");
-                if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
+                if (avatarEl) { avatarEl.textContent = ""; setTimeout(refreshAllAvatars, 50); }
 
                 // Remove leaderboard blur
                 if (blurOverlay) blurOverlay.style.display = "none";
@@ -1136,7 +1277,15 @@
                 const li = document.createElement("li");
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
                 const fastScore = row.fast_score != null ? row.fast_score : "–";
-                li.innerHTML = `<span class="lb-col-name">${medal} ${row.name}</span><span class="lb-col-map">${row.score}</span><span class="lb-col-fast">${fastScore}</span>`;
+                const avatarC = document.createElement("canvas");
+                const playerName = localStorage.getItem("player_name");
+                const lbSkin = (row.name === playerName) ? getActiveSkin() : "default";
+                drawAvatar(avatarC, lbSkin, 22);
+                avatarC.style.cssText = "border-radius:50%;flex-shrink:0;vertical-align:middle;";
+                li.innerHTML = `<span class="lb-col-name"></span><span class="lb-col-map">${row.score}</span><span class="lb-col-fast">${fastScore}</span>`;
+                const nameSpan = li.querySelector(".lb-col-name");
+                nameSpan.appendChild(avatarC);
+                nameSpan.insertAdjacentText("beforeend", " " + medal + " " + row.name);
                 ul.appendChild(li);
             });
         }

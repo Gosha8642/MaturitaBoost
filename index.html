@@ -756,7 +756,7 @@
     }
 </script>
     <script type="module">
-import { SKINS, drawCharacter, drawAvatar, getOwnedSkins, getActiveSkin, setActiveSkin, buySkin, RARITY_COLORS } from "./character.js";
+import { SKINS, drawCharacter, drawAvatar, getOwnedSkins, getActiveSkin, setActiveSkin, buySkin, unlockSecretSkin, RARITY_COLORS } from "./character.js";
 
 // ---------- CHARACTER HELPERS ----------
 function refreshAllAvatars() {
@@ -822,7 +822,9 @@ function buildShop(coins) {
       ? `<button class="skin-btn equipped" disabled>✓ Equipped</button>`
       : isOwned
         ? `<button class="skin-btn owned" data-id="${skin.id}">Equip</button>`
-        : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">🪙 ${skin.price}</button>`;
+        : skin.secret
+          ? `<button class="skin-btn" disabled style="background:rgba(255,255,255,0.05);color:#555;cursor:default;font-size:0.7rem">🔒 ${skin.unlockHint}</button>`
+          : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">🪙 ${skin.price}</button>`;
 
     card.innerHTML = `<div class="skin-preview"></div>${rarBadge}<div class="skin-name">${skin.name}</div><div class="skin-desc">${skin.desc}</div>${btnHtml}`;
     card.querySelector(".skin-preview").appendChild(previewC);
@@ -1347,6 +1349,7 @@ function buildShop(coins) {
             setStatus(`🪙+${delta}`);
             setTimeout(() => setStatus(""), 2000);
             await loadLeaderboard();
+            await checkSecretUnlocks();
         }
 
         // ===== PLAYER PROFILE MODAL =====
@@ -1413,6 +1416,60 @@ function buildShop(coins) {
         }
         window.closePlayerProfile = closePlayerProfile;
         window.openPlayerProfile = openPlayerProfile;
+
+        // ===== SECRET SKIN UNLOCK CHECKS =====
+        async function checkSecretUnlocks() {
+            const name = localStorage.getItem("player_name");
+            if (!name) return;
+
+            // Fetch player score and rank
+            const { data } = await sb.from("leaderboard")
+                .select("name, score")
+                .order("score", { ascending: false });
+            if (!data) return;
+
+            const seen = new Set();
+            const ranked = [];
+            for (const row of data) {
+                if (!seen.has(row.name)) { seen.add(row.name); ranked.push(row); }
+            }
+            const myEntry = ranked.find(r => r.name === name);
+            if (!myEntry) return;
+
+            const myRank = ranked.indexOf(myEntry) + 1;
+            const myScore = myEntry.score || 0;
+
+            // Secret 1: 1000+ coins total → unlock "secret_hacker_god"
+            if (myScore >= 1000) {
+                const unlocked = unlockSecretSkin("secret_hacker_god");
+                if (unlocked) {
+                    showSecretUnlockToast("💀 Matrix Hacker odomknutý!");
+                    await saveActiveSkinToDb(getActiveSkin()); // refresh
+                }
+            }
+
+            // Secret 2: #1 on leaderboard → unlock "secret_maturant"
+            if (myRank === 1) {
+                const unlocked = unlockSecretSkin("secret_maturant");
+                if (unlocked) {
+                    showSecretUnlockToast("👑 Legendárny Maturant odomknutý!");
+                    await saveActiveSkinToDb(getActiveSkin());
+                }
+            }
+        }
+
+        function showSecretUnlockToast(msg) {
+            let toast = document.getElementById("secret-unlock-toast");
+            if (!toast) {
+                toast = document.createElement("div");
+                toast.id = "secret-unlock-toast";
+                toast.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;padding:14px 28px;border-radius:16px;font-size:1rem;font-weight:700;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:fadeIn 0.3s ease;pointer-events:none;text-align:center;";
+                document.body.appendChild(toast);
+            }
+            toast.textContent = "🔓 Tajný skin " + msg;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 4000);
+        }
 
         // Bio save
         document.getElementById("pm-bio-input")?.addEventListener("input", function() {
@@ -1559,6 +1616,7 @@ function buildShop(coins) {
         window.addEventListener("load", async () => {
             await loadLeaderboard();
             await fetchUkazky();
+            await checkSecretUnlocks();
         });
     </script>
 

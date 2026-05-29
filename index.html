@@ -48,7 +48,7 @@
             <h2>📖 Pravidlá hry</h2>
             <p>Vitaj v hre <strong>MaturitaBoost</strong> – interaktívna mapa Slovenska na precvičovanie poznatkov!</p>
 
-            <h3>🗺️ Mapa a body</h3>
+            <h3>🗺️ Mapa a 🪙 mince</h3>
             <ul>
                 <li><span class="legend-dot city" style="display:inline-block;vertical-align:middle"></span> <strong>Žlté body</strong> – bežné mestá</li>
                 <li><span class="legend-dot capital" style="display:inline-block;vertical-align:middle"></span> <strong>Modré body</strong> – <em>krajské mestá</em> (väčšie, s bielym okrajom)</li>
@@ -61,15 +61,15 @@
                 <li>Klikni na bod mesta na mape – otvorí sa úloha.</li>
                 <li>Odpovedz na otázku (výber, doplnenie alebo otvorená odpoveď).</li>
                 <li>Pri nesprávnej odpovedi <strong>môžeš skúšať znova</strong> – bod sa zafarbí na červeno, kým neodpovieš správne.</li>
-                <li>Po správnej odpovedi sa bod zmení na zelený a získaš body.</li>
+                <li>Po správnej odpovedi sa bod zmení na zelený a získaš mince.</li>
             </ul>
 
-            <h3>⭐ Bodovanie</h3>
+            <h3>🪙 Mince</h3>
             <ul>
-                <li>1. pokus → <strong>10 bodov</strong></li>
-                <li>2. pokus → <strong>5 bodov</strong></li>
-                <li>3. pokus → <strong>2 body</strong></li>
-                <li>4. a viac → 0 bodov</li>
+                <li>1. pokus → <strong>10 🪙</strong></li>
+                <li>2. pokus → <strong>5 🪙</strong></li>
+                <li>3. pokus → <strong>2 🪙</strong></li>
+                <li>4. a viac → 0 🪙</li>
             </ul>
 
             <h3>🏆 Leaderboard</h3>
@@ -174,12 +174,12 @@
             <div class="profile-modal-stats">
                 <div class="pm-stat">
                     <div class="pm-stat-val" id="pm-stat-map">–</div>
-                    <div class="pm-stat-lbl">🗺️ Mapa</div>
+                    <div class="pm-stat-lbl">🗺️ Mapa 🪙</div>
                 </div>
                 <div class="pm-stat-sep"></div>
                 <div class="pm-stat">
                     <div class="pm-stat-val" id="pm-stat-fast">–</div>
-                    <div class="pm-stat-lbl">⚡ Fast Game</div>
+                    <div class="pm-stat-lbl">⚡ Fast 🪙</div>
                 </div>
                 <div class="pm-stat-sep"></div>
                 <div class="pm-stat">
@@ -260,7 +260,7 @@
                     <div class="stat-pill">
                         <span class="stat-icon">⭐</span>
                         <div>
-                            <div class="stat-label">Skóre</div>
+                            <div class="stat-label">🪙 Mince</div>
                             <div class="stat-value"><span id="score">0</span></div>
                         </div>
                     </div>
@@ -373,13 +373,13 @@
                     <div class="profile-stat">
                         <div class="profile-stat-icon">🗺️</div>
                         <div class="profile-stat-val" id="profile-best-map">-</div>
-                        <div class="profile-stat-label">Mapa</div>
+                        <div class="profile-stat-label">🗺️ Mapa 🪙</div>
                     </div>
                     <div class="profile-stat-divider"></div>
                     <div class="profile-stat">
                         <div class="profile-stat-icon">⚡</div>
                         <div class="profile-stat-val" id="profile-best-fast">-</div>
-                        <div class="profile-stat-label">Fast Game</div>
+                        <div class="profile-stat-label">⚡ Fast 🪙</div>
                     </div>
                     <div class="profile-stat-divider"></div>
                     <div class="profile-stat">
@@ -607,7 +607,7 @@
                 chosen.classList.add("correct");
                 currentPoint.classList.remove("wrong");
                 currentPoint.classList.add("correct");
-                $("feedback").innerText = pts ? `Správne! +${pts}` : "Správne! (0 bodov)";
+                $("feedback").innerText = pts ? `Správne! 🪙+${pts}` : "Správne! (0 🪙)";
                 answeredCities.add(currentCity);
             } else {
                 chosen.classList.add("wrong");
@@ -686,7 +686,7 @@
 
             currentPoint.classList.remove("wrong");
             currentPoint.classList.add("correct");
-            $("feedback").innerText = `Správne (${percent}%)! +${pts}`;
+            $("feedback").innerText = `Správne (${percent}%)! 🪙+${pts}`;
             answeredCities.add(currentCity);
         } else {
             currentPoint.classList.add("wrong");
@@ -719,7 +719,7 @@
                 inp.style.background = "#c8e6c9";
                 currentPoint.classList.remove("wrong");
                 currentPoint.classList.add("correct");
-                $("feedback").innerText = `Správne! +${pts}`;
+                $("feedback").innerText = `Správne! 🪙+${pts}`;
                 answeredCities.add(currentCity);
             } else {
                 inp.style.background = "#ffcdd2";
@@ -1131,7 +1131,7 @@
 
             const ul = document.getElementById("leaderboard");
             if (!ul) return;
-            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">🗺️ Mapa</span><span class="lb-col-fast" title="Fast Game">⚡ Fast</span></li>`;
+            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">🗺️ Mapa 🪙</span><span class="lb-col-fast" title="Fast Game">⚡ Fast 🪙</span></li>`;
             rows.forEach((row, i) => {
                 const li = document.createElement("li");
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;

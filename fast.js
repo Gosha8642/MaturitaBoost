@@ -20,6 +20,10 @@ let difficulty = DIFFICULTIES.medium; // default
 
 const MAX_MULT = 5;
 
+// Difficulty coin multipliers
+const DIFF_MULT = { easy: 1, medium: 2, hard: 3 };
+let diffMultiplier = DIFF_MULT.medium; // default
+
 // ---------- State ----------
 const state = {
     snippets: [],
@@ -114,6 +118,7 @@ document.querySelectorAll(".diff-btn").forEach(btn => {
     btn.addEventListener("click", () => {
         const key = btn.dataset.diff;
         difficulty = DIFFICULTIES[key];
+        diffMultiplier = DIFF_MULT[key] ?? 1;
 
         // update rules panel text
         document.getElementById("rules-time").textContent = difficulty.totalTime;
@@ -275,7 +280,8 @@ function handleAnswer(key, btn) {
 
     if (String(key) === String(q.correct)) {
         const base = pointsForTime(elapsed);
-        const mult = Math.min(MAX_MULT, state.streak + 1);
+        const streakMult = Math.min(MAX_MULT, state.streak + 1);
+        const mult = streakMult * diffMultiplier;
         const got = base * mult;
         state.score += got;
         state.correctCount += 1;
@@ -283,7 +289,8 @@ function handleAnswer(key, btn) {
         if (state.streak > state.bestStreak) state.bestStreak = state.streak;
 
         btn.classList.add("correct");
-        showFloating("+" + got + (mult > 1 ? " (×" + mult + ")" : ""), "correct");
+        const multLabel = (streakMult > 1 || diffMultiplier > 1) ? ` (×${streakMult}${diffMultiplier > 1 ? " ×"+diffMultiplier+"diff" : ""})` : "";
+        showFloating("🪙+" + got + multLabel, "correct");
         triggerStreakFlash(state.streak);
     } else {
         btn.classList.add("wrong");
@@ -291,7 +298,7 @@ function handleAnswer(key, btn) {
         if (right) right.classList.add("reveal-correct");
         state.wrongCount += 1;
         state.streak = 0;
-        showFloating("+0 · streak reset", "wrong");
+        showFloating("🪙+0 · streak reset", "wrong");
         triggerStreakFlash(0);
     }
     updateStreakUI();

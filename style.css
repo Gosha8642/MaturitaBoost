@@ -2080,28 +2080,38 @@ body[class*="streak-bg-"] .ukazka-col {
 .auth-modal-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
 }
 
 .auth-modal-title {
     font-size: 1.4rem;
     font-weight: 800;
     color: var(--color-text, #eee);
-    margin: 0 0 4px;
+    margin: 0 0 6px;
     letter-spacing: -0.3px;
 }
 
 .auth-modal-sub {
     font-size: 0.83rem;
     color: var(--color-text-muted, #888);
-    margin: 0 0 6px;
+    margin: 0;
     line-height: 1.5;
+    opacity: 0.65;
+}
+
+/* Group title + subtitle together so the gap between them and fields is consistent */
+.auth-modal-header-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 4px;
 }
 
 .auth-field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    margin-bottom: 18px;
 }
 
 .auth-label {
@@ -2180,7 +2190,10 @@ body[class*="streak-bg-"] .ukazka-col {
     min-height: 18px;
     color: var(--color-wrong, #e53935);
     text-align: center;
-    margin-top: -6px;
+    margin-top: -2px;
+}
+.auth-modal-status.info {
+    color: var(--color-text-muted, #888);
 }
 
 /* ===== EMAIL CONFIRM TOAST ===== */

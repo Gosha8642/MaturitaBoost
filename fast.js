@@ -552,7 +552,7 @@ function endUkazka() {
         updateStreakBg(0);
         stopFire();
         showScreen("stats");
-        saveScoreToLeaderboard(state.score);
+        saveScoreToLeaderboard(state.score).then(() => loadHeaderCoins());
     }
 
     if (hasStreak) {
@@ -615,11 +615,40 @@ function escapeHTML(s) {
     }[c]));
 }
 
+// ---------- Header Coins ----------
+async function loadHeaderCoins() {
+    try {
+        const name = localStorage.getItem("player_name");
+        if (!name) return;
+        const { data } = await sb
+            .from("leaderboard")
+            .select("score")
+            .eq("name", name)
+            .order("score", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+        if (data) {
+            const el = document.getElementById("header-coins-display");
+            if (el) el.textContent = data.score;
+            const widget = document.getElementById("header-coins-widget");
+            if (widget) widget.style.display = "flex";
+        }
+    } catch(e) { /* silent */ }
+}
+
+// After saving fast game score, refresh header coins
+const _origSave = saveScoreToLeaderboard;
+async function saveScoreAndRefreshHeader(score) {
+    await _origSave(score);
+    await loadHeaderCoins();
+}
+
 // ---------- Init ----------
 document.getElementById("start-game-btn").addEventListener("click", startGame);
 document.getElementById("next-ukazka-btn").addEventListener("click", () => showDifficultyScreen());
 
 (async function init() {
     await loadSnippets();
+    await loadHeaderCoins();
     if (state.snippets.length > 0) showDifficultyScreen();
 })();

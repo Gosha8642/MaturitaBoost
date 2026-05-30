@@ -14,6 +14,9 @@
         <header>
             <h1>🚀 MaturitaBoost</h1>
             <div class="header-actions">
+                <div id="header-coins-widget" style="display:none; align-items:center; gap:6px; background:rgba(255,255,255,0.07); border-radius:20px; padding:5px 14px; font-size:0.9rem; font-weight:700; color:var(--color-text,#eee); border:1px solid rgba(255,255,255,0.1);">
+                    🪙 <span id="header-coins-display">0</span>
+                </div>
                 <button id="rules-btn" class="btn" type="button" title="Pravidlá hry">
                     <span>📖</span><span>Pravidlá</span>
                 </button>
@@ -98,8 +101,10 @@
 
             <!-- LOGIN -->
             <div id="modal-form-login" class="auth-modal-form">
-                <h2 class="auth-modal-title">Vitaj späť 👋</h2>
-                <p class="auth-modal-sub">Prihláste sa do svojho účtu a sledujte rebríček.</p>
+                <div class="auth-modal-header-group">
+                    <h2 class="auth-modal-title">Vitaj späť 👋</h2>
+                    <p class="auth-modal-sub">Prihláste sa do svojho účtu a sledujte rebríček.</p>
+                </div>
                 <div class="auth-field">
                     <label class="auth-label">E-mail</label>
                     <div class="auth-input-wrap">
@@ -123,8 +128,10 @@
 
             <!-- REGISTER -->
             <div id="modal-form-register" class="auth-modal-form" style="display:none">
-                <h2 class="auth-modal-title">Vytvorte účet ✨</h2>
-                <p class="auth-modal-sub">Zaregistrujte sa a objavte sa v rebríčku najlepších hráčov.</p>
+                <div class="auth-modal-header-group">
+                    <h2 class="auth-modal-title">Vytvorte účet ✨</h2>
+                    <p class="auth-modal-sub">Zaregistrujte sa a objavte sa v rebríčku najlepších hráčov.</p>
+                </div>
                 <div class="auth-field">
                     <label class="auth-label">Meno hráča</label>
                     <div class="auth-input-wrap">
@@ -287,14 +294,7 @@
         <div class="main-stage">
             <div class="content">
                 <div class="game-ui">
-                    <div class="stat-pill">
-                        <span class="stat-icon">⭐</span>
-                        <div>
-                            <div class="stat-label">🪙 Mince</div>
-                            <div class="stat-value"><span id="score">0</span></div>
-                        </div>
-                    </div>
-
+                    <span id="score" style="display:none">0</span>
                 </div>
 
                 <!-- Next ukážka banner (hidden by default) -->
@@ -314,32 +314,32 @@
                     <img src="./assets/image.png" class="map-image">
 
                     <!-- BRATISLAVA REGION -->
-                    <div class="point capital" data-city="Bratislava" style="top:67%; left:9.11%;"></div>
+                    <div class="point capital" data-city="Bratislava" style="top:66.4%; left:11.8%;"></div>
                     
 
                     <!-- TRNAVA REGION -->
-                    <div class="point capital" data-city="Trnava" style="top:60.70%; left:15.89%;"></div>
+                    <div class="point capital" data-city="Trnava" style="top:58.9%; left:18.4%;"></div>
                    
                     <!-- TRENCIN REGION -->
-                    <div class="point capital" data-city="Trencin" style="top:42.33%; left:21.5%;"></div>
+                    <div class="point capital" data-city="Trencin" style="top:41.9%; left:24.8%;"></div>
                     
                     <!-- NITRA REGION -->
-                    <div class="point capital" data-city="Nitra" style="top:62.56%; left:27.44%;"></div>
+                    <div class="point capital" data-city="Nitra" style="top:61.2%; left:25.4%;"></div>
                     
 
                     <!-- ZILINA REGION -->
-                    <div class="point capital" data-city="Zilina" style="top:32.07%; left:33.00%;"></div>
+                    <div class="point capital" data-city="Zilina" style="top:31.1%; left:34.5%;"></div>
                     
                     <!-- BANSKA BYSTRICA REGION -->
-                    <div class="point capital" data-city="BanskaBystrica" style="top:50.59%; left:45.22%;"></div>
+                    <div class="point capital" data-city="BanskaBystrica" style="top:47.0%; left:40.3%;"></div>
                     
 
                     <!-- PRESOV REGION -->
-                    <div class="point capital" data-city="Presov" style="top:33.00%; left:78.00%;"></div>
+                    <div class="point capital" data-city="Presov" style="top:38.5%; left:69.4%;"></div>
                    
 
                     <!-- KOSICE REGION -->
-                    <div class="point capital" data-city="Kosice" style="top:52.44%; left:81.33%;"></div>
+                    <div class="point capital" data-city="Kosice" style="top:47.8%; left:69.7%;"></div>
                   
 
                 </div>
@@ -693,8 +693,13 @@
             } else {
                 chosen.classList.add("wrong");
                 currentPoint.classList.add("wrong");
-                answeredCities.add(currentCity); checkAllAnswered();
-                $("feedback").innerText = "Nesprávne, skús znova";
+                const nextPts = calcPoints();
+                if (nextPts > 0) {
+                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: 🪙${nextPts})`;
+                } else {
+                    $("feedback").innerText = "Nesprávne (0 🪙)";
+                    answeredCities.add(currentCity); checkAllAnswered();
+                }
             }
 
             updateUI();
@@ -772,8 +777,13 @@
             answeredCities.add(currentCity); checkAllAnswered();
         } else {
             currentPoint.classList.add("wrong");
-            answeredCities.add(currentCity); checkAllAnswered();
-            $("feedback").innerText = "Niektoré odpovede sú zlé";
+            const nextPts = calcPoints();
+            if (nextPts > 0) {
+                $("feedback").innerText = `Niektoré odpovede sú zlé (ďalší pokus: 🪙${nextPts})`;
+            } else {
+                $("feedback").innerText = "Nesprávne (0 🪙)";
+                answeredCities.add(currentCity); checkAllAnswered();
+            }
         }
 
             updateUI();
@@ -807,8 +817,13 @@
             } else {
                 inp.style.background = "#ffcdd2";
                 currentPoint.classList.add("wrong");
-                answeredCities.add(currentCity); checkAllAnswered();
-                $("feedback").innerText = "Nesprávne";
+                const nextPts = calcPoints();
+                if (nextPts > 0) {
+                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: 🪙${nextPts})`;
+                } else {
+                    $("feedback").innerText = "Nesprávne (0 🪙)";
+                    answeredCities.add(currentCity); checkAllAnswered();
+                }
             }
 
             updateUI();
@@ -856,9 +871,13 @@ function buildShop(coins) {
   const grid   = document.getElementById("skin-shop-grid");
   if (!grid) return;
 
-  // Update coins display
+  // Update coins display (profile modal + header)
   const coinsEl = document.getElementById("pm-coins-display");
   if (coinsEl) coinsEl.textContent = coins;
+  const hdrCoins = document.getElementById("header-coins-display");
+  if (hdrCoins) hdrCoins.textContent = coins;
+  const hdrWidget = document.getElementById("header-coins-widget");
+  if (hdrWidget) hdrWidget.style.display = "flex";
 
   // Update active skin name badge
   const activeSkin = SKINS.find(s => s.id === active);
@@ -989,7 +1008,7 @@ function buildShop(coins) {
             const el = document.getElementById(form === "login" ? "modal-status-login" : "modal-status-register");
             if (!el) return;
             el.textContent = msg;
-            el.style.color = isError ? "var(--color-wrong, #e53935)" : "var(--color-correct, #43a047)";
+            el.style.color = isError ? "var(--color-wrong, #e53935)" : "var(--color-text-muted, #888)";
         }
 
         // LOGIN via modal
@@ -1293,6 +1312,13 @@ function buildShop(coins) {
                     const mapVal = document.getElementById("profile-best-map");
                     if (mapVal) mapVal.textContent = myRow ? myRow.score : "0";
 
+                    // Update header coins widget
+                    const userCoins = myRow ? myRow.score : 0;
+                    const hdrCoins = document.getElementById("header-coins-display");
+                    if (hdrCoins) hdrCoins.textContent = userCoins;
+                    const hdrWidget = document.getElementById("header-coins-widget");
+                    if (hdrWidget) hdrWidget.style.display = userCoins !== null ? "flex" : "none";
+
                     // Rank
                     const placeEl = document.getElementById("profile-place");
                     const rankBadge = document.getElementById("profile-rank-badge");
@@ -1408,6 +1434,11 @@ function buildShop(coins) {
 
             setStatus(`🪙+${delta}`);
             setTimeout(() => setStatus(""), 2000);
+            // Update header coins widget live
+            const hdrCoins = document.getElementById("header-coins-display");
+            if (hdrCoins) hdrCoins.textContent = newScore;
+            const hdrWidget = document.getElementById("header-coins-widget");
+            if (hdrWidget) hdrWidget.style.display = "flex";
             await loadLeaderboard();
             await checkSecretUnlocks();
         }

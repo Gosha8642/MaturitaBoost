@@ -6,26 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaturitaBoost</title>
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="container">
         <header>
-            <h1>🚀 MaturitaBoost</h1>
+            <h1><i class="fa-solid fa-rocket"></i> MaturitaBoost</h1>
             <div class="header-actions">
-                <div id="header-coins-widget" style="display:none; align-items:center; gap:6px; background:rgba(255,255,255,0.07); border-radius:20px; padding:5px 14px; font-size:0.9rem; font-weight:700; color:var(--color-text,#eee); border:1px solid rgba(255,255,255,0.1);">
-                    🪙 <span id="header-coins-display">0</span>
+                <div id="header-coins-widget" class="header-coins-widget" style="display:none;">
+                    <i class="fa-solid fa-coins"></i> <span id="header-coins-display">0</span>
                 </div>
                 <button id="rules-btn" class="btn" type="button" title="Pravidlá hry">
-                    <span>📖</span><span>Pravidlá</span>
+                    <i class="fa-solid fa-book-open"></i><span>Pravidlá</span>
                 </button>
                 <!-- AUTH HEADER WIDGET -->
                 <div id="header-auth-widget">
                     <!-- Logged out: show Login/Register buttons -->
                     <div id="header-auth-logged-out">
-                        <button id="header-login-btn" class="btn btn-auth" type="button" onclick="openAuthModal('login')">🔑 Prihlásiť</button>
-                        <button id="header-register-btn" class="btn btn-auth btn-auth-outline" type="button" onclick="openAuthModal('register')">🚀 Registrovať</button>
+                        <button id="header-login-btn" class="btn btn-auth" type="button" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> Prihlásiť</button>
+                        <button id="header-register-btn" class="btn btn-auth btn-auth-outline" type="button" onclick="openAuthModal('register')"><i class="fa-solid fa-user-plus"></i> Registrovať</button>
                     </div>
                     <!-- Logged in: show avatar + name clickable -->
                     <div id="header-auth-logged-in" style="display:none">
@@ -34,11 +35,11 @@
                             <span class="header-username" id="header-username">Hráč</span>
                             <span class="header-profile-chevron">▾</span>
                         </button>
-                        <button id="header-logout-btn" class="btn btn-auth btn-auth-ghost" type="button">🚪</button>
+                        <button id="header-logout-btn" class="btn btn-auth btn-auth-ghost" type="button"><i class="fa-solid fa-right-from-bracket"></i></button>
                     </div>
                 </div>
                 <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" title="Prepnúť tému">
-                    <span id="theme-icon">🌙</span>
+                    <span id="theme-icon"><i class="fa-solid fa-moon"></i></span>
                 </button>
             </div>
         </header>
@@ -48,18 +49,17 @@
     <div id="rules-popup" class="popup">
         <div class="popup-content">
             <span class="close" onclick="closeRules()">&times;</span>
-            <h2>📖 Pravidlá hry</h2>
+            <h2><i class="fa-solid fa-book-open"></i> Pravidlá hry</h2>
             <p>Vitaj v hre <strong>MaturitaBoost</strong> – interaktívna mapa Slovenska na precvičovanie poznatkov!</p>
 
-            <h3>🗺️ Mapa a 🪙 mince</h3>
+            <h3><i class="fa-solid fa-map"></i> Mapa a <i class="fa-solid fa-coins"></i> mince</h3>
             <ul>
-                <li><span class="legend-dot city" style="display:inline-block;vertical-align:middle"></span> <strong>Žlté body</strong> – bežné mestá</li>
-                <li><span class="legend-dot capital" style="display:inline-block;vertical-align:middle"></span> <strong>Modré body</strong> – <em>krajské mestá</em> (väčšie, s bielym okrajom)</li>
+                                <li><span class="legend-dot capital" style="display:inline-block;vertical-align:middle"></span> <strong>Modré body</strong> – <em>krajské mestá</em> (väčšie, s bielym okrajom)</li>
                 <li><span class="legend-dot correct" style="display:inline-block;vertical-align:middle"></span> <strong>Zelený bod</strong> – správna odpoveď</li>
                 <li><span class="legend-dot wrong" style="display:inline-block;vertical-align:middle"></span> <strong>Červený bod</strong> – nesprávna odpoveď</li>
             </ul>
 
-            <h3>🎯 Ako hrať</h3>
+            <h3><i class="fa-solid fa-bullseye"></i> Ako hrať</h3>
             <ul>
                 <li>Klikni na bod mesta na mape – otvorí sa úloha.</li>
                 <li>Odpovedz na otázku (výber, doplnenie alebo otvorená odpoveď).</li>
@@ -67,7 +67,7 @@
                 <li>Po správnej odpovedi sa bod zmení na zelený a získaš mince.</li>
             </ul>
 
-            <h3>🪙 Mince</h3>
+            <h3><i class="fa-solid fa-coins"></i> Mince</h3>
             <ul>
                 <li>1. pokus → <strong>10 🪙</strong></li>
                 <li>2. pokus → <strong>5 🪙</strong></li>
@@ -75,7 +75,7 @@
                 <li>4. a viac → 0 🪙</li>
             </ul>
 
-            <h3>🏆 Leaderboard</h3>
+            <h3><i class="fa-solid fa-trophy"></i> Leaderboard</h3>
             <p>Zadaj svoje meno v pravom paneli a ulož ho – tvoje skóre sa bude automaticky pridávať do online rebríčka.</p>
 
             <button class="btn" type="button" onclick="closeRules()" style="margin-top:14px">Začať hrať!</button>
@@ -89,7 +89,7 @@
 
             <!-- Logo / branding -->
             <div class="auth-modal-brand">
-                <span class="auth-modal-logo">🚀</span>
+                <span class="auth-modal-logo"><i class="fa-solid fa-rocket"></i></span>
                 <span class="auth-modal-logo-text">MaturitaBoost</span>
             </div>
 
@@ -108,14 +108,14 @@
                 <div class="auth-field">
                     <label class="auth-label">E-mail</label>
                     <div class="auth-input-wrap">
-                        <span class="auth-input-icon">✉️</span>
+                        <span class="auth-input-icon"><i class="fa-solid fa-envelope"></i></span>
                         <input id="modal-email-login" type="email" placeholder="vas@email.sk" autocomplete="email" />
                     </div>
                 </div>
                 <div class="auth-field">
                     <label class="auth-label">Heslo</label>
                     <div class="auth-input-wrap">
-                        <span class="auth-input-icon">🔒</span>
+                        <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
                         <input id="modal-password-login" type="password" placeholder="Vaše heslo" autocomplete="current-password" />
                     </div>
                 </div>
@@ -135,21 +135,21 @@
                 <div class="auth-field">
                     <label class="auth-label">Meno hráča</label>
                     <div class="auth-input-wrap">
-                        <span class="auth-input-icon">🎮</span>
+                        <span class="auth-input-icon"><i class="fa-solid fa-gamepad"></i></span>
                         <input id="modal-name-register" type="text" placeholder="Vaše herné meno" autocomplete="nickname" />
                     </div>
                 </div>
                 <div class="auth-field">
                     <label class="auth-label">E-mail</label>
                     <div class="auth-input-wrap">
-                        <span class="auth-input-icon">✉️</span>
+                        <span class="auth-input-icon"><i class="fa-solid fa-envelope"></i></span>
                         <input id="modal-email-register" type="email" placeholder="vas@email.sk" autocomplete="email" />
                     </div>
                 </div>
                 <div class="auth-field">
                     <label class="auth-label">Heslo</label>
                     <div class="auth-input-wrap">
-                        <span class="auth-input-icon">🔒</span>
+                        <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
                         <input id="modal-password-register" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
                     </div>
                 </div>
@@ -183,23 +183,23 @@
                 <div class="profile-modal-stats">
                     <div class="pm-stat">
                         <div class="pm-stat-val" id="pm-stat-map">–</div>
-                        <div class="pm-stat-lbl">🗺️ Mapa 🪙</div>
+                        <div class="pm-stat-lbl"><i class="fa-solid fa-map"></i> Mapa <i class="fa-solid fa-coins"></i></div>
                     </div>
                     <div class="pm-stat-sep"></div>
                     <div class="pm-stat">
                         <div class="pm-stat-val" id="pm-stat-rank">–</div>
-                        <div class="pm-stat-lbl">🏆 Miesto</div>
+                        <div class="pm-stat-lbl"><i class="fa-solid fa-trophy"></i> Miesto</div>
                     </div>
                 </div>
 
                 <!-- Edit section -->
                 <div class="profile-modal-body">
-                    <div class="pm-section-title">✏️ Upraviť profil</div>
+                    <div class="pm-section-title"><i class="fa-solid fa-pencil"></i> Upraviť profil</div>
 
                     <div class="auth-field">
                         <label class="auth-label">Herné meno</label>
                         <div class="auth-input-wrap" style="position:relative">
-                            <span class="auth-input-icon">🎮</span>
+                            <span class="auth-input-icon"><i class="fa-solid fa-gamepad"></i></span>
                             <input id="pm-nick-input" type="text" placeholder="Vaše herné meno" autocomplete="off" />
                             <span class="pm-nick-check" id="pm-nick-check"></span>
                         </div>
@@ -213,7 +213,7 @@
 
                     <div class="pm-divider"></div>
 
-                    <div class="pm-section-title">📝 O mne</div>
+                    <div class="pm-section-title"><i class="fa-solid fa-file-lines"></i> O mne</div>
                     <div class="auth-field">
                         <label class="auth-label">Popis profilu</label>
                         <textarea id="pm-bio-input" placeholder="Napíš niečo o sebe…" maxlength="160" rows="3" style="width:100%;background:var(--input-bg,rgba(255,255,255,0.06));border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:var(--text);font-size:0.9rem;resize:none;font-family:inherit;box-sizing:border-box;outline:none"></textarea>
@@ -226,19 +226,19 @@
 
                     <div class="pm-divider"></div>
 
-                    <div class="pm-section-title">🔒 Zmena hesla</div>
+                    <div class="pm-section-title"><i class="fa-solid fa-lock"></i> Zmena hesla</div>
 
                     <div class="auth-field">
                         <label class="auth-label">Nové heslo</label>
                         <div class="auth-input-wrap">
-                            <span class="auth-input-icon">🔒</span>
+                            <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
                             <input id="pm-new-password" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
                         </div>
                     </div>
                     <div class="auth-field">
                         <label class="auth-label">Potvrdiť heslo</label>
                         <div class="auth-input-wrap">
-                            <span class="auth-input-icon">✅</span>
+                            <span class="auth-input-icon"><i class="fa-solid fa-check"></i></span>
                             <input id="pm-confirm-password" type="password" placeholder="Zopakujte heslo" autocomplete="new-password" />
                         </div>
                     </div>
@@ -252,7 +252,7 @@
                     <div class="pm-divider"></div>
 
                     <button id="pm-logout-btn" type="button" class="profile-logout-btn" style="width:100%;margin:0">
-                        🚪 Odhlásiť sa
+                        <i class="fa-solid fa-right-from-bracket"></i> Odhlásiť sa
                     </button>
                 </div>
             </div>
@@ -260,8 +260,8 @@
             <!-- RIGHT COLUMN: Character -->
             <div class="pm-col pm-col-right">
                 <div class="pm-char-header">
-                    <div class="pm-char-title">🎮 Môj charakter</div>
-                    <div class="pm-char-coins-badge"><span id="pm-coins-display">–</span> 🪙</div>
+                    <div class="pm-char-title"><i class="fa-solid fa-gamepad"></i> Môj charakter</div>
+                    <div class="pm-char-coins-badge"><span id="pm-coins-display">–</span> <i class="fa-solid fa-coins"></i></div>
                 </div>
 
                 <!-- Big animated character showcase -->
@@ -281,7 +281,7 @@
     <!-- EMAIL CONFIRM TOAST -->
     <div id="email-confirm-toast" class="email-toast" style="display:none">
         <div class="email-toast-inner">
-            <div class="email-toast-icon">📬</div>
+            <div class="email-toast-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
             <div class="email-toast-body">
                 <div class="email-toast-title">Skontrolujte svoju schránku!</div>
                 <div class="email-toast-msg">Poslali sme vám potvrdzovací e-mail. Kliknite na odkaz v e-maile a váš účet bude aktivovaný.</div>
@@ -299,7 +299,7 @@
 
                 <!-- Next ukážka banner (hidden by default) -->
                 <div id="next-ukazka-banner" style="display:none;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-radius:14px;padding:14px 22px;margin-bottom:12px;display:none;align-items:center;justify-content:space-between;gap:12px;animation:fadeIn 0.4s ease;">
-                    <span style="font-size:1rem;font-weight:600">🎉 Všetky otázky zodpovedané!</span>
+                    <span style="font-size:1rem;font-weight:600"><i class="fa-solid fa-circle-check" style="color:#4ade80"></i> Všetky otázky zodpovedané!</span>
                     <button id="next-ukazka-btn" type="button" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);color:#fff;padding:8px 18px;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.95rem;white-space:nowrap;">Ďalšia ukážka →</button>
                 </div>
 
@@ -345,7 +345,6 @@
                 </div>
 
                 <div class="legend">
-                    <span class="legend-item"><span class="legend-dot city"></span> Mesto</span>
                     <span class="legend-item"><span class="legend-dot capital"></span> Krajské mesto</span>
                     <span class="legend-item"><span class="legend-dot correct"></span> Správne</span>
                     <span class="legend-item"><span class="legend-dot wrong"></span> Nesprávne</span>
@@ -383,7 +382,7 @@
     </div>
 
     <div id="sidebar">
-        <h3>🏆 Leaderboard</h3>
+        <h3><i class="fa-solid fa-trophy"></i> Leaderboard</h3>
 
         <!-- Logged IN: beautiful profile card -->
         <div id="sidebar-logged-in" style="display:none">
@@ -401,13 +400,13 @@
                 </div>
                 <div class="profile-stats">
                     <div class="profile-stat">
-                        <div class="profile-stat-icon">🗺️</div>
+                        <div class="profile-stat-icon"><i class="fa-solid fa-map"></i></div>
                         <div class="profile-stat-val" id="profile-best-map">-</div>
-                        <div class="profile-stat-label">🗺️ Mapa 🪙</div>
+                        <div class="profile-stat-label"><i class="fa-solid fa-map"></i> Mapa <i class="fa-solid fa-coins"></i></div>
                     </div>
                     <div class="profile-stat-divider"></div>
                     <div class="profile-stat">
-                        <div class="profile-stat-icon">🏆</div>
+                        <div class="profile-stat-icon"><i class="fa-solid fa-trophy"></i></div>
                         <div class="profile-stat-val" id="profile-place">-</div>
                         <div class="profile-stat-label">Miesto</div>
                     </div>
@@ -425,9 +424,9 @@
             <ul id="leaderboard"></ul>
             <div id="leaderboard-blur-overlay">
                 <div class="lb-blur-msg">
-                    <span>🔒</span>
+                    <span><i class="fa-solid fa-lock"></i></span>
                     <p>Prihláste sa pre zobrazenie rebríčka</p>
-                    <button class="btn btn-auth" type="button" onclick="openAuthModal('login')">🔑 Prihlásiť sa</button>
+                    <button class="btn btn-auth" type="button" onclick="openAuthModal('login')"><i class="fa-solid fa-key"></i> Prihlásiť sa</button>
                 </div>
             </div>
         </div>
@@ -442,22 +441,22 @@
         <footer class="site-footer">
             <div class="footer-inner">
                 <div class="footer-brand">
-                    <span class="footer-logo">🚀</span>
+                    <span class="footer-logo"><i class="fa-solid fa-rocket"></i></span>
                     <span class="footer-name">MaturitaBoost</span>
                 </div>
                 <div class="footer-tagline">Priprav sa na maturitu. Hravo.</div>
                 <div class="footer-divider"></div>
                 <div class="footer-links">
-                    <span class="footer-school">📍 SPŠD Košice · Hlavná 113</span>
+                    <span class="footer-school"><i class="fa-solid fa-location-dot"></i> SPŠD Košice · Hlavná 113</span>
                     <span class="footer-sep">·</span>
                     <button type="button" class="footer-email" id="copy-email-btn" onclick="
                         navigator.clipboard.writeText('maturitaboostsupport@gmail.com').then(() => {
                             const btn = document.getElementById('copy-email-btn');
-                            btn.innerHTML = '<span>✅</span> <strong>Skopírované!</strong>';
-                            setTimeout(() => { btn.innerHTML = \'<span>✉️</span> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>\'; }, 2000);
+                            btn.innerHTML = '<i class=\'fa-solid fa-check\'></i> <strong>Skopírované!</strong>';
+                            setTimeout(() => { btn.innerHTML = '<i class=\'fa-solid fa-envelope\'></i> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>'; }, 2000);
                         });
                     ">
-                        <span>✉️</span> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>
+                        <i class="fa-solid fa-envelope"></i> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>
                     </button>
                 </div>
                 <div class="footer-copy">© 2025 MaturitaBoost. Všetky práva vyhradené.</div>
@@ -470,7 +469,7 @@
         const saved = localStorage.getItem("theme") || "dark";
         document.documentElement.setAttribute("data-theme", saved);
         const icon = document.getElementById("theme-icon");
-        if (icon) icon.textContent = saved === "light" ? "☀️" : "🌙";
+        if (icon) icon.innerHTML = saved === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     })();
 
     document.getElementById("theme-toggle")?.addEventListener("click", () => {
@@ -478,7 +477,7 @@
         const next = cur === "dark" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", next);
         localStorage.setItem("theme", next);
-        document.getElementById("theme-icon").textContent = next === "light" ? "☀️" : "🌙";
+        document.getElementById("theme-icon").innerHTML = next === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     });
 
     /* ===== RULES MODAL ===== */
@@ -495,6 +494,8 @@
     let visitedCities = new Set();
     let answeredCities = new Set();
     let attempts = {};
+    let wrongChoices = {};
+    let correctChoices = {};
     let currentCity = null;
     let currentPoint = null;
     
@@ -567,6 +568,8 @@
 
     function resetMapState() {
         attempts = {};
+        wrongChoices = {};
+        correctChoices = {};
         answeredCities = new Set();
         visitedCities = new Set();
         currentCity = null;
@@ -659,14 +662,40 @@
 
     /* ===== CHOICE ===== */
     function renderChoiceQuestion(q) {
-        $("submit-answer").style.display = "inline-block";
-
         for (const key in q.choices) {
             $("choices").innerHTML += `
                 <label class="choice">
                   <input type="radio" name="answer" value="${key}">
                   <span>${key}: ${q.choices[key]}</span>
                 </label>`;
+        }
+
+        // Already answered correctly — show result, hide submit
+        if (answeredCities.has(currentCity) && correctChoices[currentCity]) {
+            $("submit-answer").style.display = "none";
+            const prevInput = document.querySelector(`input[name="answer"][value="${correctChoices[currentCity]}"]`);
+            if (prevInput) {
+                prevInput.checked = true;
+                prevInput.closest(".choice").classList.add("correct");
+                document.querySelectorAll('input[name="answer"]').forEach(i => i.disabled = true);
+            }
+            $("feedback").innerHTML = '<span style="color:var(--point-correct,#059669);font-weight:700">✔ Táto otázka je už splnená</span>';
+            return;
+        }
+
+        $("submit-answer").style.display = "inline-block";
+
+        // Restore previous wrong pick when re-opening the question
+        if (wrongChoices[currentCity] && !answeredCities.has(currentCity)) {
+            const prevInput = document.querySelector(`input[name="answer"][value="${wrongChoices[currentCity]}"]`);
+            if (prevInput) {
+                prevInput.checked = true;
+                prevInput.closest(".choice").classList.add("wrong");
+            }
+            const nextPts = calcPoints();
+            $("feedback").innerText = nextPts > 0
+                ? `Nesprávne, skús znova (ďalší pokus: 🪙${nextPts})`
+                : "Nesprávne (0 🪙)";
         }
 
         $("submit-answer").onclick = function () {
@@ -689,10 +718,12 @@
                 currentPoint.classList.remove("wrong");
                 currentPoint.classList.add("correct");
                 $("feedback").innerText = pts ? `Správne! 🪙+${pts}` : "Správne! (0 🪙)";
+                correctChoices[currentCity] = selected.value;
                 answeredCities.add(currentCity); checkAllAnswered();
             } else {
                 chosen.classList.add("wrong");
                 currentPoint.classList.add("wrong");
+                wrongChoices[currentCity] = selected.value;
                 const nextPts = calcPoints();
                 if (nextPts > 0) {
                     $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: 🪙${nextPts})`;
@@ -836,27 +867,27 @@ import { SKINS, drawCharacter, drawAvatar, getOwnedSkins, getActiveSkin, setActi
 // ---------- CHARACTER HELPERS ----------
 function refreshAllAvatars() {
   const active = getActiveSkin();
-  // Header avatar
+  // Header avatar — draw at 2x (56px) display at 28px for crisp pixels
   const hdr = document.getElementById("header-profile-avatar");
   if (hdr) {
     const c = document.createElement("canvas");
-    drawAvatar(c, active, 28);
+    drawAvatar(c, active, 56);
     hdr.innerHTML = "";
     hdr.appendChild(c);
   }
-  // Sidebar avatar
+  // Sidebar avatar — draw at 2x (104px) display at 52px
   const sav = document.getElementById("profile-avatar-letter");
   if (sav) {
     const c = document.createElement("canvas");
-    drawAvatar(c, active, 52);
+    drawAvatar(c, active, 104);
     sav.innerHTML = "";
     sav.appendChild(c);
   }
-  // Profile modal avatar
+  // Profile modal avatar — draw at 2x (144px) display at 72px
   const mav = document.getElementById("pm-avatar-letter");
   if (mav) {
     const c = document.createElement("canvas");
-    drawAvatar(c, active, 72);
+    drawAvatar(c, active, 144);
     mav.innerHTML = "";
     mav.appendChild(c);
   }
@@ -1193,7 +1224,7 @@ function buildShop(coins) {
             const { data: { user } } = await sb.auth.getUser();
             updateAuthUI(user);
             document.getElementById("pm-username").textContent = newName;
-            document.getElementById("pm-avatar-letter").textContent = newName.charAt(0).toUpperCase();
+            refreshAllAvatars();
             pmStatus.textContent = "✅ Meno bolo zmenené!";
             pmStatus.style.color = "#43a047";
             setTimeout(() => { if(pmStatus) pmStatus.textContent = ""; }, 3000);
@@ -1762,18 +1793,18 @@ function buildShop(coins) {
                     <div class="pp-stats">
                         <div class="pp-stat">
                             <div class="pp-stat-val" id="pp-score">–</div>
-                            <div class="pp-stat-lbl">🪙 Mince</div>
+                            <div class="pp-stat-lbl"><i class="fa-solid fa-coins"></i> Mince</div>
                         </div>
                         <div class="pp-stat-sep"></div>
                         <div class="pp-stat">
                             <div class="pp-stat-val" id="pp-place">–</div>
-                            <div class="pp-stat-lbl">🏆 Miesto</div>
+                            <div class="pp-stat-lbl"><i class="fa-solid fa-trophy"></i> Miesto</div>
                         </div>
                     </div>
 
                     <!-- Bio -->
                     <div class="pp-bio-wrap">
-                        <div class="pp-bio-label">📝 O hráčovi</div>
+                        <div class="pp-bio-label"><i class="fa-solid fa-file-lines"></i> O hráčovi</div>
                         <div id="pp-bio" class="pp-bio-text">—</div>
                     </div>
                 </div>
@@ -1784,7 +1815,7 @@ function buildShop(coins) {
                     <div class="pp-char-label">Charakter</div>
                     <canvas id="pp-char-canvas" class="pp-char-canvas"></canvas>
                     <div class="pp-skins-section">
-                        <div class="pp-skins-label">🎒 Kolekcia</div>
+                        <div class="pp-skins-label"><i class="fa-solid fa-bag-shopping"></i> Kolekcia</div>
                         <div id="pp-skins-grid" class="pp-skins-grid"></div>
                     </div>
                 </div>

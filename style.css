@@ -1,7 +1,7 @@
 /* ============================================================
    THEME VARIABLES — GeoGuesser Profile Aesthetic
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
     --page-gutter: 24px;
@@ -97,9 +97,9 @@
     --btn-text: #fff;
     --btn-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
 
-    --btn-ghost-bg: rgba(124, 58, 237, 0.06);
-    --btn-ghost-border: rgba(124, 58, 237, 0.18);
-    --btn-ghost-text: #1e1b2e;
+    --btn-ghost-bg: rgba(124, 58, 237, 0.10);
+    --btn-ghost-border: rgba(124, 58, 237, 0.40);
+    --btn-ghost-text: #3b1fa8;
 
     --popup-overlay: rgba(15, 10, 30, 0.45);
     --popup-bg: #ffffff;
@@ -124,7 +124,7 @@
 body {
     margin: 0;
     min-height: 100vh;
-    font-family: "Outfit", "Segoe UI", Tahoma, sans-serif;
+    font-family: "Plus Jakarta Sans", "Segoe UI", Tahoma, sans-serif;
     background: var(--bg-grad);
     background-attachment: fixed;
     color: var(--text);
@@ -191,7 +191,7 @@ h1 {
     font-size: 24px;
     font-weight: 800;
     letter-spacing: -0.5px;
-    font-family: "Space Mono", monospace;
+    font-family: "Syne", sans-serif;
     animation: titlePop 0.8s ease;
 }
 
@@ -211,7 +211,7 @@ h1 {
     padding: 9px 18px;
     border: none;
     border-radius: 10px;
-    font-family: "Outfit", inherit;
+    font-family: "Plus Jakarta Sans", inherit;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
@@ -243,6 +243,45 @@ h1 {
     justify-content: center;
     font-size: 17px;
     border-radius: 10px;
+}
+
+/* ============================================================
+   UNIFIED HEADER BUTTONS — all pills, same ghost style
+   ============================================================ */
+.header-actions .btn,
+.header-actions .btn-auth,
+.header-actions #theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    height: 38px;
+    border-radius: 999px;
+    font-family: "Plus Jakarta Sans", inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid rgba(124,58,237,0.35);
+    background: rgba(124,58,237,0.10);
+    color: var(--color-text, #eee);
+    box-shadow: none;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    width: auto;
+}
+.header-actions .btn:hover,
+.header-actions .btn-auth:hover,
+.header-actions #theme-toggle:hover {
+    background: rgba(124,58,237,0.22);
+    border-color: rgba(124,58,237,0.6);
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+.header-actions .btn:active,
+.header-actions .btn-auth:active,
+.header-actions #theme-toggle:active {
+    transform: translateY(0);
 }
 
 /* ============================================================
@@ -293,8 +332,8 @@ h1 {
     color: var(--text);
 }
 .stat-pill .stat-icon { font-size: 20px; }
-.stat-pill .stat-label { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.2px; font-family: "Space Mono", monospace; }
-.stat-pill .stat-value { font-size: 22px; font-weight: 800; color: var(--title); font-family: "Space Mono", monospace; }
+.stat-pill .stat-label { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.2px; font-family: "JetBrains Mono", monospace; }
+.stat-pill .stat-value { font-size: 22px; font-weight: 800; color: var(--title); font-family: "JetBrains Mono", monospace; }
 
 /* ============================================================
    CONTROLS
@@ -591,7 +630,7 @@ input.open-answer-input {
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-family: "Space Mono", monospace;
+    font-family: "JetBrains Mono", monospace;
     font-weight: 700;
 }
 .text-illustration p,
@@ -616,7 +655,7 @@ input.open-answer-input {
     color: var(--title);
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-family: "Space Mono", monospace;
+    font-family: "JetBrains Mono", monospace;
     font-weight: 700;
 }
 
@@ -691,7 +730,7 @@ input.open-answer-input {
     letter-spacing: 0.08em;
     padding-bottom: 2px;
     margin-bottom: 2px;
-    font-family: "Space Mono", monospace;
+    font-family: "JetBrains Mono", monospace;
 }
 #leaderboard li.lb-header-row:hover { transform: none; }
 .lb-col-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -700,7 +739,7 @@ input.open-answer-input {
     min-width: 44px;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    font-family: "Space Mono", monospace;
+    font-family: "JetBrains Mono", monospace;
     font-size: 12.5px;
 }
 .lb-col-fast { color: var(--gold); }
@@ -747,7 +786,7 @@ input.open-answer-input {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-family: "Space Mono", monospace;
+    font-family: "JetBrains Mono", monospace;
 }
 
 .footer-tagline {
@@ -1460,7 +1499,7 @@ input.open-answer-input {
 
 .diff-icon  { font-size: 2rem; }
 .diff-label { font-size: 1.1rem; font-weight: 700; }
-.diff-time  { font-size: 1.3rem; font-weight: 800; color: var(--title); font-family: "Space Mono", monospace; }
+.diff-time  { font-size: 1.3rem; font-weight: 800; color: var(--title); font-family: "JetBrains Mono", monospace; }
 .diff-desc  { font-size: 0.78rem; color: var(--text-muted); }
 
 /* ===========================================================================
@@ -1915,7 +1954,7 @@ body[class*="streak-bg-"] .ukazka-col {
     background: transparent;
     color: var(--color-text-muted, #aaa);
     font-size: 1rem;
-    padding: 10px 12px;
+    padding: 8px 12px;
     box-shadow: none;
 }
 
@@ -2322,6 +2361,7 @@ body[class*="streak-bg-"] .ukazka-col {
     color: #fff;
     box-shadow: 0 4px 16px rgba(124,58,237,0.5);
     border: 2px solid rgba(255,255,255,0.15);
+    overflow: hidden;
 }
 
 .profile-rank-badge {
@@ -2440,17 +2480,19 @@ body[class*="streak-bg-"] .ukazka-col {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px 6px 6px;
+    padding: 4px 12px 4px 4px;
+    height: 38px;
     border: 1.5px solid rgba(124,58,237,0.35);
     border-radius: 999px;
-    background: rgba(124,58,237,0.1);
+    background: rgba(124,58,237,0.10);
     color: var(--color-text, #eee);
     cursor: pointer;
-    font-family: inherit;
+    font-family: "Plus Jakarta Sans", inherit;
     font-size: 14px;
     font-weight: 600;
     transition: background 0.2s, border-color 0.2s, transform 0.15s;
     white-space: nowrap;
+    box-shadow: none;
 }
 .header-profile-btn:hover {
     background: rgba(124,58,237,0.22);
@@ -2461,6 +2503,7 @@ body[class*="streak-bg-"] .ukazka-col {
 .header-profile-avatar {
     width: 28px;
     height: 28px;
+    min-width: 28px;
     border-radius: 50%;
     background: linear-gradient(135deg, #7c3aed, #9f5aff);
     display: flex;
@@ -2470,6 +2513,7 @@ body[class*="streak-bg-"] .ukazka-col {
     font-weight: 800;
     color: #fff;
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .header-profile-chevron {
@@ -2755,6 +2799,7 @@ body[class*="streak-bg-"] .ukazka-col {
     flex-shrink: 0;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     letter-spacing: -1px;
+    overflow: hidden;
 }
 
 .profile-modal-banner-info {
@@ -3013,18 +3058,36 @@ body[class*="streak-bg-"] .ukazka-col {
     gap: 6px;
 }
 
-/* Avatar canvases everywhere */
-.profile-avatar canvas,
+/* Avatar canvases — header (canvas 56px → display 28px) */
 .header-profile-avatar canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    display: block;
+    flex-shrink: 0;
 }
 
+/* Avatar canvases — sidebar (canvas 104px → display 52px) */
+.profile-avatar canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    border-radius: 50%;
+    width: 52px !important;
+    height: 52px !important;
+    display: block;
+}
+
+/* Avatar canvases — profile modal big (canvas 144px → display 72px) */
 .profile-modal-avatar-big canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     border-radius: 50%;
+    width: 72px !important;
+    height: 72px !important;
+    display: block;
+    overflow: hidden;
 }
 
 /* ===== PLAYER PROFILE MODAL ===== */
@@ -3416,3 +3479,238 @@ body[class*="streak-bg-"] .ukazka-col {
     color: var(--text);
 }
 
+
+/* ============================================================
+   FONT AWESOME ICON INTEGRATION
+   ============================================================ */
+
+/* Smooth rendering for FA icons */
+.fa-solid, .fa-regular, .fa-brands {
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* Header title icon */
+h1 .fa-rocket {
+    color: var(--color-accent, #7c3aed);
+    font-size: 0.9em;
+}
+
+/* Auth modal logo icon */
+.auth-modal-logo .fa-rocket {
+    font-size: inherit;
+}
+
+/* Input icon alignment */
+.auth-input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+}
+.auth-input-icon .fa-solid {
+    opacity: 0.5;
+    font-size: 0.85rem;
+}
+
+/* Heading icons in modals */
+h2 .fa-solid, h3 .fa-solid {
+    opacity: 0.8;
+    font-size: 0.9em;
+}
+
+/* Section titles with icons */
+.pm-section-title .fa-solid {
+    opacity: 0.7;
+    font-size: 0.85em;
+}
+
+/* Syne font for section headings */
+h2, h3, .auth-modal-title, .stats-card h2, .reading-card h2 {
+    font-family: "Syne", "Plus Jakarta Sans", sans-serif;
+}
+
+/* Tighten tracking on Syne headings */
+h2 { letter-spacing: -0.3px; }
+h3 { letter-spacing: 0px; }
+
+/* UKÁŽKA label and sidebar headers — use Syne */
+#sidebar h3, .text-illustration h3, .hud-label, .stat-pill .stat-label {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    letter-spacing: 1.5px;
+}
+
+/* ============================================================
+   LIGHT THEME — header buttons explicit contrast fix
+   ============================================================ */
+[data-theme="light"] .header-actions .btn,
+[data-theme="light"] .header-actions .btn-auth,
+[data-theme="light"] .header-actions #theme-toggle,
+[data-theme="light"] .header-profile-btn {
+    background: rgba(124, 58, 237, 0.10);
+    border-color: rgba(109, 40, 217, 0.45);
+    color: #3b1fa8;
+}
+[data-theme="light"] .header-actions .btn:hover,
+[data-theme="light"] .header-actions .btn-auth:hover,
+[data-theme="light"] .header-actions #theme-toggle:hover,
+[data-theme="light"] .header-profile-btn:hover {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: rgba(109, 40, 217, 0.70);
+}
+
+[data-theme="light"] .header-username,
+[data-theme="light"] .header-profile-chevron {
+    color: #3b1fa8;
+}
+
+/* Light theme — logout button visibility fix */
+[data-theme="light"] .btn-auth-ghost {
+    color: #5b21b6;
+    border-color: rgba(109, 40, 217, 0.45);
+    background: rgba(124, 58, 237, 0.10);
+}
+[data-theme="light"] .btn-auth-ghost:hover {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: rgba(109, 40, 217, 0.70);
+    color: #3b1fa8;
+}
+
+/* ============================================================
+   HEADER COINS WIDGET — theme-aware
+   ============================================================ */
+.header-coins-widget {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    /* dark theme defaults */
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #eee;
+}
+.header-coins-widget .fa-coins {
+    color: #f59e0b;
+}
+
+[data-theme="light"] .header-coins-widget {
+    background: rgba(124, 58, 237, 0.10);
+    border-color: rgba(109, 40, 217, 0.45);
+    color: #3b1fa8;
+}
+[data-theme="light"] .header-coins-widget .fa-coins {
+    color: #d97706;
+}
+
+/* ============================================================
+   FA ICON POLISH — consistent icon sizing & colors
+   ============================================================ */
+
+/* Zone colored dots for rules list (replacing emoji circles) */
+.zone-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+.zone-dot.zone-green  { background: #4ade80; }
+.zone-dot.zone-yellow { background: #facc15; }
+.zone-dot.zone-orange { background: #fb923c; }
+.zone-dot.zone-red    { background: #f87171; }
+
+/* FA icons inside stat-box-icon */
+.stat-box-icon .fa-solid {
+    font-size: 24px;
+    line-height: 1;
+}
+.stat-box-icon .fa-coins    { color: #f59e0b; }
+.stat-box-icon .fa-circle-check { color: #34d399; }
+.stat-box-icon .fa-circle-xmark { color: #f87171; }
+.stat-box-icon .fa-fire      { color: #fb923c; }
+.stat-box-icon .fa-stopwatch { color: #60a5fa; }
+.stat-box-icon .fa-chart-bar { color: #a78bfa; }
+
+/* stats-trophy FA icon */
+.stats-trophy .fa-solid {
+    font-size: 2.5rem;
+    color: #f59e0b;
+    filter: drop-shadow(0 0 12px rgba(245,158,11,0.5));
+}
+
+/* profile-stat-icon FA */
+.profile-stat-icon .fa-solid {
+    font-size: 1.1rem;
+    opacity: 0.75;
+}
+.profile-stat-icon .fa-map    { color: #60a5fa; }
+.profile-stat-icon .fa-trophy { color: #f59e0b; }
+
+/* pp popup stat labels */
+.pp-stat-lbl .fa-solid {
+    opacity: 0.75;
+    font-size: 0.85em;
+}
+
+/* email-toast-icon FA */
+.email-toast-icon .fa-solid {
+    font-size: 2.2rem;
+    color: #60a5fa;
+}
+
+/* footer logo FA */
+.footer-logo .fa-solid {
+    font-size: inherit;
+    color: var(--accent);
+}
+
+/* pm-char-coins-badge FA */
+.pm-char-coins-badge .fa-coins {
+    color: #f59e0b;
+    font-size: 0.9em;
+}
+
+/* pm-char-title FA */
+.pm-char-title .fa-solid {
+    opacity: 0.75;
+    font-size: 0.9em;
+}
+
+/* leaderboard blur overlay FA */
+.lb-blur-msg .fa-solid {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* pp-bio-label and pp-skins-label FA */
+.pp-bio-label .fa-solid,
+.pp-skins-label .fa-solid {
+    opacity: 0.7;
+    font-size: 0.85em;
+    margin-right: 3px;
+}
+
+/* rules panel title FA */
+.rules-panel-title .fa-solid {
+    color: var(--accent);
+    margin-right: 4px;
+}
+
+/* ukazka-col-header FA */
+.ukazka-col-header .fa-solid {
+    opacity: 0.75;
+    font-size: 0.9em;
+    margin-right: 4px;
+}
+
+/* hud-label FA coins */
+.hud-label .fa-coins {
+    color: #f59e0b;
+    font-size: 0.85em;
+}

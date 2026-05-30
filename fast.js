@@ -618,6 +618,9 @@ function escapeHTML(s) {
 // ---------- Header Coins ----------
 async function loadHeaderCoins() {
     try {
+        // Only show coins for authenticated users
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) return;
         const name = localStorage.getItem("player_name");
         if (!name) return;
         const { data } = await sb

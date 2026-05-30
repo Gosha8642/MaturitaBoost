@@ -4,22 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fast Game · MaturitaBoost</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="fast-body">
 
     <div class="container">
         <header>
-            <h1>⚡ MaturitaBoost · Fast Game</h1>
+            <h1><i class="fa-solid fa-bolt"></i> MaturitaBoost · Fast Game</h1>
             <div class="header-actions">
-                <div id="header-coins-widget" style="display:none; align-items:center; gap:6px; background:rgba(255,255,255,0.07); border-radius:20px; padding:5px 14px; font-size:0.9rem; font-weight:700; color:var(--color-text,#eee); border:1px solid rgba(255,255,255,0.1);">
-                    🪙 <span id="header-coins-display">0</span>
+                <div id="header-coins-widget" class="header-coins-widget" style="display:none;">
+                    <i class="fa-solid fa-coins"></i> <span id="header-coins-display">0</span>
                 </div>
                 <a href="./index.html" class="btn btn-ghost" data-testid="back-to-map">
-                    <span>🗺️</span><span>Späť na mapu</span>
+                    <i class="fa-solid fa-map"></i><span>Späť na mapu</span>
                 </a>
                 <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" title="Prepnúť tému">
-                    <span id="theme-icon">🌙</span>
+                    <span id="theme-icon"><i class="fa-solid fa-moon"></i></span>
                 </button>
             </div>
         </header>
@@ -73,12 +74,12 @@
                 </div>
 
                 <div class="rules-panel">
-                    <div class="rules-panel-title">⚡ Pravidlá Fast Game</div>
+                    <div class="rules-panel-title"><i class="fa-solid fa-bolt"></i> Pravidlá Fast Game</div>
                     <ul class="rules-list">
-                        <li>⏱️ Máš <strong><span id="rules-time">15</span> sekúnd</strong> na každú otázku</li>
-                        <li>🟢 <strong>0–<span id="rules-z10">5</span>s</strong> → 10 🪙 · 🟡 <strong><span id="rules-z5">5–10</span>s</strong> → 5 🪙 · 🟠 <strong><span id="rules-z2">10–13</span>s</strong> → 2 🪙 · 🔴 ostatné → 0</li>
-                        <li>❌ Nesprávna odpoveď → ďalšia otázka okamžite</li>
-                        <li>🔥 <strong>Streak bonus</strong>: 2× za 2 správne v rade, max 5× · 🎯 Obtiažnosť: Ľahký ×1, Stredný ×2, Ťažký ×3</li>
+                        <li><i class="fa-solid fa-stopwatch"></i> Máš <strong><span id="rules-time">15</span> sekúnd</strong> na každú otázku</li>
+                        <li><span class="zone-dot zone-green"></span> <strong>0–<span id="rules-z10">5</span>s</strong> → 10 <i class="fa-solid fa-coins"></i> · <span class="zone-dot zone-yellow"></span> <strong><span id="rules-z5">5–10</span>s</strong> → 5 <i class="fa-solid fa-coins"></i> · <span class="zone-dot zone-orange"></span> <strong><span id="rules-z2">10–13</span>s</strong> → 2 <i class="fa-solid fa-coins"></i> · <span class="zone-dot zone-red"></span> ostatné → 0</li>
+                        <li><i class="fa-solid fa-xmark" style="color:#f87171"></i> Nesprávna odpoveď → ďalšia otázka okamžite</li>
+                        <li><i class="fa-solid fa-fire" style="color:#fb923c"></i> <strong>Streak bonus</strong>: 2× za 2 správne v rade, max 5× · <i class="fa-solid fa-bullseye"></i> Obtiažnosť: Ľahký ×1, Stredný ×2, Ťažký ×3</li>
                     </ul>
                 </div>
 
@@ -87,7 +88,7 @@
                 </div>
 
                 <button id="start-game-btn" class="btn btn-large" type="button" data-testid="start-fast-game-btn">
-                    <span>🚀</span>
+                    <i class="fa-solid fa-rocket"></i>
                     <span>Prečítal som ukážku a som pripravený hrať</span>
                 </button>
             </div>
@@ -99,7 +100,7 @@
 
                 <!-- LEFT: ukážka column -->
                 <div class="ukazka-col" id="ukazka-col">
-                    <div class="ukazka-col-header">📖 Ukážka</div>
+                    <div class="ukazka-col-header"><i class="fa-solid fa-book-open"></i> Ukážka</div>
                     <div class="ukazka-col-text" id="ukazka-hint-text"></div>
                 </div>
 
@@ -107,7 +108,7 @@
                 <div class="game-col">
                     <div class="game-hud">
                         <div class="hud-pill">
-                            <div class="hud-label">🪙 MINCE</div>
+                            <div class="hud-label"><i class="fa-solid fa-coins"></i> MINCE</div>
                             <div class="hud-value" id="hud-score">0</div>
                         </div>
                         <div class="hud-pill streak-pill" id="streak-pill">
@@ -153,54 +154,54 @@
         <!-- ====== STATS ====== -->
         <section id="screen-stats" class="fast-screen">
             <div class="stats-card">
-                <div class="stats-trophy">🏆</div>
+                <div class="stats-trophy"><i class="fa-solid fa-trophy"></i></div>
                 <h2>Ukážka dokončená!</h2>
                 <p class="stats-subtitle">Tu sú tvoje výsledky:</p>
 
                 <div class="stats-grid">
                     <div class="stat-box">
-                        <div class="stat-box-icon">🪙</div>
+                        <div class="stat-box-icon"><i class="fa-solid fa-coins"></i></div>
                         <div class="stat-box-label">Mince</div>
                         <div class="stat-box-value" id="stats-score">0</div>
                     </div>
                     <div class="stat-box correct-box">
-                        <div class="stat-box-icon">✅</div>
+                        <div class="stat-box-icon"><i class="fa-solid fa-circle-check"></i></div>
                         <div class="stat-box-label">Správne</div>
                         <div class="stat-box-value" id="stats-correct">0</div>
                     </div>
                     <div class="stat-box wrong-box">
-                        <div class="stat-box-icon">❌</div>
+                        <div class="stat-box-icon"><i class="fa-solid fa-circle-xmark"></i></div>
                         <div class="stat-box-label">Nesprávne</div>
                         <div class="stat-box-value" id="stats-wrong">0</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-box-icon">🔥</div>
+                        <div class="stat-box-icon"><i class="fa-solid fa-fire"></i></div>
                         <div class="stat-box-label">Najdlhší streak</div>
                         <div class="stat-box-value" id="stats-streak">0</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-box-icon">⏱️</div>
+                        <div class="stat-box-icon"><i class="fa-solid fa-stopwatch"></i></div>
                         <div class="stat-box-label">Priemerný čas</div>
                         <div class="stat-box-value"><span id="stats-avg-time">0.0</span>s</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-box-icon">📊</div>
+                        <div class="stat-box-icon"><i class="fa-solid fa-chart-bar"></i></div>
                         <div class="stat-box-label">Úspešnosť</div>
                         <div class="stat-box-value"><span id="stats-accuracy">0</span>%</div>
                     </div>
                 </div>
 
                 <div class="stats-total-game">
-                    <div>🪙 Celkové mince v session:</div>
+                    <div><i class="fa-solid fa-coins"></i> Celkové mince v session:</div>
                     <div class="stats-total-value" id="stats-total-session">0</div>
                 </div>
 
                 <div class="stats-actions">
                     <button id="next-ukazka-btn" class="btn btn-large" type="button" data-testid="next-ukazka-btn">
-                        <span>➡️</span><span>Ďalšia ukážka</span>
+                        <i class="fa-solid fa-arrow-right"></i><span>Ďalšia ukážka</span>
                     </button>
                     <a href="./index.html" class="btn btn-ghost btn-large" data-testid="exit-to-map">
-                        <span>🗺️</span><span>Späť na mapu</span>
+                        <i class="fa-solid fa-map"></i><span>Späť na mapu</span>
                     </a>
                 </div>
             </div>
@@ -220,14 +221,14 @@
             const saved = localStorage.getItem("theme") || "dark";
             document.documentElement.setAttribute("data-theme", saved);
             const icon = document.getElementById("theme-icon");
-            if (icon) icon.textContent = saved === "light" ? "☀️" : "🌙";
+            if (icon) icon.innerHTML = saved === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
         })();
         document.getElementById("theme-toggle")?.addEventListener("click", () => {
             const cur  = document.documentElement.getAttribute("data-theme") || "dark";
             const next = cur === "dark" ? "light" : "dark";
             document.documentElement.setAttribute("data-theme", next);
             localStorage.setItem("theme", next);
-            document.getElementById("theme-icon").textContent = next === "light" ? "☀️" : "🌙";
+            document.getElementById("theme-icon").innerHTML = next === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
         });
     </script>
 

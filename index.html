@@ -169,91 +169,120 @@
 
             <!-- LEFT COLUMN -->
             <div class="pm-col pm-col-left">
-                <!-- Header gradient banner -->
-                <div class="profile-modal-banner">
-                    <div class="profile-modal-banner-blob"></div>
-                    <div class="profile-modal-avatar-big" id="pm-avatar-letter"></div>
-                    <div class="profile-modal-banner-info">
-                        <div class="profile-modal-username" id="pm-username">Hráč</div>
-                        <div class="profile-modal-email" id="pm-email"></div>
+
+                <!-- HERO BANNER -->
+                <div class="pml-hero">
+                    <div class="pml-hero-bg"></div>
+                    <div class="pml-hero-glow"></div>
+                    <div class="pml-avatar-wrap">
+                        <div class="pml-avatar" id="pm-avatar-letter"></div>
+                        <div class="pml-avatar-ring"></div>
+                    </div>
+                    <div class="pml-hero-info">
+                        <div class="pml-username" id="pm-username">Hráč</div>
+                        <div class="pml-email" id="pm-email"></div>
                     </div>
                 </div>
 
-                <!-- Stats row -->
-                <div class="profile-modal-stats">
-                    <div class="pm-stat">
-                        <div class="pm-stat-val" id="pm-stat-map">–</div>
-                        <div class="pm-stat-lbl"><i class="fa-solid fa-map"></i> Mapa <i class="fa-solid fa-coins"></i></div>
+                <!-- STATS CARDS -->
+                <div class="pml-stats">
+                    <div class="pml-stat-card">
+                        <div class="pml-stat-icon"><i class="fa-solid fa-map"></i></div>
+                        <div class="pml-stat-body">
+                            <div class="pml-stat-val" id="pm-stat-map">–</div>
+                            <div class="pml-stat-lbl">Mapa coins</div>
+                        </div>
                     </div>
-                    <div class="pm-stat-sep"></div>
-                    <div class="pm-stat">
-                        <div class="pm-stat-val" id="pm-stat-rank">–</div>
-                        <div class="pm-stat-lbl"><i class="fa-solid fa-trophy"></i> Miesto</div>
+                    <div class="pml-stat-card">
+                        <div class="pml-stat-icon pml-stat-icon--gold"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="pml-stat-body">
+                            <div class="pml-stat-val" id="pm-stat-rank">–</div>
+                            <div class="pml-stat-lbl">Miesto v rebríčku</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Edit section -->
-                <div class="profile-modal-body">
-                    <div class="pm-section-title"><i class="fa-solid fa-pencil"></i> Upraviť profil</div>
+                <!-- FORM BODY -->
+                <div class="pml-body">
 
-                    <div class="auth-field">
-                        <label class="auth-label">Herné meno</label>
-                        <div class="auth-input-wrap" style="position:relative">
-                            <span class="auth-input-icon"><i class="fa-solid fa-gamepad"></i></span>
-                            <input id="pm-nick-input" type="text" placeholder="Vaše herné meno" autocomplete="off" />
-                            <span class="pm-nick-check" id="pm-nick-check"></span>
+                    <!-- Section: Profil -->
+                    <div class="pml-card">
+                        <div class="pml-card-header">
+                            <i class="fa-solid fa-user-pen"></i>
+                            <span>Upraviť profil</span>
                         </div>
-                        <div class="pm-field-hint" id="pm-nick-hint"></div>
-                    </div>
-
-                    <button id="pm-save-nick-btn" type="button" class="auth-modal-submit" style="margin-top:4px">
-                        <span>Uložiť meno</span>
-                        <span class="auth-submit-arrow">→</span>
-                    </button>
-
-                    <div class="pm-divider"></div>
-
-                    <div class="pm-section-title"><i class="fa-solid fa-file-lines"></i> O mne</div>
-                    <div class="auth-field">
-                        <label class="auth-label">Popis profilu</label>
-                        <textarea id="pm-bio-input" placeholder="Napíš niečo o sebe…" maxlength="160" rows="3" style="width:100%;background:var(--input-bg,rgba(255,255,255,0.06));border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:var(--text);font-size:0.9rem;resize:none;font-family:inherit;box-sizing:border-box;outline:none"></textarea>
-                        <div style="text-align:right;font-size:0.72rem;color:var(--text-muted);margin-top:3px"><span id="pm-bio-count">0</span>/160</div>
-                    </div>
-                    <button id="pm-save-bio-btn" type="button" class="auth-modal-submit pm-btn-secondary" style="margin-top:4px">
-                        <span>Uložiť popis</span>
-                        <span class="auth-submit-arrow">→</span>
-                    </button>
-
-                    <div class="pm-divider"></div>
-
-                    <div class="pm-section-title"><i class="fa-solid fa-lock"></i> Zmena hesla</div>
-
-                    <div class="auth-field">
-                        <label class="auth-label">Nové heslo</label>
-                        <div class="auth-input-wrap">
-                            <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
-                            <input id="pm-new-password" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                        <div class="pml-card-body">
+                            <div class="pml-field">
+                                <label class="pml-label">Herné meno</label>
+                                <div class="pml-input-wrap">
+                                    <i class="fa-solid fa-gamepad pml-input-icon"></i>
+                                    <input id="pm-nick-input" type="text" class="pml-input" placeholder="Vaše herné meno" autocomplete="off" />
+                                    <span class="pm-nick-check" id="pm-nick-check"></span>
+                                </div>
+                                <div class="pm-field-hint" id="pm-nick-hint"></div>
+                            </div>
+                            <button id="pm-save-nick-btn" type="button" class="pml-btn pml-btn--primary">
+                                <span>Uložiť meno</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="auth-field">
-                        <label class="auth-label">Potvrdiť heslo</label>
-                        <div class="auth-input-wrap">
-                            <span class="auth-input-icon"><i class="fa-solid fa-check"></i></span>
-                            <input id="pm-confirm-password" type="password" placeholder="Zopakujte heslo" autocomplete="new-password" />
+
+                    <!-- Section: O mne -->
+                    <div class="pml-card">
+                        <div class="pml-card-header">
+                            <i class="fa-solid fa-comment-dots"></i>
+                            <span>O mne</span>
+                        </div>
+                        <div class="pml-card-body">
+                            <div class="pml-field">
+                                <label class="pml-label">Popis profilu</label>
+                                <textarea id="pm-bio-input" class="pml-textarea" placeholder="Napíš niečo o sebe…" maxlength="160" rows="3"></textarea>
+                                <div class="pml-bio-counter"><span id="pm-bio-count">0</span>/160</div>
+                            </div>
+                            <button id="pm-save-bio-btn" type="button" class="pml-btn pml-btn--ghost">
+                                <span>Uložiť popis</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
-                    <button id="pm-save-pass-btn" type="button" class="auth-modal-submit pm-btn-secondary" style="margin-top:4px">
-                        <span>Zmeniť heslo</span>
-                        <span class="auth-submit-arrow">→</span>
+
+                    <!-- Section: Heslo -->
+                    <div class="pml-card">
+                        <div class="pml-card-header">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Zmena hesla</span>
+                        </div>
+                        <div class="pml-card-body">
+                            <div class="pml-field">
+                                <label class="pml-label">Nové heslo</label>
+                                <div class="pml-input-wrap">
+                                    <i class="fa-solid fa-lock pml-input-icon"></i>
+                                    <input id="pm-new-password" type="password" class="pml-input" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                                </div>
+                            </div>
+                            <div class="pml-field">
+                                <label class="pml-label">Potvrdiť heslo</label>
+                                <div class="pml-input-wrap">
+                                    <i class="fa-solid fa-shield-halved pml-input-icon"></i>
+                                    <input id="pm-confirm-password" type="password" class="pml-input" placeholder="Zopakujte heslo" autocomplete="new-password" />
+                                </div>
+                            </div>
+                            <button id="pm-save-pass-btn" type="button" class="pml-btn pml-btn--ghost">
+                                <span>Zmeniť heslo</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="pm-status" class="pml-status"></div>
+
+                    <!-- Logout -->
+                    <button id="pm-logout-btn" type="button" class="pml-logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Odhlásiť sa</span>
                     </button>
 
-                    <div id="pm-status" class="auth-modal-status" style="text-align:center;margin-top:8px;font-size:0.85rem"></div>
-
-                    <div class="pm-divider"></div>
-
-                    <button id="pm-logout-btn" type="button" class="profile-logout-btn" style="width:100%;margin:0">
-                        <i class="fa-solid fa-right-from-bracket"></i> Odhlásiť sa
-                    </button>
                 </div>
             </div>
 
@@ -916,37 +945,64 @@ function buildShop(coins) {
   if (nameBadge && activeSkin) nameBadge.textContent = activeSkin.name;
 
   grid.innerHTML = "";
-  SKINS.forEach(skin => {
-    const isOwned  = owned.includes(skin.id);
-    const isActive = skin.id === active;
-    const rar      = RARITY_COLORS[skin.rarity];
-    const card     = document.createElement("div");
-    card.className = "skin-card-fs" + (isActive ? " skin-active" : "");
-    card.dataset.skinId = skin.id;
+  // Group by rarity
+  const RARITY_ORDER = ["free","common","rare","epic","legendary","secret"];
+  const RARITY_ICONS = { free:"⬜", common:"🟩", rare:"🟦", epic:"🟪", legendary:"🔶", secret:"❓" };
+  const byRarity = {};
+  SKINS.forEach(s => { (byRarity[s.rarity] = byRarity[s.rarity]||[]).push(s); });
 
-    const previewC = document.createElement("canvas");
-    drawCharacter(previewC, skin.id, 2);
+  RARITY_ORDER.forEach(rarity => {
+    const group = byRarity[rarity];
+    if (!group || group.length === 0) return;
 
-    const rarBadge = `<span class="skin-rarity" style="background:${rar.bg};color:${rar.text}">${rar.label}</span>`;
-    const btnHtml  = isActive
-      ? `<button class="skin-btn equipped" disabled>✓ Equipped</button>`
-      : isOwned
-        ? `<button class="skin-btn owned" data-id="${skin.id}">Equip</button>`
-        : skin.secret
-          ? `<button class="skin-btn" disabled style="background:rgba(255,255,255,0.05);color:#555;cursor:default;font-size:0.7rem">🔒 ${skin.unlockHint}</button>`
-          : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">🪙 ${skin.price}</button>`;
+    // Section header
+    const header = document.createElement("div");
+    header.className = "pm-rarity-header";
+    header.dataset.rarity = rarity;
+    header.textContent = RARITY_ICONS[rarity] + " " + (RARITY_COLORS[rarity]?.label || rarity.toUpperCase());
+    grid.insertAdjacentElement("beforeend", header);
 
-    card.innerHTML = `<div class="skin-preview"></div>${rarBadge}<div class="skin-name">${skin.name}</div><div class="skin-desc">${skin.desc}</div>${btnHtml}`;
-    card.querySelector(".skin-preview").appendChild(previewC);
-    grid.appendChild(card);
+    // Row grid
+    const row = document.createElement("div");
+    row.className = "pm-rarity-row";
+    grid.insertAdjacentElement("beforeend", row);
 
-    // Click card = preview in big showcase
-    card.addEventListener("click", (e) => {
-      if (e.target.classList.contains("skin-btn")) return;
-      const previewBig = document.getElementById("char-preview-canvas");
-      if (previewBig) drawCharacter(previewBig, skin.id, 5);
-      const nb = document.getElementById("pm-active-skin-name");
-      if (nb) nb.textContent = skin.name;
+    group.forEach(skin => {
+      const isOwned  = owned.includes(skin.id);
+      const isActive = skin.id === active;
+      const rar      = RARITY_COLORS[skin.rarity];
+      const card     = document.createElement("div");
+      card.className = "skin-card-fs" + (isActive ? " skin-active" : "");
+      card.dataset.skinId = skin.id;
+      card.dataset.rarity = skin.rarity;
+
+      const previewC = document.createElement("canvas");
+      drawCharacter(previewC, skin.id, 2);
+
+      const rarBadge = `<span class="skin-rarity" style="background:${rar.bg};color:${rar.text}">${rar.label}</span>`;
+      const btnHtml  = isActive
+        ? `<button class="skin-btn equipped" disabled>✓ Equipped</button>`
+        : isOwned
+          ? `<button class="skin-btn owned" data-id="${skin.id}">Equip</button>`
+          : skin.secret
+            ? `<button class="skin-btn" disabled style="background:rgba(255,255,255,0.05);color:#555;cursor:default;font-size:0.65rem;padding:3px 6px">🔒 ${skin.unlockHint}</button>`
+            : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">🪙 ${skin.price}</button>`;
+
+      card.innerHTML = `<div class="skin-preview"></div>${rarBadge}<div class="skin-name">${skin.name}</div>${btnHtml}`;
+      card.querySelector(".skin-preview").appendChild(previewC);
+      row.appendChild(card);
+
+      // Click card = preview in big showcase
+      card.addEventListener("click", (e) => {
+        if (e.target.classList.contains("skin-btn")) return;
+        const previewBig = document.getElementById("char-preview-canvas");
+        if (previewBig) {
+          previewBig.style.filter = "drop-shadow(0 0 0 transparent)";
+          setTimeout(() => { drawCharacter(previewBig, skin.id, 5); previewBig.style.filter = ""; }, 60);
+        }
+        const nb = document.getElementById("pm-active-skin-name");
+        if (nb) nb.textContent = skin.name;
+      });
     });
   });
 
@@ -955,7 +1011,7 @@ function buildShop(coins) {
   if (previewBig) drawCharacter(previewBig, active, 5);
 
   // Equip buttons
-  grid.querySelectorAll(".skin-btn.owned").forEach(btn => {
+  document.querySelectorAll("#skin-shop-grid .skin-btn.owned").forEach(btn => {
     btn.addEventListener("click", () => {
       setActiveSkin(btn.dataset.id);
       buildShop(coins);
@@ -965,7 +1021,7 @@ function buildShop(coins) {
   });
 
   // Buy buttons
-  grid.querySelectorAll(".skin-btn.buy").forEach(btn => {
+  document.querySelectorAll("#skin-shop-grid .skin-btn.buy").forEach(btn => {
     btn.addEventListener("click", async () => {
       const result = buySkin(btn.dataset.id, coins);
       if (!result.ok) {

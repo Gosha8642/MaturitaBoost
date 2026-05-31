@@ -190,7 +190,7 @@
                         <div class="pml-stat-icon"><i class="fa-solid fa-map"></i></div>
                         <div class="pml-stat-body">
                             <div class="pml-stat-val" id="pm-stat-map">–</div>
-                            <div class="pml-stat-lbl">Mapa coins</div>
+                            <div class="pml-stat-lbl">Mince</div>
                         </div>
                     </div>
                     <div class="pml-stat-card">
@@ -431,7 +431,7 @@
                     <div class="profile-stat">
                         <div class="profile-stat-icon"><i class="fa-solid fa-map"></i></div>
                         <div class="profile-stat-val" id="profile-best-map">-</div>
-                        <div class="profile-stat-label"><i class="fa-solid fa-map"></i> Mapa <i class="fa-solid fa-coins"></i></div>
+                        <div class="profile-stat-label"><i class="fa-solid fa-coins"></i> Mince</div>
                     </div>
                     <div class="profile-stat-divider"></div>
                     <div class="profile-stat">
@@ -494,11 +494,19 @@
     </div>
     <script>
     /* ===== THEME TOGGLE ===== */
+    function applyMapTheme(theme) {
+        const mapImg = document.querySelector('.map-image');
+        if (mapImg) {
+            mapImg.src = theme === 'light' ? './assets/image_light.png' : './assets/image.png';
+        }
+    }
+
     (function initTheme() {
         const saved = localStorage.getItem("theme") || "dark";
         document.documentElement.setAttribute("data-theme", saved);
         const icon = document.getElementById("theme-icon");
         if (icon) icon.innerHTML = saved === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        applyMapTheme(saved);
     })();
 
     document.getElementById("theme-toggle")?.addEventListener("click", () => {
@@ -507,6 +515,7 @@
         document.documentElement.setAttribute("data-theme", next);
         localStorage.setItem("theme", next);
         document.getElementById("theme-icon").innerHTML = next === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        applyMapTheme(next);
     });
 
     /* ===== RULES MODAL ===== */

@@ -1672,6 +1672,52 @@ body[class*="streak-bg-"] .choice-btn:hover:not(.correct):not(.wrong):not(.revea
     border-color: rgba(255, 140, 40, 0.55) !important;
 }
 
+/* ── Light theme: fix text visibility during streak backgrounds ──────── */
+[data-theme="light"] body.streak-bg-1,
+[data-theme="light"] body.streak-bg-2,
+[data-theme="light"] body.streak-bg-3,
+[data-theme="light"] body.streak-bg-4,
+[data-theme="light"] body.streak-bg-5 {
+    color: #fff;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .question-card,
+[data-theme="light"] body[class*="streak-bg-"] .stats-card {
+    color: #f0eaff !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .question-text,
+[data-theme="light"] body[class*="streak-bg-"] .ukazka-col-text,
+[data-theme="light"] body[class*="streak-bg-"] .hud-label,
+[data-theme="light"] body[class*="streak-bg-"] .hud-value,
+[data-theme="light"] body[class*="streak-bg-"] .timer-zones {
+    color: #f0eaff !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .choice-btn {
+    color: #f0eaff !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .choice-btn:hover:not(.correct):not(.wrong):not(.reveal-correct) {
+    color: #fff !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .ukazka-col {
+    color: #f0eaff !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .hud-pill {
+    color: #f0eaff !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] header {
+    color: #f0eaff !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .streak-mult {
+    color: #fbbf24 !important;
+}
+
 /* ── End-of-round cinematic: panels fade out ─────────────────────────── */
 .game-cinematic-out {
     animation: panelFadeOut 1.0s ease forwards !important;

@@ -11,6 +11,34 @@ export const SKINS = [
     price: 0, rarity: "free",
     hat: null, outfit: "blue", extras: [],
   },
+  {
+    id: "free_red",
+    name: "Rebel",
+    desc: "Červená je farba odvahy",
+    price: 0, rarity: "free",
+    hat: null, outfit: "red", extras: [],
+  },
+  {
+    id: "free_green",
+    name: "Prírodovedec",
+    desc: "Zelená myseľ, čistý výsledok",
+    price: 0, rarity: "free",
+    hat: null, outfit: "green", extras: [],
+  },
+  {
+    id: "free_cap",
+    name: "Škôlkár",
+    desc: "Šiltovka a dobrá nálada",
+    price: 0, rarity: "free",
+    hat: "cap", outfit: "navy", extras: [],
+  },
+  {
+    id: "free_purple",
+    name: "Snílek",
+    desc: "Fialová je farba fantázie",
+    price: 0, rarity: "free",
+    hat: null, outfit: "purple", extras: [],
+  },
 
   // ── COMMON ────────────────────────────────────────────────────────────────
   {
@@ -40,6 +68,13 @@ export const SKINS = [
     desc: "Zem pod nohami, pero v ruke",
     price: 45, rarity: "common",
     hat: "straw_hat", outfit: "brown", extras: [],
+  },
+  {
+    id: "chef",
+    name: "Šéfkuchár",
+    desc: "Varí len tie najlepšie odpovede",
+    price: 35, rarity: "common",
+    hat: "chef_hat", outfit: "chef_white", extras: [],
   },
 
   // ── RARE ──────────────────────────────────────────────────────────────────
@@ -78,13 +113,7 @@ export const SKINS = [
     price: 90, rarity: "rare",
     hat: "cowboy", outfit: "brown", extras: [],
   },
-  {
-    id: "astronaut",
-    name: "Astronaut",
-    desc: "Maturita je vesmírna misia",
-    price: 130, rarity: "rare",
-    hat: "helmet", outfit: "spacesuit", extras: [],
-  },
+
 
   // ── EPIC ──────────────────────────────────────────────────────────────────
   {
@@ -145,6 +174,20 @@ export const SKINS = [
     price: 500, rarity: "legendary",
     hat: null, outfit: "phantom", extras: ["ghost_trail", "mask"],
   },
+  {
+    id: "demon_lord",
+    name: "Démon",
+    desc: "Z pekla priamo na maturitu",
+    price: 450, rarity: "legendary",
+    hat: "demon_horns", outfit: "demon", extras: ["fire", "cape"],
+  },
+  {
+    id: "ice_queen",
+    name: "Ľadová kráľovná",
+    desc: "Chladná hlava, ľadové nervy",
+    price: 480, rarity: "legendary",
+    hat: "ice_crown", outfit: "ice", extras: ["stars"],
+  },
 
   // ── SECRET ────────────────────────────────────────────────────────────────
   {
@@ -197,6 +240,9 @@ const C = {
   phantom:     { body: "#312e81", dark: "#1e1b4b",  light: "#818cf8" },
   matrix:      { body: "#052e16", dark: "#14532d",  light: "#4ade80" },
   rainbow:     { body: "#a855f7", dark: "#7e22ce",  light: "#f0abfc" },
+  chef_white:  { body: "#f1f5f9", dark: "#cbd5e1",  light: "#ffffff" },
+  demon:       { body: "#7f1d1d", dark: "#450a0a",  light: "#ef4444" },
+  ice:         { body: "#bae6fd", dark: "#7dd3fc",  light: "#e0f2fe" },
 
   // accessory colours
   wizard_hat:  "#6d28d9",
@@ -225,6 +271,8 @@ const C = {
   dragon_h:    "#dc2626",
   fire_col:    "#f97316",
   ghost_col:   "#a5b4fc",
+  demon_h:     "#7c0000",
+  ice_col:     "#7dd3fc",
 };
 
 // ---------- PRIMITIVES ----------
@@ -305,29 +353,27 @@ function drawHeadband(ctx, s) {
   pixel(ctx, s, 11,2, C.headband); pixel(ctx, s, 11,4, C.headband);
 }
 function drawSailorHat(ctx, s) {
-  rect(ctx, s, 4,0, 8,1, C.white); // brim
-  rect(ctx, s, 5,1, 6,2, C.sailor_brim); // top blue
+  rect(ctx, s, 4,0, 8,1, C.white);
+  rect(ctx, s, 5,1, 6,2, C.sailor_brim);
   rect(ctx, s, 3,0, 1,1, C.white); rect(ctx, s, 12,0, 1,1, C.white);
-  pixel(ctx, s, 7,1, C.white); pixel(ctx, s, 8,1, C.white); // stripe
+  pixel(ctx, s, 7,1, C.white); pixel(ctx, s, 8,1, C.white);
 }
 function drawStrawHat(ctx, s) {
-  rect(ctx, s, 3,-1, 10,1, C.straw); // wide brim
-  rect(ctx, s, 5,0, 6,3, C.straw);   // dome
-  rect(ctx, s, 4,0, 1,1, "#a16207"); rect(ctx, s, 11,0, 1,1, "#a16207"); // band
-  rect(ctx, s, 5,-1, 6,1, "#a16207"); // hat band stripe
+  rect(ctx, s, 3,-1, 10,1, C.straw);
+  rect(ctx, s, 5,0, 6,3, C.straw);
+  rect(ctx, s, 4,0, 1,1, "#a16207"); rect(ctx, s, 11,0, 1,1, "#a16207");
+  rect(ctx, s, 5,-1, 6,1, "#a16207");
 }
 function drawFedora(ctx, s) {
-  rect(ctx, s, 3,0, 10,1, C.fedora_col); // brim
-  rect(ctx, s, 5,1, 6,3, C.fedora_col);  // dome
-  rect(ctx, s, 5,2, 6,1, "#374151");     // indent
+  rect(ctx, s, 3,0, 10,1, C.fedora_col);
+  rect(ctx, s, 5,1, 6,3, C.fedora_col);
+  rect(ctx, s, 5,2, 6,1, "#374151");
   rect(ctx, s, 4,1, 1,1, C.fedora_col);
 }
 function drawHorns(ctx, s) {
-  // viking horns on sides
   rect(ctx, s, 2,0, 2,3, C.horn_col);
   rect(ctx, s, 12,0, 2,3, C.horn_col);
   pixel(ctx, s, 2,-1, C.horn_col); pixel(ctx, s, 13,-1, C.horn_col);
-  // helmet base
   rect(ctx, s, 4,0, 8,3, "#374151");
   rect(ctx, s, 4,2, 8,1, "#6b7280");
 }
@@ -336,13 +382,12 @@ function drawCowboy(ctx, s) {
   rect(ctx, s, 5,1, 6,3, C.cowboy_col);
   rect(ctx, s, 3,0, 2,1, C.cowboy_col); rect(ctx, s, 11,0, 2,1, C.cowboy_col);
   pixel(ctx, s, 2,0, C.cowboy_col); pixel(ctx, s, 13,0, C.cowboy_col);
-  rect(ctx, s, 5,1, 6,1, "#78350f"); // band
+  rect(ctx, s, 5,1, 6,1, "#78350f");
 }
 function drawHelmet(ctx, s) {
   rect(ctx, s, 4,-1, 8,4, C.helmet_col);
   rect(ctx, s, 3,0, 1,3, C.helmet_col); rect(ctx, s, 12,0, 1,3, C.helmet_col);
   rect(ctx, s, 4,3, 8,1, "#64748b");
-  // visor glass
   rect(ctx, s, 5,1, 6,2, "rgba(100,220,255,0.35)");
   rect(ctx, s, 5,1, 6,1, "#38bdf8");
 }
@@ -350,44 +395,68 @@ function drawAntennae(ctx, s) {
   pixel(ctx, s, 6,-4, C.antennae_c); pixel(ctx, s, 9,-4, C.antennae_c);
   pixel(ctx, s, 6,-3, C.antennae_c); pixel(ctx, s, 9,-3, C.antennae_c);
   pixel(ctx, s, 7,-2, C.antennae_c); pixel(ctx, s, 8,-2, C.antennae_c);
-  // antenna balls
   pixel(ctx, s, 6,-5, "#fbbf24"); pixel(ctx, s, 9,-5, "#fbbf24");
-  // robot head box
   rect(ctx, s, 4,1, 8,6, "#475569");
-  rect(ctx, s, 5,1, 6,1, "#64748b"); // top
+  rect(ctx, s, 5,1, 6,1, "#64748b");
   pixel(ctx, s, 4,1, "#334155"); pixel(ctx, s, 11,1, "#334155");
-  // robot eyes override
   pixel(ctx, s, 6,4, C.visor_col); pixel(ctx, s, 9,4, C.visor_col);
 }
 function drawKabuto(ctx, s) {
   rect(ctx, s, 4,0, 8,4, C.kabuto_col);
   rect(ctx, s, 3,1, 1,3, C.kabuto_col); rect(ctx, s, 12,1, 1,3, C.kabuto_col);
-  rect(ctx, s, 4,4, 8,1, "#881337"); // cheek guards
-  rect(ctx, s, 3,3, 10,1, "#be123c"); // brow plate
-  pixel(ctx, s, 7,0, "#fbbf24"); pixel(ctx, s, 8,0, "#fbbf24"); // crest
+  rect(ctx, s, 4,4, 8,1, "#881337");
+  rect(ctx, s, 3,3, 10,1, "#be123c");
+  pixel(ctx, s, 7,0, "#fbbf24"); pixel(ctx, s, 8,0, "#fbbf24");
   pixel(ctx, s, 7,-1, "#fbbf24"); pixel(ctx, s, 8,-1, "#fbbf24");
 }
 function drawPirateHat(ctx, s) {
   rect(ctx, s, 4,0, 8,4, C.pirate_col);
-  rect(ctx, s, 3,0, 10,1, C.pirate_col); // brim
-  pixel(ctx, s, 7,1, C.white); pixel(ctx, s, 8,1, C.white); // skull white
+  rect(ctx, s, 3,0, 10,1, C.pirate_col);
+  pixel(ctx, s, 7,1, C.white); pixel(ctx, s, 8,1, C.white);
   pixel(ctx, s, 7,2, C.white); pixel(ctx, s, 8,2, C.white);
-  pixel(ctx, s, 6,2, C.white); pixel(ctx, s, 9,2, C.white); // crossbones
+  pixel(ctx, s, 6,2, C.white); pixel(ctx, s, 9,2, C.white);
 }
 function drawDragonHorns(ctx, s) {
-  // big swept back horns
   pixel(ctx, s, 4,-3, C.dragon_h); pixel(ctx, s, 3,-4, C.dragon_h); pixel(ctx, s, 2,-3, C.dragon_h);
   pixel(ctx, s, 11,-3, C.dragon_h); pixel(ctx, s, 12,-4, C.dragon_h); pixel(ctx, s, 13,-3, C.dragon_h);
-  rect(ctx, s, 4,0, 8,1, C.dragon_h); // spine on head
+  rect(ctx, s, 4,0, 8,1, C.dragon_h);
   pixel(ctx, s, 6,-1, C.dragon_h); pixel(ctx, s, 9,-1, C.dragon_h);
 }
 function drawHalo(ctx, s) {
-  // glowing halo ring above head
   rect(ctx, s, 5,-3, 6,1, C.halo_col);
   pixel(ctx, s, 4,-2, C.halo_col); pixel(ctx, s, 11,-2, C.halo_col);
   pixel(ctx, s, 4,-3, C.halo_col); pixel(ctx, s, 11,-3, C.halo_col);
-  // glow dots
   pixel(ctx, s, 6,-4, "rgba(253,230,138,0.6)"); pixel(ctx, s, 9,-4, "rgba(253,230,138,0.6)");
+}
+function drawChefHat(ctx, s) {
+  // tall white chef hat
+  rect(ctx, s, 5,-4, 6,5, C.white);
+  rect(ctx, s, 4,-4, 1,3, C.white); rect(ctx, s, 11,-4, 1,3, C.white);
+  rect(ctx, s, 4,0, 8,2, C.white);
+  // band
+  rect(ctx, s, 4,0, 8,1, "#e2e8f0");
+  // puff top detail
+  pixel(ctx, s, 5,-5, C.white); pixel(ctx, s, 6,-5, C.white);
+  pixel(ctx, s, 9,-5, C.white); pixel(ctx, s, 10,-5, C.white);
+}
+function drawDemonHorns(ctx, s) {
+  // curved demon horns
+  pixel(ctx, s, 5,-1, C.demon_h); pixel(ctx, s, 4,-2, C.demon_h); pixel(ctx, s, 4,-3, C.demon_h); pixel(ctx, s, 5,-4, C.demon_h);
+  pixel(ctx, s, 10,-1, C.demon_h); pixel(ctx, s, 11,-2, C.demon_h); pixel(ctx, s, 11,-3, C.demon_h); pixel(ctx, s, 10,-4, C.demon_h);
+  // inner dark
+  pixel(ctx, s, 5,-2, "#450a0a"); pixel(ctx, s, 5,-3, "#450a0a");
+  pixel(ctx, s, 10,-2, "#450a0a"); pixel(ctx, s, 10,-3, "#450a0a");
+}
+function drawIceCrown(ctx, s) {
+  // ice crystal crown
+  rect(ctx, s, 4,1, 8,2, C.ice_col);
+  // crystal spikes
+  pixel(ctx, s, 5,0, C.ice_col); pixel(ctx, s, 5,-1, C.ice_col);
+  pixel(ctx, s, 7,-1, C.ice_col); pixel(ctx, s, 7,-2, C.ice_col); pixel(ctx, s, 8,-2, C.ice_col); pixel(ctx, s, 8,-1, C.ice_col);
+  pixel(ctx, s, 10,0, C.ice_col); pixel(ctx, s, 10,-1, C.ice_col);
+  // shimmer
+  pixel(ctx, s, 6,1, "rgba(224,242,254,0.8)"); pixel(ctx, s, 9,1, "rgba(224,242,254,0.8)");
+  pixel(ctx, s, 7,0, "#ffffff"); pixel(ctx, s, 8,0, "#ffffff");
 }
 
 // ---------- FACE / BODY EXTRAS ----------
@@ -413,8 +482,8 @@ function drawVisor(ctx, s) {
 }
 function drawEyepatch(ctx, s) {
   pixel(ctx, s, 6,4, C.eyepatch_c); pixel(ctx, s, 7,4, C.eyepatch_c);
-  pixel(ctx, s, 6,3, "#374151"); // strap up
-  pixel(ctx, s, 5,4, "#374151"); // strap side
+  pixel(ctx, s, 6,3, "#374151");
+  pixel(ctx, s, 5,4, "#374151");
 }
 function drawBeard(ctx, s) {
   rect(ctx, s, 5,6, 6,2, C.beard_col);
@@ -428,13 +497,10 @@ function drawCape(ctx, s) {
 }
 function drawWings(ctx, s, outfit) {
   const wc = (outfit === "dragon") ? C.dragon_h : C.wing_col;
-  // left wing
   rect(ctx, s, 0,8, 2,6, wc);
   pixel(ctx, s, 0,7, wc); pixel(ctx, s, 0,14, wc);
-  // right wing
   rect(ctx, s, 14,8, 2,6, wc);
   pixel(ctx, s, 15,7, wc); pixel(ctx, s, 15,14, wc);
-  // wing detail lines
   pixel(ctx, s, 1,10, "rgba(0,0,0,0.2)"); pixel(ctx, s, 14,10, "rgba(0,0,0,0.2)");
   pixel(ctx, s, 1,12, "rgba(0,0,0,0.2)"); pixel(ctx, s, 14,12, "rgba(0,0,0,0.2)");
 }
@@ -480,21 +546,24 @@ export function drawCharacter(canvas, skinId, scale = 2) {
   drawBase(ctx, s, skin);
 
   // hats
-  if (skin.hat === "wizard")     drawWizardHat(ctx, s);
-  if (skin.hat === "cap")        drawCap(ctx, s);
-  if (skin.hat === "crown")      drawCrown(ctx, s);
-  if (skin.hat === "headband")   drawHeadband(ctx, s);
-  if (skin.hat === "sailor_hat") drawSailorHat(ctx, s);
-  if (skin.hat === "straw_hat")  drawStrawHat(ctx, s);
-  if (skin.hat === "fedora")     drawFedora(ctx, s);
-  if (skin.hat === "horns")      drawHorns(ctx, s);
-  if (skin.hat === "cowboy")     drawCowboy(ctx, s);
-  if (skin.hat === "helmet")     drawHelmet(ctx, s);
-  if (skin.hat === "antennae")   drawAntennae(ctx, s);
-  if (skin.hat === "kabuto")     drawKabuto(ctx, s);
-  if (skin.hat === "pirate")     drawPirateHat(ctx, s);
+  if (skin.hat === "wizard")      drawWizardHat(ctx, s);
+  if (skin.hat === "cap")         drawCap(ctx, s);
+  if (skin.hat === "crown")       drawCrown(ctx, s);
+  if (skin.hat === "headband")    drawHeadband(ctx, s);
+  if (skin.hat === "sailor_hat")  drawSailorHat(ctx, s);
+  if (skin.hat === "straw_hat")   drawStrawHat(ctx, s);
+  if (skin.hat === "fedora")      drawFedora(ctx, s);
+  if (skin.hat === "horns")       drawHorns(ctx, s);
+  if (skin.hat === "cowboy")      drawCowboy(ctx, s);
+  if (skin.hat === "helmet")      drawHelmet(ctx, s);
+  if (skin.hat === "antennae")    drawAntennae(ctx, s);
+  if (skin.hat === "kabuto")      drawKabuto(ctx, s);
+  if (skin.hat === "pirate")      drawPirateHat(ctx, s);
   if (skin.hat === "dragon_horns") drawDragonHorns(ctx, s);
-  if (skin.hat === "halo")       drawHalo(ctx, s);
+  if (skin.hat === "halo")        drawHalo(ctx, s);
+  if (skin.hat === "chef_hat")    drawChefHat(ctx, s);
+  if (skin.hat === "demon_horns") drawDemonHorns(ctx, s);
+  if (skin.hat === "ice_crown")   drawIceCrown(ctx, s);
 
   // face/body extras
   if (skin.extras.includes("glasses"))  drawGlasses(ctx, s);
@@ -543,25 +612,24 @@ export function drawAvatar(canvas, skinId, size = 40) {
   rect(ctx, s, 4,8, 8,4, o.body);
   rect(ctx, s, 7,8, 2,1, o.light);
 
-  if (skin.hat === "wizard") {
-    rect(ctx, s, 4,0, 8,1, C.wizard_hat); rect(ctx, s, 5,1, 6,1, C.wizard_hat);
-    pixel(ctx, s, 6,-1, C.wizard_hat); pixel(ctx, s, 7,-1, C.wizard_hat); pixel(ctx, s, 8,-1, C.wizard_hat);
-    pixel(ctx, s, 7,0, C.star);
-  }
-  if (skin.hat === "cap")        { rect(ctx, s, 4,2, 8,1, C.cap_brim); rect(ctx, s, 2,3, 2,1, C.cap_brim); }
-  if (skin.hat === "crown")      { rect(ctx, s, 4,2, 8,1, C.crown); pixel(ctx, s, 4,1, C.crown); pixel(ctx, s, 7,0, C.crown); pixel(ctx, s, 11,1, C.crown); }
-  if (skin.hat === "headband")   { rect(ctx, s, 4,3, 8,1, C.headband); }
-  if (skin.hat === "sailor_hat") { rect(ctx, s, 4,1, 8,1, C.white); rect(ctx, s, 5,2, 6,1, C.sailor_brim); }
-  if (skin.hat === "straw_hat")  { rect(ctx, s, 3,1, 10,1, C.straw); rect(ctx, s, 5,2, 6,2, C.straw); }
-  if (skin.hat === "fedora")     { rect(ctx, s, 3,1, 10,1, C.fedora_col); rect(ctx, s, 5,2, 6,2, C.fedora_col); }
-  if (skin.hat === "horns")      { pixel(ctx, s, 2,0, C.horn_col); pixel(ctx, s, 13,0, C.horn_col); rect(ctx, s, 4,1, 8,2, "#374151"); }
-  if (skin.hat === "cowboy")     { rect(ctx, s, 3,1, 10,1, C.cowboy_col); rect(ctx, s, 5,2, 6,2, C.cowboy_col); }
-  if (skin.hat === "helmet")     { rect(ctx, s, 4,0, 8,3, C.helmet_col); rect(ctx, s, 5,1, 6,1, "rgba(100,220,255,0.5)"); }
-  if (skin.hat === "antennae")   { rect(ctx, s, 4,1, 8,5, "#475569"); pixel(ctx, s, 6,-1, "#fbbf24"); pixel(ctx, s, 9,-1, "#fbbf24"); }
-  if (skin.hat === "kabuto")     { rect(ctx, s, 4,1, 8,3, C.kabuto_col); pixel(ctx, s, 7,0, "#fbbf24"); pixel(ctx, s, 8,0, "#fbbf24"); }
-  if (skin.hat === "pirate")     { rect(ctx, s, 3,0, 10,1, C.pirate_col); rect(ctx, s, 5,1, 6,2, C.pirate_col); pixel(ctx, s, 7,1, C.white); pixel(ctx, s, 8,1, C.white); }
+  if (skin.hat === "wizard")      { rect(ctx, s, 4,0, 8,1, C.wizard_hat); rect(ctx, s, 5,1, 6,1, C.wizard_hat); pixel(ctx, s, 7,0, C.star); }
+  if (skin.hat === "cap")         { rect(ctx, s, 4,2, 8,1, C.cap_brim); rect(ctx, s, 2,3, 2,1, C.cap_brim); }
+  if (skin.hat === "crown")       { rect(ctx, s, 4,2, 8,1, C.crown); pixel(ctx, s, 4,1, C.crown); pixel(ctx, s, 7,0, C.crown); pixel(ctx, s, 11,1, C.crown); }
+  if (skin.hat === "headband")    { rect(ctx, s, 4,3, 8,1, C.headband); }
+  if (skin.hat === "sailor_hat")  { rect(ctx, s, 4,1, 8,1, C.white); rect(ctx, s, 5,2, 6,1, C.sailor_brim); }
+  if (skin.hat === "straw_hat")   { rect(ctx, s, 3,1, 10,1, C.straw); rect(ctx, s, 5,2, 6,2, C.straw); }
+  if (skin.hat === "fedora")      { rect(ctx, s, 3,1, 10,1, C.fedora_col); rect(ctx, s, 5,2, 6,2, C.fedora_col); }
+  if (skin.hat === "horns")       { pixel(ctx, s, 2,0, C.horn_col); pixel(ctx, s, 13,0, C.horn_col); rect(ctx, s, 4,1, 8,2, "#374151"); }
+  if (skin.hat === "cowboy")      { rect(ctx, s, 3,1, 10,1, C.cowboy_col); rect(ctx, s, 5,2, 6,2, C.cowboy_col); }
+  if (skin.hat === "helmet")      { rect(ctx, s, 4,0, 8,3, C.helmet_col); rect(ctx, s, 5,1, 6,1, "rgba(100,220,255,0.5)"); }
+  if (skin.hat === "antennae")    { rect(ctx, s, 4,1, 8,5, "#475569"); pixel(ctx, s, 6,-1, "#fbbf24"); pixel(ctx, s, 9,-1, "#fbbf24"); }
+  if (skin.hat === "kabuto")      { rect(ctx, s, 4,1, 8,3, C.kabuto_col); pixel(ctx, s, 7,0, "#fbbf24"); pixel(ctx, s, 8,0, "#fbbf24"); }
+  if (skin.hat === "pirate")      { rect(ctx, s, 3,0, 10,1, C.pirate_col); rect(ctx, s, 5,1, 6,2, C.pirate_col); pixel(ctx, s, 7,1, C.white); pixel(ctx, s, 8,1, C.white); }
   if (skin.hat === "dragon_horns") { pixel(ctx, s, 4,0, C.dragon_h); pixel(ctx, s, 11,0, C.dragon_h); pixel(ctx, s, 3,-1, C.dragon_h); pixel(ctx, s, 12,-1, C.dragon_h); }
-  if (skin.hat === "halo")       { rect(ctx, s, 5,0, 6,1, C.halo_col); pixel(ctx, s, 4,1, C.halo_col); pixel(ctx, s, 11,1, C.halo_col); }
+  if (skin.hat === "halo")        { rect(ctx, s, 5,0, 6,1, C.halo_col); pixel(ctx, s, 4,1, C.halo_col); pixel(ctx, s, 11,1, C.halo_col); }
+  if (skin.hat === "chef_hat")    { rect(ctx, s, 4,-1, 8,3, C.white); rect(ctx, s, 4,1, 8,1, "#e2e8f0"); }
+  if (skin.hat === "demon_horns") { pixel(ctx, s, 5,0, C.demon_h); pixel(ctx, s, 4,-1, C.demon_h); pixel(ctx, s, 10,0, C.demon_h); pixel(ctx, s, 11,-1, C.demon_h); }
+  if (skin.hat === "ice_crown")   { rect(ctx, s, 4,2, 8,1, C.ice_col); pixel(ctx, s, 5,1, C.ice_col); pixel(ctx, s, 7,0, C.ice_col); pixel(ctx, s, 8,0, C.ice_col); pixel(ctx, s, 10,1, C.ice_col); }
 
   if (skin.extras.includes("glasses")) {
     rect(ctx, s, 5,4, 2,1, "rgba(0,200,255,0.5)"); rect(ctx, s, 8,4, 2,1, "rgba(0,200,255,0.5)");
@@ -599,7 +667,6 @@ export function buySkin(id, currentCoins) {
   return { ok: true, cost: skin.price };
 }
 
-// Called externally to unlock a secret skin (no coin cost)
 export function unlockSecretSkin(id) {
   const skin = SKINS.find(s => s.id === id);
   if (!skin || !skin.secret) return false;

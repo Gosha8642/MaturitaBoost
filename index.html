@@ -69,10 +69,10 @@
 
             <h3><i class="fa-solid fa-coins"></i> Mince</h3>
             <ul>
-                <li>1. pokus → <strong>10 🪙</strong></li>
-                <li>2. pokus → <strong>5 🪙</strong></li>
-                <li>3. pokus → <strong>2 🪙</strong></li>
-                <li>4. a viac → 0 🪙</li>
+                <li>1. pokus → <strong>10 ★</strong></li>
+                <li>2. pokus → <strong>5 ★</strong></li>
+                <li>3. pokus → <strong>2 ★</strong></li>
+                <li>4. a viac → 0 ★</li>
             </ul>
 
             <h3><i class="fa-solid fa-trophy"></i> Leaderboard</h3>
@@ -681,7 +681,7 @@
             ? cityQuestions[Math.floor(Math.random() * cityQuestions.length)]
             : cityQuestions;
 
-        $("task-title").innerText = "Úloha pre mesto " + city;
+        $("task-title").innerText = "Úloha pre mesto " + city.replace(/BanskaBystrica/g, "Banska Bystrica");
         $("question-text").innerText = q.question;
         $("choices").innerHTML = "";
         $("feedback").innerText = "";
@@ -732,8 +732,8 @@
             }
             const nextPts = calcPoints();
             $("feedback").innerText = nextPts > 0
-                ? `Nesprávne, skús znova (ďalší pokus: 🪙${nextPts})`
-                : "Nesprávne (0 🪙)";
+                ? `Nesprávne, skús znova (ďalší pokus: ★${nextPts})`
+                : "Nesprávne (0 ★)";
         }
 
         $("submit-answer").onclick = function () {
@@ -755,7 +755,7 @@
                 chosen.classList.add("correct");
                 currentPoint.classList.remove("wrong");
                 currentPoint.classList.add("correct");
-                $("feedback").innerText = pts ? `Správne! 🪙+${pts}` : "Správne! (0 🪙)";
+                $("feedback").innerText = pts ? `Správne! ★+${pts}` : "Správne! (0 ★)";
                 correctChoices[currentCity] = selected.value;
                 answeredCities.add(currentCity); checkAllAnswered();
             } else {
@@ -764,9 +764,9 @@
                 wrongChoices[currentCity] = selected.value;
                 const nextPts = calcPoints();
                 if (nextPts > 0) {
-                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: 🪙${nextPts})`;
+                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: ★${nextPts})`;
                 } else {
-                    $("feedback").innerText = "Nesprávne (0 🪙)";
+                    $("feedback").innerText = "Nesprávne (0 ★)";
                     answeredCities.add(currentCity); checkAllAnswered();
                 }
             }
@@ -842,15 +842,15 @@
 
             currentPoint.classList.remove("wrong");
             currentPoint.classList.add("correct");
-            $("feedback").innerText = `Správne (${percent}%)! 🪙+${pts}`;
+            $("feedback").innerText = `Správne (${percent}%)! ★+${pts}`;
             answeredCities.add(currentCity); checkAllAnswered();
         } else {
             currentPoint.classList.add("wrong");
             const nextPts = calcPoints();
             if (nextPts > 0) {
-                $("feedback").innerText = `Niektoré odpovede sú zlé (ďalší pokus: 🪙${nextPts})`;
+                $("feedback").innerText = `Niektoré odpovede sú zlé (ďalší pokus: ★${nextPts})`;
             } else {
-                $("feedback").innerText = "Nesprávne (0 🪙)";
+                $("feedback").innerText = "Nesprávne (0 ★)";
                 answeredCities.add(currentCity); checkAllAnswered();
             }
         }
@@ -881,16 +881,16 @@
                 inp.style.background = "#c8e6c9";
                 currentPoint.classList.remove("wrong");
                 currentPoint.classList.add("correct");
-                $("feedback").innerText = `Správne! 🪙+${pts}`;
+                $("feedback").innerText = `Správne! ★+${pts}`;
                 answeredCities.add(currentCity); checkAllAnswered();
             } else {
                 inp.style.background = "#ffcdd2";
                 currentPoint.classList.add("wrong");
                 const nextPts = calcPoints();
                 if (nextPts > 0) {
-                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: 🪙${nextPts})`;
+                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: ★${nextPts})`;
                 } else {
-                    $("feedback").innerText = "Nesprávne (0 🪙)";
+                    $("feedback").innerText = "Nesprávne (0 ★)";
                     answeredCities.add(currentCity); checkAllAnswered();
                 }
             }
@@ -956,7 +956,7 @@ function buildShop(coins) {
   grid.innerHTML = "";
   // Group by rarity
   const RARITY_ORDER = ["free","common","rare","epic","legendary","secret"];
-  const RARITY_ICONS = { free:"⬜", common:"🟩", rare:"🟦", epic:"🟪", legendary:"🔶", secret:"❓" };
+  const RARITY_ICONS = { free:"○", common:"●", rare:"◆", epic:"◈", legendary:"★", secret:"?" };
   const byRarity = {};
   SKINS.forEach(s => { (byRarity[s.rarity] = byRarity[s.rarity]||[]).push(s); });
 
@@ -995,7 +995,7 @@ function buildShop(coins) {
           ? `<button class="skin-btn owned" data-id="${skin.id}">Equip</button>`
           : skin.secret
             ? `<button class="skin-btn" disabled style="background:rgba(255,255,255,0.05);color:#555;cursor:default;font-size:0.65rem;padding:3px 6px">🔒 ${skin.unlockHint}</button>`
-            : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">🪙 ${skin.price}</button>`;
+            : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">★ ${skin.price}</button>`;
 
       card.innerHTML = `<div class="skin-preview"></div>${rarBadge}<div class="skin-name">${skin.name}</div>${btnHtml}`;
       card.querySelector(".skin-preview").appendChild(previewC);
@@ -1035,8 +1035,8 @@ function buildShop(coins) {
       const result = buySkin(btn.dataset.id, coins);
       if (!result.ok) {
         if (result.reason === "Not enough coins") {
-          btn.textContent = "❌ Málo 🪙";
-          setTimeout(() => { btn.textContent = "🪙 " + btn.dataset.price; }, 1500);
+          btn.textContent = "❌ Málo ★";
+          setTimeout(() => { btn.textContent = "★ " + btn.dataset.price; }, 1500);
         }
         return;
       }
@@ -1052,7 +1052,7 @@ function buildShop(coins) {
         if (idx > -1) owned.splice(idx, 1);
         localStorage.setItem("mb_owned_skins", JSON.stringify(owned));
         btn.textContent = "❌ Chyba";
-        setTimeout(() => { btn.textContent = "🪙 " + btn.dataset.price; btn.disabled = false; }, 2000);
+        setTimeout(() => { btn.textContent = "★ " + btn.dataset.price; btn.disabled = false; }, 2000);
         return;
       }
 
@@ -1471,7 +1471,7 @@ function buildShop(coins) {
 
             const ul = document.getElementById("leaderboard");
             if (!ul) return;
-            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">🗺️ Mapa 🪙</span></li>`;
+            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">Mapa ★</span></li>`;
             rows.forEach((row, i) => {
                 const li = document.createElement("li");
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
@@ -1528,7 +1528,7 @@ function buildShop(coins) {
                     .insert({ name, score: delta, active_skin: getActiveSkin() });
             }
 
-            setStatus(`🪙+${delta}`);
+            setStatus(`★+${delta}`);
             setTimeout(() => setStatus(""), 2000);
             // Update header coins widget live
             const hdrCoins = document.getElementById("header-coins-display");

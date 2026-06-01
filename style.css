@@ -540,7 +540,7 @@ svg.map-svg path:hover {
     transition: color 0.2s, transform 0.2s;
     user-select: none;
 }
-.close:hover { color: var(--point-wrong); transform: rotate(90deg); }
+.close:hover { color: var(--point-wrong); }
 
 #question-text {
     margin: 10px 0 16px;

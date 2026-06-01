@@ -124,6 +124,32 @@
                     <span class="auth-submit-arrow">→</span>
                 </button>
                 <div id="modal-status-login" class="auth-modal-status"></div>
+                <div style="text-align:center;margin-top:8px;">
+                    <button id="modal-forgot-link" type="button" style="background:none;border:none;color:var(--color-accent,#7c6ff7);cursor:pointer;font-size:0.85rem;text-decoration:underline;padding:0;">Zabudli ste heslo?</button>
+                </div>
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+            <div id="modal-form-forgot" class="auth-modal-form" style="display:none">
+                <div class="auth-modal-header-group">
+                    <h2 class="auth-modal-title">Obnoviť heslo 🔑</h2>
+                    <p class="auth-modal-sub">Zadajte váš e-mail a my vám pošleme odkaz na obnovenie hesla.</p>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">E-mail</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon"><i class="fa-solid fa-envelope"></i></span>
+                        <input id="modal-email-forgot" type="email" placeholder="vas@email.sk" autocomplete="email" />
+                    </div>
+                </div>
+                <button id="modal-forgot-btn" type="button" class="auth-modal-submit">
+                    <span>Odoslať odkaz</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+                <div id="modal-status-forgot" class="auth-modal-status"></div>
+                <div style="text-align:center;margin-top:8px;">
+                    <button id="modal-back-to-login" type="button" style="background:none;border:none;color:var(--color-accent,#7c6ff7);cursor:pointer;font-size:0.85rem;text-decoration:underline;padding:0;">← Späť na prihlásenie</button>
+                </div>
             </div>
 
             <!-- REGISTER -->
@@ -1096,12 +1122,14 @@ function buildShop(coins) {
         window.switchModalTab = function(tab) {
             document.getElementById("modal-form-login").style.display = tab === "login" ? "block" : "none";
             document.getElementById("modal-form-register").style.display = tab === "register" ? "block" : "none";
+            document.getElementById("modal-form-forgot").style.display = "none";
             document.getElementById("modal-tab-login").classList.toggle("active", tab === "login");
             document.getElementById("modal-tab-register").classList.toggle("active", tab === "register");
         };
 
         function setModalStatus(form, msg, isError = false) {
-            const el = document.getElementById(form === "login" ? "modal-status-login" : "modal-status-register");
+            const idMap = { login: "modal-status-login", register: "modal-status-register", forgot: "modal-status-forgot" };
+            const el = document.getElementById(idMap[form] || "modal-status-login");
             if (!el) return;
             el.textContent = msg;
             el.style.color = isError ? "var(--color-wrong, #e53935)" : "var(--color-text-muted, #888)";
@@ -1114,7 +1142,18 @@ function buildShop(coins) {
             if (!email || !password) { setModalStatus("login", "Vyplň e-mail a heslo.", true); return; }
             setModalStatus("login", "Prihlasovanie…");
             const { data, error } = await sb.auth.signInWithPassword({ email, password });
-            if (error) { setModalStatus("login", error.message, true); return; }
+            if (error) {
+                let msg = error.message;
+                if (msg.toLowerCase().includes("invalid login credentials") || msg.toLowerCase().includes("invalid credentials") || msg.toLowerCase().includes("wrong email or password")) {
+                    msg = "Nesprávny e-mail alebo heslo.";
+                } else if (msg.toLowerCase().includes("email not confirmed")) {
+                    msg = "E-mail nebol potvrdený. Skontrolujte svoju poštu.";
+                } else if (msg.toLowerCase().includes("too many requests")) {
+                    msg = "Príliš veľa pokusov. Skúste neskôr.";
+                }
+                setModalStatus("login", msg, true);
+                return;
+            }
             setModalStatus("login", "");
             updateAuthUI(data.user);
             closeAuthModal();
@@ -1146,7 +1185,25 @@ function buildShop(coins) {
                 email, password,
                 options: { data: { display_name: name } }
             });
-            if (error) { setModalStatus("register", error.message, true); return; }
+            if (error) {
+                // Translate common errors to Slovak
+                let msg = error.message;
+                if (msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("user already exists") || msg.toLowerCase().includes("email address is already")) {
+                    msg = "Tento e-mail je už zaregistrovaný. Skúste sa prihlásiť.";
+                } else if (msg.toLowerCase().includes("invalid email")) {
+                    msg = "Neplatný e-mail.";
+                } else if (msg.toLowerCase().includes("password")) {
+                    msg = "Heslo musí mať aspoň 6 znakov.";
+                }
+                setModalStatus("register", msg, true);
+                return;
+            }
+            // Supabase sometimes returns a user but no error even if email exists (email confirmation flow)
+            // Check if identities array is empty — means email already registered
+            if (data.user && data.user.identities && data.user.identities.length === 0) {
+                setModalStatus("register", "Tento e-mail je už zaregistrovaný. Skúste sa prihlásiť.", true);
+                return;
+            }
             if (data.user && !data.session) {
                 setModalStatus("register", "");
                 closeAuthModal();
@@ -1168,6 +1225,41 @@ function buildShop(coins) {
         });
         document.getElementById("modal-password-register")?.addEventListener("keydown", (e) => {
             if (e.key === "Enter") document.getElementById("modal-register-btn")?.click();
+        });
+
+        // FORGOT PASSWORD – show form
+        document.getElementById("modal-forgot-link")?.addEventListener("click", () => {
+            document.getElementById("modal-form-login").style.display = "none";
+            document.getElementById("modal-form-forgot").style.display = "";
+            document.getElementById("modal-tab-login").classList.remove("active");
+            document.getElementById("modal-tab-register").classList.remove("active");
+        });
+
+        // FORGOT PASSWORD – back to login
+        document.getElementById("modal-back-to-login")?.addEventListener("click", () => {
+            document.getElementById("modal-form-forgot").style.display = "none";
+            document.getElementById("modal-form-login").style.display = "";
+            document.getElementById("modal-tab-login").classList.add("active");
+        });
+
+        // FORGOT PASSWORD – send reset email
+        document.getElementById("modal-forgot-btn")?.addEventListener("click", async () => {
+            const email = document.getElementById("modal-email-forgot").value.trim();
+            if (!email) { setModalStatus("forgot", "Zadajte e-mail.", true); return; }
+            setModalStatus("forgot", "Odosielam…");
+            const { error } = await sb.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + window.location.pathname
+            });
+            if (error) {
+                setModalStatus("forgot", "Chyba: " + error.message, true);
+            } else {
+                setModalStatus("forgot", "✅ Odkaz na obnovenie hesla bol odoslaný na váš e-mail.");
+                document.getElementById("modal-email-forgot").value = "";
+            }
+        });
+
+        document.getElementById("modal-email-forgot")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") document.getElementById("modal-forgot-btn")?.click();
         });
 
         // HEADER LOGOUT

@@ -188,6 +188,39 @@
         </div>
     </div>
 
+    <!-- RESET PASSWORD MODAL -->
+    <div id="reset-password-modal" class="popup" style="display:none">
+        <div class="auth-modal-card">
+            <div class="auth-modal-brand">
+                <span class="auth-modal-logo"><i class="fa-solid fa-key"></i></span>
+                <span class="auth-modal-logo-text">MaturitaBoost</span>
+            </div>
+            <div class="auth-modal-header-group" style="text-align:center;margin-bottom:16px;">
+                <h2 class="auth-modal-title">Nové heslo 🔐</h2>
+                <p class="auth-modal-sub">Zadajte nové heslo pre váš účet.</p>
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Nové heslo</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
+                    <input id="reset-new-password" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                </div>
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Potvrdiť heslo</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <input id="reset-confirm-password" type="password" placeholder="Zopakujte heslo" autocomplete="new-password" />
+                </div>
+            </div>
+            <button id="reset-save-btn" type="button" class="auth-modal-submit">
+                <span>Uložiť nové heslo</span>
+                <span class="auth-submit-arrow">→</span>
+            </button>
+            <div id="reset-status" class="auth-modal-status"></div>
+        </div>
+    </div>
+
     <!-- PROFILE MODAL -->
     <div id="profile-modal" class="popup profile-modal-fullscreen" style="display:none">
         <div class="profile-modal-card pm-fullscreen-card">
@@ -1533,8 +1566,38 @@ function buildShop(coins) {
             updateAuthUI(session?.user ?? null);
         });
 
-        sb.auth.onAuthStateChange((_event, session) => {
+        sb.auth.onAuthStateChange((event, session) => {
+            if (event === "PASSWORD_RECOVERY") {
+                // Show reset password modal instead of logging in normally
+                const modal = document.getElementById("reset-password-modal");
+                if (modal) modal.style.display = "flex";
+                return;
+            }
             updateAuthUI(session?.user ?? null);
+        });
+
+        // RESET PASSWORD – save new password
+        document.getElementById("reset-save-btn")?.addEventListener("click", async () => {
+            const pass1 = document.getElementById("reset-new-password").value;
+            const pass2 = document.getElementById("reset-confirm-password").value;
+            const statusEl = document.getElementById("reset-status");
+            const setStatus = (msg, isError) => {
+                statusEl.textContent = msg;
+                statusEl.style.color = isError ? "var(--color-wrong, #e53935)" : "var(--color-text-muted, #888)";
+            };
+            if (pass1.length < 6) { setStatus("Heslo musí mať aspoň 6 znakov.", true); return; }
+            if (pass1 !== pass2) { setStatus("Heslá sa nezhodujú.", true); return; }
+            setStatus("Ukladám…");
+            const { error } = await sb.auth.updateUser({ password: pass1 });
+            if (error) { setStatus("Chyba: " + error.message, true); return; }
+            setStatus("✅ Heslo bolo úspešne zmenené!");
+            document.getElementById("reset-new-password").value = "";
+            document.getElementById("reset-confirm-password").value = "";
+            setTimeout(() => {
+                document.getElementById("reset-password-modal").style.display = "none";
+                // Refresh session state
+                sb.auth.getSession().then(({ data }) => updateAuthUI(data.session?.user ?? null));
+            }, 2000);
         });
 
         // ===================== PLAYER NAME (compat) =====================

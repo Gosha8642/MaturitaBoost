@@ -5155,3 +5155,342 @@ h3 { letter-spacing: 0px; }
     background-image: url('./assets/biele_it-valley.png');
     right: 0;
 }
+/* ============================================================
+   MOBILE — полный редизайн для телефонов
+   Стратегия: меняем исходные компоненты, не добавляем поверх
+   ============================================================ */
+
+@media screen and (max-width: 600px) {
+
+/* --- BODY --- */
+body {
+    padding: 0 !important;
+    padding-bottom: 72px !important;
+}
+
+/* --- HEADER --- */
+.container { padding: 0 !important; }
+
+header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 300 !important;
+    height: 60px !important;
+    padding: 0 10px !important;
+    margin-bottom: 0 !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+h1 { font-size: 16px !important; }
+
+/* Все кнопки в шапке — квадраты 48x48 */
+.header-actions { gap: 4px !important; }
+
+.header-actions .btn,
+.header-actions .btn-auth,
+.header-actions #theme-toggle {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+    justify-content: center !important;
+    gap: 0 !important;
+}
+
+/* Прячем весь текст в кнопках шапки — только иконки */
+.header-actions .btn > span:not([class*="fa"]):not([class*="icon"]),
+.header-actions .btn-auth > span:not([class*="fa"]):not([class*="icon"]) {
+    display: none !important;
+}
+#rules-btn > span { display: none !important; }
+
+/* Монеты — компактно */
+.header-coins-widget {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    border-radius: 20px !important;
+    gap: 4px !important;
+    height: 36px !important;
+}
+
+/* Профиль кнопка */
+.header-profile-btn {
+    height: 48px !important;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+    gap: 6px !important;
+}
+.header-profile-chevron { display: none !important; }
+.header-username { font-size: 13px !important; max-width: 65px !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+
+/* --- MAIN LAYOUT --- */
+.main-stage {
+    grid-template-columns: 1fr !important;
+    padding: 10px 10px 20px !important;
+    gap: 10px !important;
+}
+
+/* --- УКАЖКА SELECT --- */
+.controls { margin-bottom: 8px !important; }
+.controls select {
+    height: 48px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    padding: 0 12px !important;
+}
+
+/* --- КАРТА --- */
+.map-wrapper { padding: 8px !important; border-radius: 12px !important; }
+
+/* Touch зоны на точках */
+.point {
+    width: 14px !important;
+    height: 14px !important;
+}
+.point.capital {
+    width: 20px !important;
+    height: 20px !important;
+}
+/* Невидимая зона касания */
+.point::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: -16px !important;
+    border-radius: 50% !important;
+}
+
+/* --- ЛЕГЕНДА --- */
+.legend {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+    gap: 10px !important;
+}
+.legend::-webkit-scrollbar { display: none !important; }
+.legend-item { flex-shrink: 0 !important; }
+
+/* --- FAST CTA --- */
+.fast-cta { padding: 14px 16px !important; border-radius: 14px !important; margin-top: 10px !important; }
+.fast-cta-title { font-size: 15px !important; }
+.fast-cta-sub { font-size: 11px !important; }
+
+/* --- ОТВЕТЫ (choices) в fast game --- */
+.choices-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+
+.choice-btn {
+    padding: 16px !important;
+    min-height: 60px !important;
+    font-size: 15px !important;
+    border-radius: 14px !important;
+}
+
+.choice-key {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 17px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+}
+
+/* --- ОТВЕТЫ в index.html (обычные) --- */
+.choice {
+    padding: 14px 16px !important;
+    min-height: 56px !important;
+    font-size: 14px !important;
+    border-radius: 14px !important;
+    margin-bottom: 8px !important;
+}
+
+/* --- POPUP — выезжает снизу --- */
+.popup { align-items: flex-end !important; padding: 0 !important; }
+.popup-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 20px 16px 28px !important;
+    max-height: 92vh !important;
+}
+.popup-content h2 { font-size: 17px !important; margin-bottom: 10px !important; padding-right: 28px !important; }
+#question-text { font-size: 14px !important; }
+
+/* Кнопка отправки — огромная */
+#submit-answer {
+    display: block !important;
+    width: 100% !important;
+    height: 54px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border-radius: 14px !important;
+    margin-top: 14px !important;
+}
+
+/* Поля ввода в попапе */
+input.fill-input,
+input.open-answer-input {
+    height: 50px !important;
+    font-size: 15px !important;
+    border-radius: 12px !important;
+    padding: 0 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* --- AUTH MODAL --- */
+#auth-modal { align-items: flex-end !important; }
+.auth-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 24px 16px 32px !important;
+    max-height: 95vh !important;
+    overflow-y: auto !important;
+}
+.auth-modal-submit {
+    height: 54px !important;
+    font-size: 16px !important;
+    border-radius: 14px !important;
+}
+.auth-modal-tab { height: 46px !important; font-size: 15px !important; }
+.auth-modal-form .auth-field input,
+.auth-modal-form input[type="email"],
+.auth-modal-form input[type="password"],
+.auth-modal-form input[type="text"] {
+    height: 50px !important;
+    font-size: 15px !important;
+    border-radius: 12px !important;
+}
+
+/* --- DIFF BUTTONS (выбор сложности) --- */
+.diff-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+.diff-btn {
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 18px 20px !important;
+    gap: 16px !important;
+    min-height: 72px !important;
+    border-radius: 16px !important;
+}
+.diff-icon { font-size: 1.8rem !important; flex-shrink: 0 !important; }
+.diff-label { font-size: 1rem !important; font-weight: 700 !important; }
+.diff-time { font-size: 1.1rem !important; }
+.diff-desc { font-size: 0.75rem !important; }
+
+/* --- STAT PILLS (mince/streak/otázka) --- */
+.stat-pill {
+    padding: 14px !important;
+    border-radius: 14px !important;
+}
+.stat-pill .stat-label { font-size: 10px !important; }
+.stat-pill .stat-value { font-size: 24px !important; }
+
+/* --- SIDEBAR --- */
+#sidebar { padding: 14px !important; border-radius: 12px !important; }
+#sidebar h3 { font-size: 11px !important; letter-spacing: 1.5px !important; }
+#leaderboard li { padding: 10px 12px !important; font-size: 13px !important; }
+
+/* --- NEXT UKAŽKA BANNER --- */
+#next-ukazka-banner {
+    flex-direction: column !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+}
+#next-ukazka-btn {
+    width: 100% !important;
+    padding: 14px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+}
+
+/* --- SCORE BAR (fast game) --- */
+.score-bar-wrap { border-radius: 12px !important; }
+
+/* --- FAST GAME MAIN CONTENT --- */
+.fast-main { padding: 12px 10px !important; }
+.fast-screen { padding: 0 !important; }
+
+/* --- UKAŽKA TEXT --- */
+.text-illustration {
+    padding: 14px !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+}
+.text-illustration h3 { font-size: 11px !important; letter-spacing: 1.5px !important; margin-bottom: 8px !important; }
+
+/* --- BOTTOM NAV --- */
+.mobile-bottom-nav { display: flex !important; }
+
+} /* end @media 600px */
+
+/* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 64px;
+    background: var(--card-bg-solid);
+    border-top: 1px solid var(--card-border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    z-index: 250;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mobile-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    height: 60px;
+    border: none;
+    background: none;
+    border-radius: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: color 0.15s;
+}
+.mobile-nav-btn:active {
+    color: var(--title);
+    background: rgba(124,58,237,0.12);
+    transform: scale(0.93);
+}
+.mobile-nav-btn i { font-size: 22px; line-height: 1; }
+.mobile-nav-btn span { font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+
+/* ===== TOUCH: убираем hover, добавляем active ===== */
+@media (hover: none) and (pointer: coarse) {
+    .btn:hover, .choice-btn:hover, .diff-btn:hover { transform: none !important; box-shadow: var(--btn-shadow) !important; }
+    .btn:active { transform: scale(0.95) !important; opacity: 0.88 !important; }
+    .choice-btn:active:not(.correct):not(.wrong) { background: var(--btn-ghost-border) !important; }
+    .diff-btn:active { transform: scale(0.97) !important; border-color: rgba(167,139,250,0.5) !important; }
+    * { -webkit-tap-highlight-color: transparent; }
+    a, button, .point, .choice-btn, .diff-btn { touch-action: manipulation; }
+}
+
+/* ===== LANDSCAPE ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+    .mobile-bottom-nav { display: none !important; }
+    body { padding-bottom: 0 !important; }
+    .popup { align-items: center !important; }
+    .popup-content { border-radius: 16px !important; margin: 0 12px !important; width: calc(100% - 24px) !important; }
+    header { height: 48px !important; }
+}

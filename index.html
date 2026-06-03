@@ -3,7 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0d0b14">
     <title>MaturitaBoost</title>
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -2135,5 +2139,28 @@ function buildShop(coins) {
             </div>
             </div>
         </div>
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <button class="mobile-nav-btn" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <i class="fa-solid fa-map"></i>
+            <span>Mapa</span>
+        </button>
+        <button class="mobile-nav-btn" type="button" onclick="document.getElementById('question-set-select')?.scrollIntoView({behavior:'smooth',block:'center'})">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Ukážka</span>
+        </button>
+        <button class="mobile-nav-btn" type="button" onclick="openRules()">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Pravidlá</span>
+        </button>
+        <button class="mobile-nav-btn" type="button" id="mobile-nav-auth" onclick="openAuthModal('login')">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Prihlásiť</span>
+        </button>
+        <button class="mobile-nav-btn" type="button" onclick="document.getElementById('sidebar')?.scrollIntoView({behavior:'smooth',block:'start'})">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Top</span>
+        </button>
+    </nav>
 </body>
 </html>

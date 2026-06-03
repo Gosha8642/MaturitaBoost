@@ -1506,9 +1506,6 @@ function buildShop(coins) {
 
                 // Load profile stats async
                 loadProfileStats(displayName);
-
-                // Restore owned skins + active skin from DB (cross-device sync)
-                loadSkinsFromDb(displayName);
             } else {
                 if (headerOut) headerOut.style.display = "flex";
                 if (headerIn) headerIn.style.display = "none";
@@ -1698,31 +1695,6 @@ function buildShop(coins) {
         }
 
         // ===== PLAYER PROFILE MODAL =====
-        async function loadSkinsFromDb(name) {
-            try {
-                const { data: row } = await sb.from("leaderboard")
-                    .select("active_skin, owned_skins")
-                    .eq("name", name)
-                    .order("score", { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-                if (!row) return;
-
-                // Merge DB owned skins with localStorage (union, never lose local ones)
-                const dbOwned = Array.isArray(row.owned_skins) ? row.owned_skins : ["default"];
-                const localOwned = JSON.parse(localStorage.getItem("mb_owned_skins") || '["default"]');
-                const merged = [...new Set([...localOwned, ...dbOwned])];
-                localStorage.setItem("mb_owned_skins", JSON.stringify(merged));
-
-                // Restore active skin from DB
-                if (row.active_skin) {
-                    localStorage.setItem("mb_active_skin", row.active_skin);
-                }
-
-                refreshAllAvatars();
-            } catch(e) { console.warn("loadSkinsFromDb error:", e); }
-        }
-
         async function saveActiveSkinToDb(skinId) {
             try {
                 const name = localStorage.getItem("player_name");

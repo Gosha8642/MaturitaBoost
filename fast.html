@@ -17,7 +17,7 @@
                 <div id="header-coins-widget" class="header-coins-widget" style="display:none;">
                     <i class="fa-solid fa-coins"></i> <span id="header-coins-display">0</span>
                 </div>
-                <a href="./index.html" class="btn btn-ghost" data-testid="back-to-map">
+                <a href="./index.html" class="btn btn-ghost fast-back-btn" data-testid="back-to-map">
                     <i class="fa-solid fa-map"></i><span>Späť na mapu</span>
                 </a>
                 <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" title="Prepnúť tému">
@@ -101,7 +101,12 @@
 
                 <!-- LEFT: ukážka column -->
                 <div class="ukazka-col" id="ukazka-col">
-                    <div class="ukazka-col-header"><i class="fa-solid fa-book-open"></i> Ukážka</div>
+                    <div class="ukazka-col-header">
+                        <span><i class="fa-solid fa-book-open"></i> Ukážka</span>
+                        <button class="ukazka-toggle-btn" id="ukazka-toggle-btn" type="button" onclick="toggleUkazka()" title="Skryť/zobraziť ukážku">
+                            <i class="fa-solid fa-chevron-up" id="ukazka-toggle-icon"></i>
+                        </button>
+                    </div>
                     <div class="ukazka-col-text" id="ukazka-hint-text"></div>
                 </div>
 
@@ -231,6 +236,15 @@
             localStorage.setItem("theme", next);
             document.getElementById("theme-icon").innerHTML = next === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
         });
+
+        function toggleUkazka() {
+            const col = document.getElementById('ukazka-col');
+            const icon = document.getElementById('ukazka-toggle-icon');
+            const text = document.getElementById('ukazka-hint-text');
+            const isCollapsed = col.classList.toggle('ukazka-collapsed');
+            if (icon) icon.className = isCollapsed ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up';
+        }
+        window.toggleUkazka = toggleUkazka;
     </script>
 
     <script type="module" src="./fast.js"></script>

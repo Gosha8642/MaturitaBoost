@@ -857,12 +857,22 @@
     $("submit-answer").style.display = "inline-block";
 
     const parts = q.sentence.split("___");
-    let html = "<p>";
+    // Build sentence text with ___ placeholders shown as underlined blanks
+    let sentenceHtml = `<div class="fill-question-wrap"><p class="fill-sentence">`;
     parts.forEach((p, i) => {
-        html += p;
-        if (i < q.answers.length) html += `<input class="fill-input">`;
+        sentenceHtml += `<span>${p}</span>`;
+        if (i < q.answers.length) sentenceHtml += `<span class="fill-blank-placeholder">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
     });
-    html += `</p><div id="sim-info" style="font-size:12px;opacity:.7;margin-top:6px"></div>`;
+    sentenceHtml += `</p></div>`;
+    // Build inputs below — one per ___ blank in the sentence
+    const blankCount = parts.length - 1 || 1; // fallback: 1 field if no ___ in sentence
+    let inputsHtml = `<div class="fill-inputs-block">`;
+    for (let i = 0; i < blankCount; i++) {
+        const label = blankCount > 1 ? `<span class="fill-input-label">${i+1}.</span>` : "";
+        inputsHtml += `<div class="fill-input-row">${label}<span class="fill-input-wrap"><i class="fa-solid fa-pencil fill-pencil-icon"></i><input class="fill-input" placeholder="Napíš odpoveď…" spellcheck="false" autocomplete="off"></span></div>`;
+    }
+    inputsHtml += `</div>`;
+    let html = sentenceHtml + inputsHtml + `<div id="sim-info" class="sim-info-bar" style="display:none"></div>`;
     $("choices").innerHTML = html;
 
     const OK = 0.7;
@@ -908,7 +918,7 @@
         });
 
         const percent = Math.round(Math.min(...sims) * 100);
-        if (info) info.textContent = `Podobnosť: ${percent}%`;
+        if (info) { info.textContent = `Podobnosť: ${percent}%`; info.style.display = "flex"; }
 
         if (okAll) {
             const mult = Math.min(...sims);
@@ -939,7 +949,7 @@
     /* ===== OPEN ===== */
     function renderOpenAnswerQuestion(q) {
         $("submit-answer").style.display = "inline-block";
-        $("choices").innerHTML = `<input class="open-answer-input" placeholder="Napíš odpoveď">`;
+        $("choices").innerHTML = `<div class="open-answer-wrap"><i class="fa-solid fa-pen-nib open-answer-icon"></i><input class="open-answer-input" placeholder="Napíš svoju odpoveď…" spellcheck="false" autocomplete="off"></div>`;
 
         $("submit-answer").onclick = function () {
             if (answeredCities.has(currentCity)) return;
@@ -1338,6 +1348,17 @@ function buildShop(coins) {
         window.mobileNavAuthClick = function() {
             if (currentUser) {
                 window.openProfileModal();
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const modal = document.getElementById('profile-modal');
+                        const skinsEl = document.getElementById('skin-shop-grid');
+                        if (!modal || !skinsEl) return;
+                        const modalRect = modal.getBoundingClientRect();
+                        const skinsRect = skinsEl.getBoundingClientRect();
+                        const scrollTop = modal.scrollTop + (skinsRect.top - modalRect.top) - 12;
+                        modal.scrollTo({ top: scrollTop, behavior: 'smooth' });
+                    });
+                });
             } else {
                 window.openAuthModal('login');
             }
@@ -1365,18 +1386,15 @@ function buildShop(coins) {
             const btn = document.getElementById('mobile-nav-auth');
             const icon = document.getElementById('mobile-nav-auth-icon');
             const label = document.getElementById('mobile-nav-auth-label');
-            const skinsBtn = document.getElementById('mobile-nav-skins');
             if (!btn) return;
             if (user) {
                 if (icon) icon.className = 'fa-solid fa-circle-user';
-                if (label) label.textContent = 'Profil';
+                if (label) label.textContent = 'Profil & Skiny';
                 btn.style.color = 'var(--color-accent, #7c6ff7)';
-                if (skinsBtn) skinsBtn.style.removeProperty('display');
             } else {
                 if (icon) icon.className = 'fa-solid fa-right-to-bracket';
                 if (label) label.textContent = 'Prihlásiť';
                 btn.style.color = '';
-                if (skinsBtn) skinsBtn.style.display = 'none';
             }
         }
 
@@ -2195,10 +2213,6 @@ function buildShop(coins) {
         <button class="mobile-nav-btn" type="button" id="mobile-nav-auth" onclick="mobileNavAuthClick()">
             <i class="fa-solid fa-right-to-bracket" id="mobile-nav-auth-icon"></i>
             <span id="mobile-nav-auth-label">Prihlásiť</span>
-        </button>
-        <button class="mobile-nav-btn mobile-nav-btn--skins" type="button" id="mobile-nav-skins" onclick="mobileNavSkinsClick()" style="display:none">
-            <i class="fa-solid fa-shirt"></i>
-            <span>Skiny</span>
         </button>
     </nav>
 </body>

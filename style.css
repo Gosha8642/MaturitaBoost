@@ -591,16 +591,144 @@ svg.map-svg path:hover {
     color: var(--text);
 }
 
-/* Inputs внутри popup */
-input.fill-input,
-input.open-answer-input {
-    background: var(--btn-ghost-bg);
-    border: 1px solid var(--btn-ghost-border);
+/* ── Beautiful fill & open-answer inputs ── */
+.fill-question-wrap {
+    margin-bottom: 10px;
+}
+.fill-sentence {
+    font-size: 15px;
+    line-height: 1.8;
     color: var(--text);
-    border-radius: 8px;
-    padding: 8px 12px;
+    margin: 0 0 14px 0;
+}
+.fill-blank-placeholder {
+    display: inline-block;
+    border-bottom: 2px solid var(--color-accent, #7c6ff7);
+    min-width: 80px;
+    margin: 0 3px;
+    vertical-align: bottom;
+    opacity: 0.5;
+}
+.fill-inputs-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+}
+.fill-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.fill-input-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-accent, #7c6ff7);
+    min-width: 16px;
+}
+.fill-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+.fill-pencil-icon {
+    position: absolute;
+    left: 10px;
+    color: var(--color-accent, #7c6ff7);
+    font-size: 11px;
+    pointer-events: none;
+    opacity: 0.7;
+}
+input.fill-input {
+    background: var(--btn-ghost-bg);
+    border: 1.5px solid rgba(124,111,247,0.4);
+    border-radius: 14px;
+    color: var(--text);
+    padding: 12px 16px 12px 36px;
     font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+}
+input.fill-input:focus {
+    border-color: var(--color-accent, #7c6ff7);
+    box-shadow: 0 0 0 3px rgba(124,111,247,0.18);
+    background: rgba(124,111,247,0.06);
+}
+input.fill-input[style*="c8e6c9"] {
+    border-color: #4ade80 !important;
+    background: rgba(74,222,128,0.1) !important;
+    box-shadow: 0 0 0 3px rgba(74,222,128,0.15) !important;
+}
+input.fill-input[style*="ffcdd2"] {
+    border-color: #f87171 !important;
+    background: rgba(248,113,113,0.1) !important;
+    box-shadow: 0 0 0 3px rgba(248,113,113,0.15) !important;
+}
+
+/* Open answer */
+.open-answer-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 8px 0 4px;
+}
+.open-answer-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--color-accent, #7c6ff7);
     font-size: 14px;
+    pointer-events: none;
+    opacity: 0.75;
+    z-index: 1;
+}
+input.open-answer-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--btn-ghost-bg);
+    border: 1.5px solid rgba(124,111,247,0.4);
+    border-radius: 14px;
+    color: var(--text);
+    padding: 13px 16px 13px 42px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+}
+input.open-answer-input:focus {
+    border-color: var(--color-accent, #7c6ff7);
+    box-shadow: 0 0 0 3px rgba(124,111,247,0.18);
+    background: rgba(124,111,247,0.06);
+}
+input.open-answer-input[style*="c8e6c9"] {
+    border-color: #4ade80 !important;
+    background: rgba(74,222,128,0.1) !important;
+    box-shadow: 0 0 0 3px rgba(74,222,128,0.15) !important;
+}
+input.open-answer-input[style*="ffcdd2"] {
+    border-color: #f87171 !important;
+    background: rgba(248,113,113,0.1) !important;
+    box-shadow: 0 0 0 3px rgba(248,113,113,0.15) !important;
+}
+
+/* Similarity info bar */
+.sim-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted, rgba(255,255,255,0.5));
+    margin-top: 6px;
+    padding: 5px 10px;
+    background: var(--btn-ghost-bg);
+    border-radius: 8px;
+    border: 1px solid var(--btn-ghost-border);
 }
 
 /* ============================================================
@@ -1813,6 +1941,70 @@ body[class*="streak-bg-"] .ukazka-col {
         position: static;
         max-height: 180px;
     }
+}
+
+/* Ukážka toggle button */
+.ukazka-col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ukazka-toggle-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-muted, rgba(255,255,255,0.4));
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: color 0.15s;
+}
+.ukazka-toggle-btn:active { color: var(--title); }
+.ukazka-col.ukazka-collapsed .ukazka-col-text {
+    display: none;
+}
+.ukazka-col.ukazka-collapsed {
+    max-height: none !important;
+    padding-bottom: 12px;
+}
+
+@media (max-width: 600px) {
+    /* Fast game: normal page scroll, no fixed height tricks */
+    .fast-body { overflow: auto; height: auto; }
+    .fast-main { padding: 0 8px; height: auto; overflow: visible; }
+    #screen-playing.fast-screen.active {
+        display: block;
+    }
+    #screen-playing .game-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    /* Ukážka: show full text, no inner scroll */
+    #screen-playing .ukazka-col {
+        max-height: none !important;
+        overflow-y: visible !important;
+        height: auto !important;
+    }
+    #screen-playing .ukazka-col.ukazka-collapsed {
+        max-height: 40px !important;
+        overflow: hidden !important;
+    }
+    #screen-playing .game-col {
+        overflow: visible;
+    }
+    /* Hide HUD pills on mobile */
+    .game-hud { display: none !important; }
+
+    .ukazka-toggle-btn { display: flex; align-items: center; justify-content: center; }
+
+    /* Compact reading screen on mobile */
+    #screen-reading .reading-card { padding: 14px 14px; }
+    #screen-reading .rules-panel { padding: 10px 12px; margin: 10px 0 12px; }
+    #screen-reading .rules-list li { font-size: 12px; padding: 2px 0; }
+    #screen-reading .ukazka-text-wrap { max-height: 200px; margin-bottom: 12px; }
+    #screen-reading .btn-large { padding: 12px 16px; font-size: 14px; }
 }
 
 /* keep fire canvas z-index correct */
@@ -5367,15 +5559,25 @@ h1 {
     border-radius: 14px !important;
     margin-top: 14px !important;
 }
-input.fill-input,
-input.open-answer-input {
-    height: 48px !important;
-    font-size: 15px !important;
-    border-radius: 12px !important;
-    padding: 0 14px !important;
+input.fill-input {
+    height: 52px !important;
+    font-size: 16px !important;
+    border-radius: 14px !important;
+    padding: 12px 16px 12px 36px !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
+input.open-answer-input {
+    height: 52px !important;
+    font-size: 16px !important;
+    border-radius: 14px !important;
+    padding: 13px 16px 13px 42px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Hide back-to-map button in fast game on mobile */
+.fast-back-btn { display: none !important; }
 
 /* --- AUTH bottom sheet --- */
 #auth-modal { align-items: flex-end !important; }

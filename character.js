@@ -474,8 +474,6 @@ const _VALLEY_B64 = "/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAA
 function drawItlabBackground(canvas, scale) {
   const ctx = canvas.getContext("2d");
   const w = canvas.width, h = canvas.height;
-  // Dark purple gradient background
-  
   // Logos are now rendered as HTML overlay in .pm-char-stage — no canvas drawing needed
 }
 
@@ -715,7 +713,7 @@ export function unlockSecretSkin(id) {
 
 // ---------- PROMO CODE REDEMPTION ----------
 const PROMO_CODES = {
-  "ITLAB2025":   "exclusive_itlab",
+  "ITLAB2026":   "exclusive_itlab",
   "ITVALLEY":    "exclusive_itlab",
   "KREATIVITA":  "exclusive_itlab",
 };

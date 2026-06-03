@@ -1334,6 +1334,58 @@ function buildShop(coins) {
             updateAuthUI(null);
         });
 
+        // ===== MOBILE BOTTOM NAV HELPERS =====
+        window.mobileNavAuthClick = function() {
+            if (currentUser) {
+                window.openProfileModal();
+            } else {
+                window.openAuthModal('login');
+            }
+        };
+        window.mobileNavSkinsClick = function() {
+            if (currentUser) {
+                window.openProfileModal();
+                setTimeout(() => {
+                    const skinsEl = document.getElementById('skin-shop-grid');
+                    if (!skinsEl) return;
+                    // On mobile the card is a single scrollable column-direction flex
+                    // Find the nearest scrollable ancestor
+                    let scrollParent = skinsEl.parentElement;
+                    while (scrollParent && scrollParent !== document.body) {
+                        const style = window.getComputedStyle(scrollParent);
+                        if (style.overflowY === 'auto' || style.overflowY === 'scroll') break;
+                        scrollParent = scrollParent.parentElement;
+                    }
+                    if (scrollParent && scrollParent !== document.body) {
+                        const offset = skinsEl.offsetTop - scrollParent.offsetTop - 12;
+                        scrollParent.scrollTo({ top: offset, behavior: 'smooth' });
+                    } else {
+                        skinsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 300);
+            } else {
+                window.openAuthModal('login');
+            }
+        };
+        function updateMobileNavAuth(user) {
+            const btn = document.getElementById('mobile-nav-auth');
+            const icon = document.getElementById('mobile-nav-auth-icon');
+            const label = document.getElementById('mobile-nav-auth-label');
+            const skinsBtn = document.getElementById('mobile-nav-skins');
+            if (!btn) return;
+            if (user) {
+                if (icon) icon.className = 'fa-solid fa-circle-user';
+                if (label) label.textContent = 'Profil';
+                btn.style.color = 'var(--color-accent, #7c6ff7)';
+                if (skinsBtn) skinsBtn.style.removeProperty('display');
+            } else {
+                if (icon) icon.className = 'fa-solid fa-right-to-bracket';
+                if (label) label.textContent = 'Prihlásiť';
+                btn.style.color = '';
+                if (skinsBtn) skinsBtn.style.display = 'none';
+            }
+        }
+
         // ===================== PROFILE MODAL =====================
         window.openProfileModal = function() {
             const modal = document.getElementById("profile-modal");
@@ -1542,6 +1594,7 @@ function buildShop(coins) {
                 if (lbList) { lbList.style.filter = "blur(6px)"; lbList.style.pointerEvents = "none"; }
                 if (nameInput) nameInput.value = "";
             }
+            updateMobileNavAuth(user);
         }
 
         async function loadProfileStats(name) {
@@ -2141,25 +2194,17 @@ function buildShop(coins) {
         </div>
     <!-- MOBILE BOTTOM NAVIGATION -->
     <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-        <button class="mobile-nav-btn" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-            <i class="fa-solid fa-map"></i>
-            <span>Mapa</span>
-        </button>
-        <button class="mobile-nav-btn" type="button" onclick="document.getElementById('question-set-select')?.scrollIntoView({behavior:'smooth',block:'center'})">
-            <i class="fa-solid fa-list-check"></i>
-            <span>Ukážka</span>
-        </button>
         <button class="mobile-nav-btn" type="button" onclick="openRules()">
             <i class="fa-solid fa-book-open"></i>
             <span>Pravidlá</span>
         </button>
-        <button class="mobile-nav-btn" type="button" id="mobile-nav-auth" onclick="openAuthModal('login')">
-            <i class="fa-solid fa-right-to-bracket"></i>
-            <span>Prihlásiť</span>
+        <button class="mobile-nav-btn" type="button" id="mobile-nav-auth" onclick="mobileNavAuthClick()">
+            <i class="fa-solid fa-right-to-bracket" id="mobile-nav-auth-icon"></i>
+            <span id="mobile-nav-auth-label">Prihlásiť</span>
         </button>
-        <button class="mobile-nav-btn" type="button" onclick="document.getElementById('sidebar')?.scrollIntoView({behavior:'smooth',block:'start'})">
-            <i class="fa-solid fa-trophy"></i>
-            <span>Top</span>
+        <button class="mobile-nav-btn mobile-nav-btn--skins" type="button" id="mobile-nav-skins" onclick="mobileNavSkinsClick()" style="display:none">
+            <i class="fa-solid fa-shirt"></i>
+            <span>Skiny</span>
         </button>
     </nav>
 </body>

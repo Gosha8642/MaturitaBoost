@@ -1345,24 +1345,18 @@ function buildShop(coins) {
         window.mobileNavSkinsClick = function() {
             if (currentUser) {
                 window.openProfileModal();
-                setTimeout(() => {
-                    const skinsEl = document.getElementById('skin-shop-grid');
-                    if (!skinsEl) return;
-                    // On mobile the card is a single scrollable column-direction flex
-                    // Find the nearest scrollable ancestor
-                    let scrollParent = skinsEl.parentElement;
-                    while (scrollParent && scrollParent !== document.body) {
-                        const style = window.getComputedStyle(scrollParent);
-                        if (style.overflowY === 'auto' || style.overflowY === 'scroll') break;
-                        scrollParent = scrollParent.parentElement;
-                    }
-                    if (scrollParent && scrollParent !== document.body) {
-                        const offset = skinsEl.offsetTop - scrollParent.offsetTop - 12;
-                        scrollParent.scrollTo({ top: offset, behavior: 'smooth' });
-                    } else {
-                        skinsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }, 300);
+                // Wait for modal to render, then scroll the modal itself to skin-shop-grid
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const modal = document.getElementById('profile-modal');
+                        const skinsEl = document.getElementById('skin-shop-grid');
+                        if (!modal || !skinsEl) return;
+                        const modalRect = modal.getBoundingClientRect();
+                        const skinsRect = skinsEl.getBoundingClientRect();
+                        const scrollTop = modal.scrollTop + (skinsRect.top - modalRect.top) - 12;
+                        modal.scrollTo({ top: scrollTop, behavior: 'smooth' });
+                    });
+                });
             } else {
                 window.openAuthModal('login');
             }

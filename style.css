@@ -2994,9 +2994,22 @@ body[class*="streak-bg-"] .ukazka-col {
 .skin-card-fs[data-rarity="secret"].skin-active::after  { background: #fff; color: #111; }
 
 @media (max-width: 700px) {
-    .pm-fullscreen-card { flex-direction: column !important; }
+    .pm-fullscreen-card {
+        flex-direction: column !important;
+        overflow: visible !important;
+        height: auto !important;
+        min-height: 100vh;
+    }
+    .profile-modal-fullscreen {
+        overflow-y: auto !important;
+        align-items: flex-start !important;
+    }
     .pm-col-left, .pm-col-right {
-        flex: none !important; width: 100% !important;
+        flex: none !important;
+        width: 100% !important;
+        overflow-y: visible !important;
+        height: auto !important;
+        max-height: none !important;
     }
     .pm-col-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
     .pm-rarity-row { grid-template-columns: repeat(3, 1fr); }
@@ -4609,6 +4622,8 @@ h3 { letter-spacing: 0px; }
     .pm-col-left {
         flex: none !important;
         width: 100% !important;
+        overflow-y: visible !important;
+        height: auto !important;
     }
 }
 /* ============================================================
@@ -5212,7 +5227,7 @@ h1 {
 }
 
 /* Скрыть текст — только иконки */
-.header-actions span:not([class*="fa"]):not([class*="icon"]):not(.header-username):not(.header-coins-display),
+.header-actions span:not([class*="fa"]):not([class*="icon"]):not(.header-username):not(.header-coins-display):not(#theme-icon),
 #rules-btn > span,
 #header-login-btn > span:last-of-type,
 #header-register-btn > span:last-of-type {
@@ -5334,7 +5349,7 @@ h1 {
 }
 
 /* --- POPUP снизу --- */
-.popup { align-items: flex-end !important; padding: 0 !important; }
+.popup:not(.profile-modal-fullscreen) { align-items: flex-end !important; padding: 0 !important; }
 .popup-content {
     width: 100% !important;
     max-width: 100% !important;

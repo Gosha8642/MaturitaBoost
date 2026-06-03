@@ -353,8 +353,12 @@
                 </div>
 
                 <!-- Big animated character showcase -->
-                <div class="pm-char-stage">
+                <div class="pm-char-stage" id="pm-char-stage">
                     <div class="pm-char-stage-bg"></div>
+                    <div id="itlab-stage-overlay" class="itlab-stage-overlay" style="display:none">
+                        <div class="itlab-overlay-logo itlab-overlay-logo--lab"></div>
+                        <div class="itlab-overlay-logo itlab-overlay-logo--valley"></div>
+                    </div>
                     <canvas id="char-preview-canvas" class="char-preview-canvas-big"></canvas>
                     <div class="pm-char-name-badge" id="pm-active-skin-name">Študent</div>
                 </div>
@@ -362,6 +366,16 @@
                 <!-- Skin grid -->
                 <div class="pm-skins-label">Vyber skin:</div>
                 <div id="skin-shop-grid" class="skin-shop-grid-fs"></div>
+
+                <!-- Promo code redeem -->
+                <div class="pm-promo-section">
+                  <div class="pm-promo-label"><i class="fa-solid fa-key"></i> Zadaj kód pre exkluzívny skin:</div>
+                  <div class="pm-promo-row">
+                    <input type="text" id="promo-code-input" class="pm-promo-input" placeholder="Zadaj kód..." maxlength="32" autocomplete="off" spellcheck="false">
+                    <button id="promo-code-btn" class="pm-promo-btn">Uplatniť</button>
+                  </div>
+                  <div id="promo-code-msg" class="pm-promo-msg"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -959,7 +973,7 @@
     }
 </script>
     <script type="module">
-import { SKINS, drawCharacter, drawAvatar, getOwnedSkins, getActiveSkin, setActiveSkin, buySkin, unlockSecretSkin, RARITY_COLORS } from "./character.js";
+import { SKINS, drawCharacter, drawAvatar, getOwnedSkins, getActiveSkin, setActiveSkin, buySkin, unlockSecretSkin, redeemCode, RARITY_COLORS } from "./character.js";
 
 // ---------- CHARACTER HELPERS ----------
 function refreshAllAvatars() {
@@ -991,6 +1005,9 @@ function refreshAllAvatars() {
   // Big character preview in shop
   const preview = document.getElementById("char-preview-canvas");
   if (preview) drawCharacter(preview, active, 5);
+  // Show/hide IT Lab exclusive overlay based on skin
+  const itlabOverlay = document.getElementById("itlab-stage-overlay");
+  if (itlabOverlay) itlabOverlay.style.display = active === "exclusive_itlab" ? "flex" : "none";
 }
 
 function buildShop(coins) {
@@ -1068,6 +1085,9 @@ function buildShop(coins) {
           previewBig.style.filter = "drop-shadow(0 0 0 transparent)";
           setTimeout(() => { drawCharacter(previewBig, skin.id, 5); previewBig.style.filter = ""; }, 60);
         }
+        // Toggle IT Lab exclusive overlay
+        const itlabOvl = document.getElementById("itlab-stage-overlay");
+        if (itlabOvl) itlabOvl.style.display = skin.id === "exclusive_itlab" ? "flex" : "none";
         const nb = document.getElementById("pm-active-skin-name");
         if (nb) nb.textContent = skin.name;
       });
@@ -1077,6 +1097,9 @@ function buildShop(coins) {
   // Update big preview
   const previewBig = document.getElementById("char-preview-canvas");
   if (previewBig) drawCharacter(previewBig, active, 5);
+  // Sync IT Lab overlay with active skin
+  const itlabOvlBuild = document.getElementById("itlab-stage-overlay");
+  if (itlabOvlBuild) itlabOvlBuild.style.display = active === "exclusive_itlab" ? "flex" : "none";
 
   // Equip buttons
   document.querySelectorAll("#skin-shop-grid .skin-btn.owned").forEach(btn => {
@@ -1871,6 +1894,46 @@ function buildShop(coins) {
             toast.style.display = "block";
             setTimeout(() => { toast.style.display = "none"; }, 4000);
         }
+
+        // ===== PROMO CODE HANDLER =====
+        (function setupPromoCode() {
+            const btn = document.getElementById("promo-code-btn");
+            const input = document.getElementById("promo-code-input");
+            const msg = document.getElementById("promo-code-msg");
+            if (!btn || !input) return;
+
+            function tryRedeem() {
+                const code = input.value.trim();
+                if (!code) return;
+                const result = redeemCode(code);
+                if (result.ok) {
+                    const skin = SKINS.find(s => s.id === result.skinId);
+                    msg.textContent = "✅ Kód uplatnený! Odomknutý skin: " + (skin?.name || result.skinId);
+                    msg.style.color = "#4ade80";
+                    input.value = "";
+                    // Refresh shop if coins are loaded
+                    const coinsEl = document.getElementById("pm-coins-display");
+                    const coins = parseInt(coinsEl?.textContent) || 0;
+                    buildShop(coins);
+                    setActiveSkin(result.skinId);
+                    if (typeof refreshAllAvatars === "function") refreshAllAvatars();
+                    showSecretUnlockToast("IT Lab Exclusive odomknutý! 🎉");
+                } else if (result.alreadyOwned) {
+                    msg.textContent = "ℹ️ Tento skin už vlastníš!";
+                    msg.style.color = "#60a5fa";
+                } else {
+                    msg.textContent = "❌ Neplatný kód. Skús znova.";
+                    msg.style.color = "#f87171";
+                    input.classList.add("promo-input-error");
+                    setTimeout(() => input.classList.remove("promo-input-error"), 600);
+                }
+                setTimeout(() => { msg.textContent = ""; }, 4000);
+            }
+
+            btn.addEventListener("click", tryRedeem);
+            input.addEventListener("keydown", (e) => { if (e.key === "Enter") tryRedeem(); });
+        })();
+
 
         // Bio save
         document.getElementById("pm-bio-input")?.addEventListener("input", function() {

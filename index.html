@@ -1556,6 +1556,36 @@ function buildShop(coins) {
                 }
 
                 // Fast game coins now go to main score
+
+                // Sync skins from DB to localStorage (fixes missing skins on new device after login)
+                try {
+                    const { data: skinRow } = await sb
+                        .from("leaderboard")
+                        .select("active_skin, owned_skins")
+                        .eq("name", name)
+                        .order("score", { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                    if (skinRow) {
+                        if (skinRow.owned_skins) {
+                            const dbOwned = Array.isArray(skinRow.owned_skins)
+                                ? skinRow.owned_skins
+                                : JSON.parse(skinRow.owned_skins || '["default"]');
+                            const localOwned = JSON.parse(localStorage.getItem("mb_owned_skins") || '["default"]');
+                            const merged = [...new Set([...dbOwned, ...localOwned])];
+                            localStorage.setItem("mb_owned_skins", JSON.stringify(merged));
+                        }
+                        if (skinRow.active_skin) {
+                            localStorage.setItem("mb_active_skin", skinRow.active_skin);
+                        }
+                        // Refresh shop UI if profile is open
+                        const shopGrid = document.getElementById("skin-shop-grid");
+                        if (shopGrid && shopGrid.children.length > 0) {
+                            const c = parseInt(document.getElementById("header-coins-display")?.textContent || "0");
+                            buildShop(c);
+                        }
+                    }
+                } catch(skinErr) { console.warn("skin sync error:", skinErr); }
             } catch(e) {
                 console.warn("loadProfileStats error:", e);
             }

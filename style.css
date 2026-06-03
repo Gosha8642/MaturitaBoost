@@ -4609,3 +4609,212 @@ h3 { letter-spacing: 0px; }
 /* ============================================================
    END PML REDESIGN
    ============================================================ */
+
+/* ============================================================
+   LIGHT THEME — Profile Modal & Skin Shop
+   ============================================================ */
+
+/* Profile fullscreen card */
+[data-theme="light"] .pm-fullscreen-card {
+    background: #f4f2ff;
+}
+
+/* Left column */
+[data-theme="light"] .pm-col-left {
+    background: #ffffff;
+    border-right: 1px solid rgba(124,58,237,0.15);
+}
+
+/* Right column */
+[data-theme="light"] .pm-col-right {
+    background: #f4f2ff;
+}
+
+/* Profile modal card (non-fullscreen) */
+[data-theme="light"] .profile-modal-card {
+    background: #ffffff;
+    box-shadow: 0 24px 80px rgba(109,40,217,0.15);
+}
+
+/* Stats strip */
+[data-theme="light"] .profile-modal-stats {
+    background: rgba(124,58,237,0.04);
+    border-bottom: 1px solid rgba(124,58,237,0.12);
+}
+
+[data-theme="light"] .pm-stat-val {
+    color: #1e1b2e;
+}
+
+[data-theme="light"] .pm-stat-lbl {
+    color: rgba(30,27,46,0.45);
+}
+
+[data-theme="light"] .pm-stat-sep {
+    background: rgba(124,58,237,0.12);
+}
+
+/* Body inputs, hints, dividers */
+[data-theme="light"] .profile-modal-body {
+    color: #1e1b2e;
+}
+
+[data-theme="light"] .pm-divider {
+    background: rgba(124,58,237,0.10);
+}
+
+[data-theme="light"] .pm-field-hint {
+    color: rgba(30,27,46,0.45);
+}
+
+[data-theme="light"] .pm-close-fs {
+    background: rgba(30,27,46,0.07) !important;
+    border-color: rgba(30,27,46,0.15) !important;
+    color: #1e1b2e;
+}
+
+[data-theme="light"] .pm-close-fs:hover {
+    background: rgba(30,27,46,0.12) !important;
+}
+
+/* Skin shop grid */
+[data-theme="light"] .skin-shop-grid-fs {
+    background: transparent;
+}
+
+[data-theme="light"] .skin-card-fs {
+    background: #ffffff;
+    border: 1.5px solid rgba(124,58,237,0.18);
+    box-shadow: 0 2px 12px rgba(109,40,217,0.08);
+}
+
+[data-theme="light"] .skin-card-fs:hover {
+    border-color: rgba(124,58,237,0.45);
+    box-shadow: 0 4px 20px rgba(109,40,217,0.15);
+}
+
+[data-theme="light"] .skin-card-fs.skin-active {
+    border-color: #7c3aed;
+    background: rgba(124,58,237,0.06);
+}
+
+[data-theme="light"] .skin-name {
+    color: #1e1b2e;
+}
+
+[data-theme="light"] .skin-btn {
+    background: rgba(124,58,237,0.10);
+    color: #3b1fa8;
+    border: 1px solid rgba(124,58,237,0.30);
+}
+
+[data-theme="light"] .skin-btn.owned {
+    background: rgba(67,160,71,0.12);
+    color: #2e7d32;
+    border-color: rgba(67,160,71,0.35);
+}
+
+[data-theme="light"] .skin-btn.equipped {
+    background: rgba(124,58,237,0.15);
+    color: #5b21b6;
+    border-color: rgba(124,58,237,0.45);
+}
+
+[data-theme="light"] .skin-btn.buy {
+    background: #7c3aed;
+    color: #fff;
+    border-color: #6d28d9;
+}
+
+[data-theme="light"] .skin-btn.buy:hover {
+    background: #6d28d9;
+}
+
+/* Right-column preview area */
+[data-theme="light"] .pm-char-preview-wrap {
+    background: rgba(124,58,237,0.06);
+    border: 1.5px solid rgba(124,58,237,0.15);
+}
+
+[data-theme="light"] .pm-char-name-badge {
+    background: rgba(124,58,237,0.10);
+    color: #3b1fa8;
+}
+
+[data-theme="light"] .pm-skins-label {
+    color: rgba(30,27,46,0.55);
+}
+
+/* ============================================================
+   LIGHT THEME — Streak backgrounds in fast game
+   Overrides the dark !important gradients with warm light tones
+   ============================================================ */
+
+[data-theme="light"] body.streak-bg-1 {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%) !important;
+}
+
+[data-theme="light"] body.streak-bg-2 {
+    background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 50%, #fdba74 100%) !important;
+}
+
+[data-theme="light"] body.streak-bg-3 {
+    background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 50%, #fda4af 100%) !important;
+}
+
+[data-theme="light"] body.streak-bg-4 {
+    background: linear-gradient(135deg, #fdf4ff 0%, #f5d0fe 50%, #e879f9 100%) !important;
+}
+
+[data-theme="light"] body.streak-bg-5 {
+    background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 50%, #818cf8 100%) !important;
+}
+
+/* Keep question cards readable during streaks in light mode */
+[data-theme="light"] body[class*="streak-bg-"] .question-card,
+[data-theme="light"] body[class*="streak-bg-"] .stats-card {
+    background: rgba(255,255,255,0.82) !important;
+    border-color: rgba(124,58,237,0.20) !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .question-text,
+[data-theme="light"] body[class*="streak-bg-"] .ukazka-col-text,
+[data-theme="light"] body[class*="streak-bg-"] .hud-label,
+[data-theme="light"] body[class*="streak-bg-"] .hud-value,
+[data-theme="light"] body[class*="streak-bg-"] .timer-zones {
+    color: #1e1b2e !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .choice-btn {
+    background: rgba(255,255,255,0.80) !important;
+    color: #1e1b2e !important;
+    border-color: rgba(124,58,237,0.22) !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .choice-btn:hover:not(.correct):not(.wrong):not(.reveal-correct) {
+    background: rgba(124,58,237,0.12) !important;
+    border-color: rgba(124,58,237,0.45) !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .ukazka-col {
+    background: rgba(255,255,255,0.72) !important;
+    border-color: rgba(124,58,237,0.18) !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] header {
+    background: rgba(255,255,255,0.75) !important;
+    border-bottom-color: rgba(124,58,237,0.15) !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .hud-pill {
+    background: rgba(255,255,255,0.75) !important;
+    border-color: rgba(124,58,237,0.18) !important;
+}
+
+[data-theme="light"] body[class*="streak-bg-"] .streak-mult {
+    background: rgba(124,58,237,0.15) !important;
+    color: #5b21b6 !important;
+}
+/* ============================================================
+   END LIGHT THEME ADDITIONS
+   ============================================================ */

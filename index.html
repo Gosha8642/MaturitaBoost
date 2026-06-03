@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="sk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaturitaBoost</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fa-solid fa-rocket"></i> MaturitaBoost</h1>
+            <div class="header-actions">
+                <div id="header-coins-widget" class="header-coins-widget" style="display:none;">
+                    <i class="fa-solid fa-coins"></i> <span id="header-coins-display">0</span>
+                </div>
+                <button id="rules-btn" class="btn" type="button" title="Pravidlá hry">
+                    <i class="fa-solid fa-book-open"></i><span>Pravidlá</span>
+                </button>
+                <!-- AUTH HEADER WIDGET -->
+                <div id="header-auth-widget">
+                    <!-- Logged out: show Login/Register buttons -->
+                    <div id="header-auth-logged-out">
+                        <button id="header-login-btn" class="btn btn-auth" type="button" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> Prihlásiť</button>
+                        <button id="header-register-btn" class="btn btn-auth btn-auth-outline" type="button" onclick="openAuthModal('register')"><i class="fa-solid fa-user-plus"></i> Registrovať</button>
+                    </div>
+                    <!-- Logged in: show avatar + name clickable -->
+                    <div id="header-auth-logged-in" style="display:none">
+                        <button class="header-profile-btn" type="button" onclick="openProfileModal()" title="Môj profil">
+                            <div class="header-profile-avatar" id="header-profile-avatar" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;border-radius:50%;"></div>
+                            <span class="header-username" id="header-username">Hráč</span>
+                            <span class="header-profile-chevron">▾</span>
+                        </button>
+                        <button id="header-logout-btn" class="btn btn-auth btn-auth-ghost" type="button"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    </div>
+                </div>
+                <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" title="Prepnúť tému">
+                    <span id="theme-icon"><i class="fa-solid fa-moon"></i></span>
+                </button>
+            </div>
+        </header>
+    </div>
+
+    <!-- RULES MODAL -->
+    <div id="rules-popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeRules()">&times;</span>
+            <h2><i class="fa-solid fa-book-open"></i> Pravidlá hry</h2>
+            <p>Vitaj v hre <strong>MaturitaBoost</strong> – interaktívna mapa Slovenska na precvičovanie poznatkov!</p>
+
+            <h3><i class="fa-solid fa-map"></i> Mapa a <i class="fa-solid fa-coins"></i> mince</h3>
+            <ul>
+                                <li><span class="legend-dot capital" style="display:inline-block;vertical-align:middle"></span> <strong>Modré body</strong> – <em>krajské mestá</em> (väčšie, s bielym okrajom)</li>
+                <li><span class="legend-dot correct" style="display:inline-block;vertical-align:middle"></span> <strong>Zelený bod</strong> – správna odpoveď</li>
+                <li><span class="legend-dot wrong" style="display:inline-block;vertical-align:middle"></span> <strong>Červený bod</strong> – nesprávna odpoveď</li>
+            </ul>
+
+            <h3><i class="fa-solid fa-bullseye"></i> Ako hrať</h3>
+            <ul>
+                <li>Klikni na bod mesta na mape – otvorí sa úloha.</li>
+                <li>Odpovedz na otázku (výber, doplnenie alebo otvorená odpoveď).</li>
+                <li>Pri nesprávnej odpovedi <strong>môžeš skúšať znova</strong> – bod sa zafarbí na červeno, kým neodpovieš správne.</li>
+                <li>Po správnej odpovedi sa bod zmení na zelený a získaš mince.</li>
+            </ul>
+
+            <h3><i class="fa-solid fa-coins"></i> Mince</h3>
+            <ul>
+                <li>1. pokus → <strong>10 ★</strong></li>
+                <li>2. pokus → <strong>5 ★</strong></li>
+                <li>3. pokus → <strong>2 ★</strong></li>
+                <li>4. a viac → 0 ★</li>
+            </ul>
+
+            <h3><i class="fa-solid fa-trophy"></i> Leaderboard</h3>
+            <p>Zadaj svoje meno v pravom paneli a ulož ho – tvoje skóre sa bude automaticky pridávať do online rebríčka.</p>
+
+            <button class="btn" type="button" onclick="closeRules()" style="margin-top:14px">Začať hrať!</button>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="popup" style="display:none">
+        <div class="auth-modal-card">
+            <button class="auth-modal-close" onclick="closeAuthModal()" type="button" aria-label="Zavrieť">&times;</button>
+
+            <!-- Logo / branding -->
+            <div class="auth-modal-brand">
+                <span class="auth-modal-logo"><i class="fa-solid fa-rocket"></i></span>
+                <span class="auth-modal-logo-text">MaturitaBoost</span>
+            </div>
+
+            <!-- Tab switcher -->
+            <div class="auth-modal-tabs">
+                <button class="auth-modal-tab active" id="modal-tab-login" type="button" onclick="switchModalTab('login')">Prihlásiť sa</button>
+                <button class="auth-modal-tab" id="modal-tab-register" type="button" onclick="switchModalTab('register')">Registrovať sa</button>
+            </div>
+
+            <!-- LOGIN -->
+            <div id="modal-form-login" class="auth-modal-form">
+                <div class="auth-modal-header-group">
+                    <h2 class="auth-modal-title">Vitaj späť 👋</h2>
+                    <p class="auth-modal-sub">Prihláste sa do svojho účtu a sledujte rebríček.</p>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">E-mail</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon"><i class="fa-solid fa-envelope"></i></span>
+                        <input id="modal-email-login" type="email" placeholder="vas@email.sk" autocomplete="email" />
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Heslo</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
+                        <input id="modal-password-login" type="password" placeholder="Vaše heslo" autocomplete="current-password" />
+                    </div>
+                </div>
+                <button id="modal-login-btn" type="button" class="auth-modal-submit">
+                    <span>Prihlásiť sa</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+                <div id="modal-status-login" class="auth-modal-status"></div>
+                <div style="text-align:center;margin-top:8px;">
+                    <button id="modal-forgot-link" type="button" style="background:none;border:none;color:var(--color-accent,#7c6ff7);cursor:pointer;font-size:0.85rem;text-decoration:underline;padding:0;">Zabudli ste heslo?</button>
+                </div>
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+            <div id="modal-form-forgot" class="auth-modal-form" style="display:none">
+                <div class="auth-modal-header-group">
+                    <h2 class="auth-modal-title">Obnoviť heslo 🔑</h2>
+                    <p class="auth-modal-sub">Zadajte váš e-mail a my vám pošleme odkaz na obnovenie hesla.</p>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">E-mail</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon"><i class="fa-solid fa-envelope"></i></span>
+                        <input id="modal-email-forgot" type="email" placeholder="vas@email.sk" autocomplete="email" />
+                    </div>
+                </div>
+                <button id="modal-forgot-btn" type="button" class="auth-modal-submit">
+                    <span>Odoslať odkaz</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+                <div id="modal-status-forgot" class="auth-modal-status"></div>
+                <div style="text-align:center;margin-top:8px;">
+                    <button id="modal-back-to-login" type="button" style="background:none;border:none;color:var(--color-accent,#7c6ff7);cursor:pointer;font-size:0.85rem;text-decoration:underline;padding:0;">← Späť na prihlásenie</button>
+                </div>
+            </div>
+
+            <!-- REGISTER -->
+            <div id="modal-form-register" class="auth-modal-form" style="display:none">
+                <div class="auth-modal-header-group">
+                    <h2 class="auth-modal-title">Vytvorte účet ✨</h2>
+                    <p class="auth-modal-sub">Zaregistrujte sa a objavte sa v rebríčku najlepších hráčov.</p>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Meno hráča</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon"><i class="fa-solid fa-gamepad"></i></span>
+                        <input id="modal-name-register" type="text" placeholder="Vaše herné meno" autocomplete="nickname" />
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">E-mail</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon"><i class="fa-solid fa-envelope"></i></span>
+                        <input id="modal-email-register" type="email" placeholder="vas@email.sk" autocomplete="email" />
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Heslo</label>
+                    <div class="auth-input-wrap">
+                        <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
+                        <input id="modal-password-register" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                    </div>
+                </div>
+                <button id="modal-register-btn" type="button" class="auth-modal-submit">
+                    <span>Registrovať sa</span>
+                    <span class="auth-submit-arrow">→</span>
+                </button>
+                <div id="modal-status-register" class="auth-modal-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESET PASSWORD MODAL -->
+    <div id="reset-password-modal" class="popup" style="display:none">
+        <div class="auth-modal-card">
+            <div class="auth-modal-brand">
+                <span class="auth-modal-logo"><i class="fa-solid fa-key"></i></span>
+                <span class="auth-modal-logo-text">MaturitaBoost</span>
+            </div>
+            <div class="auth-modal-header-group" style="text-align:center;margin-bottom:16px;">
+                <h2 class="auth-modal-title">Nové heslo 🔐</h2>
+                <p class="auth-modal-sub">Zadajte nové heslo pre váš účet.</p>
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Nové heslo</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fa-solid fa-lock"></i></span>
+                    <input id="reset-new-password" type="password" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                </div>
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Potvrdiť heslo</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <input id="reset-confirm-password" type="password" placeholder="Zopakujte heslo" autocomplete="new-password" />
+                </div>
+            </div>
+            <button id="reset-save-btn" type="button" class="auth-modal-submit">
+                <span>Uložiť nové heslo</span>
+                <span class="auth-submit-arrow">→</span>
+            </button>
+            <div id="reset-status" class="auth-modal-status"></div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="popup profile-modal-fullscreen" style="display:none">
+        <div class="profile-modal-card pm-fullscreen-card">
+            <button class="auth-modal-close pm-close-fs" onclick="closeProfileModal()" type="button">&times;</button>
+
+            <!-- LEFT COLUMN -->
+            <div class="pm-col pm-col-left">
+
+                <!-- HERO BANNER -->
+                <div class="pml-hero">
+                    <div class="pml-hero-bg"></div>
+                    <div class="pml-hero-glow"></div>
+                    <div class="pml-avatar-wrap">
+                        <div class="pml-avatar" id="pm-avatar-letter"></div>
+                        <div class="pml-avatar-ring"></div>
+                    </div>
+                    <div class="pml-hero-info">
+                        <div class="pml-username" id="pm-username">Hráč</div>
+                        <div class="pml-email" id="pm-email"></div>
+                    </div>
+                </div>
+
+                <!-- STATS CARDS -->
+                <div class="pml-stats">
+                    <div class="pml-stat-card">
+                        <div class="pml-stat-icon"><i class="fa-solid fa-map"></i></div>
+                        <div class="pml-stat-body">
+                            <div class="pml-stat-val" id="pm-stat-map">–</div>
+                            <div class="pml-stat-lbl">Mince</div>
+                        </div>
+                    </div>
+                    <div class="pml-stat-card">
+                        <div class="pml-stat-icon pml-stat-icon--gold"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="pml-stat-body">
+                            <div class="pml-stat-val" id="pm-stat-rank">–</div>
+                            <div class="pml-stat-lbl">Miesto v rebríčku</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM BODY -->
+                <div class="pml-body">
+
+                    <!-- Section: Profil -->
+                    <div class="pml-card">
+                        <div class="pml-card-header">
+                            <i class="fa-solid fa-user-pen"></i>
+                            <span>Upraviť profil</span>
+                        </div>
+                        <div class="pml-card-body">
+                            <div class="pml-field">
+                                <label class="pml-label">Herné meno</label>
+                                <div class="pml-input-wrap">
+                                    <i class="fa-solid fa-gamepad pml-input-icon"></i>
+                                    <input id="pm-nick-input" type="text" class="pml-input" placeholder="Vaše herné meno" autocomplete="off" />
+                                    <span class="pm-nick-check" id="pm-nick-check"></span>
+                                </div>
+                                <div class="pm-field-hint" id="pm-nick-hint"></div>
+                            </div>
+                            <button id="pm-save-nick-btn" type="button" class="pml-btn pml-btn--primary">
+                                <span>Uložiť meno</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section: O mne -->
+                    <div class="pml-card">
+                        <div class="pml-card-header">
+                            <i class="fa-solid fa-comment-dots"></i>
+                            <span>O mne</span>
+                        </div>
+                        <div class="pml-card-body">
+                            <div class="pml-field">
+                                <label class="pml-label">Popis profilu</label>
+                                <textarea id="pm-bio-input" class="pml-textarea" placeholder="Napíš niečo o sebe…" maxlength="160" rows="3"></textarea>
+                                <div class="pml-bio-counter"><span id="pm-bio-count">0</span>/160</div>
+                            </div>
+                            <button id="pm-save-bio-btn" type="button" class="pml-btn pml-btn--ghost">
+                                <span>Uložiť popis</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section: Heslo -->
+                    <div class="pml-card">
+                        <div class="pml-card-header">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Zmena hesla</span>
+                        </div>
+                        <div class="pml-card-body">
+                            <div class="pml-field">
+                                <label class="pml-label">Nové heslo</label>
+                                <div class="pml-input-wrap">
+                                    <i class="fa-solid fa-lock pml-input-icon"></i>
+                                    <input id="pm-new-password" type="password" class="pml-input" placeholder="Minimálne 6 znakov" autocomplete="new-password" />
+                                </div>
+                            </div>
+                            <div class="pml-field">
+                                <label class="pml-label">Potvrdiť heslo</label>
+                                <div class="pml-input-wrap">
+                                    <i class="fa-solid fa-shield-halved pml-input-icon"></i>
+                                    <input id="pm-confirm-password" type="password" class="pml-input" placeholder="Zopakujte heslo" autocomplete="new-password" />
+                                </div>
+                            </div>
+                            <button id="pm-save-pass-btn" type="button" class="pml-btn pml-btn--ghost">
+                                <span>Zmeniť heslo</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="pm-status" class="pml-status"></div>
+
+                    <!-- Logout -->
+                    <button id="pm-logout-btn" type="button" class="pml-logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Odhlásiť sa</span>
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Character -->
+            <div class="pm-col pm-col-right">
+                <div class="pm-char-header">
+                    <div class="pm-char-title"><i class="fa-solid fa-gamepad"></i> Môj charakter</div>
+                    <div class="pm-char-coins-badge"><span id="pm-coins-display">–</span> <i class="fa-solid fa-coins"></i></div>
+                </div>
+
+                <!-- Big animated character showcase -->
+                <div class="pm-char-stage">
+                    <div class="pm-char-stage-bg"></div>
+                    <canvas id="char-preview-canvas" class="char-preview-canvas-big"></canvas>
+                    <div class="pm-char-name-badge" id="pm-active-skin-name">Študent</div>
+                </div>
+
+                <!-- Skin grid -->
+                <div class="pm-skins-label">Vyber skin:</div>
+                <div id="skin-shop-grid" class="skin-shop-grid-fs"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EMAIL CONFIRM TOAST -->
+    <div id="email-confirm-toast" class="email-toast" style="display:none">
+        <div class="email-toast-inner">
+            <div class="email-toast-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+            <div class="email-toast-body">
+                <div class="email-toast-title">Skontrolujte svoju schránku!</div>
+                <div class="email-toast-msg">Poslali sme vám potvrdzovací e-mail. Kliknite na odkaz v e-maile a váš účet bude aktivovaný.</div>
+            </div>
+            <button class="email-toast-close" type="button" onclick="document.getElementById('email-confirm-toast').style.display='none'">&times;</button>
+        </div>
+    </div>
+
+
+        <div class="main-stage">
+            <div class="content">
+                <div class="game-ui">
+                    <span id="score" style="display:none">0</span>
+                </div>
+
+                <!-- Next ukážka banner (hidden by default) -->
+                <div id="next-ukazka-banner" style="display:none;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-radius:14px;padding:14px 22px;margin-bottom:12px;display:none;align-items:center;justify-content:space-between;gap:12px;animation:fadeIn 0.4s ease;">
+                    <span style="font-size:1rem;font-weight:600"><i class="fa-solid fa-circle-check" style="color:#4ade80"></i> Všetky otázky zodpovedané!</span>
+                    <button id="next-ukazka-btn" type="button" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);color:#fff;padding:8px 18px;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.95rem;white-space:nowrap;">Ďalšia ukážka →</button>
+                </div>
+
+                <div class="controls" style="margin-bottom:8px;">
+                    <label for="question-set-select">Vyber ukážku:</label>
+                    <select id="question-set-select" data-testid="ukazka-select">
+                        <option value="">Načítavam…</option>
+                    </select>
+                </div>
+
+                <div class="map-wrapper">
+                    <img src="./assets/image.png" class="map-image">
+
+                    <!-- BRATISLAVA REGION -->
+                    <div class="point capital" data-city="Bratislava" style="top:66.4%; left:11.8%;"></div>
+                    
+
+                    <!-- TRNAVA REGION -->
+                    <div class="point capital" data-city="Trnava" style="top:58.9%; left:18.4%;"></div>
+                   
+                    <!-- TRENCIN REGION -->
+                    <div class="point capital" data-city="Trencin" style="top:41.9%; left:24.8%;"></div>
+                    
+                    <!-- NITRA REGION -->
+                    <div class="point capital" data-city="Nitra" style="top:61.2%; left:25.4%;"></div>
+                    
+
+                    <!-- ZILINA REGION -->
+                    <div class="point capital" data-city="Zilina" style="top:31.1%; left:34.5%;"></div>
+                    
+                    <!-- BANSKA BYSTRICA REGION -->
+                    <div class="point capital" data-city="BanskaBystrica" style="top:47.0%; left:40.3%;"></div>
+                    
+
+                    <!-- PRESOV REGION -->
+                    <div class="point capital" data-city="Presov" style="top:38.5%; left:69.4%;"></div>
+                   
+
+                    <!-- KOSICE REGION -->
+                    <div class="point capital" data-city="Kosice" style="top:47.8%; left:69.7%;"></div>
+                  
+
+                </div>
+
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-dot capital"></span> Krajské mesto</span>
+                    <span class="legend-item"><span class="legend-dot correct"></span> Správne</span>
+                    <span class="legend-item"><span class="legend-dot wrong"></span> Nesprávne</span>
+                </div>
+
+                <!-- FAST GAME CTA -->
+                <a href="./fast.html" class="fast-cta" data-testid="fast-game-link">
+                    <div class="fast-cta-bg"></div>
+                    <div class="fast-cta-content">
+                        <div class="fast-cta-icon">⚡</div>
+                        <div class="fast-cta-text">
+                            <div class="fast-cta-title">Fast Game</div>
+                            <div class="fast-cta-sub">Hra na čas · streak bonusy · online ukážky</div>
+                        </div>
+                        <div class="fast-cta-arrow">→</div>
+                    </div>
+                </a>
+
+                <div id="popup" class="popup">
+                    <div class="popup-content">
+                        <span class="close" onclick="closePopup()">&times;</span>
+                        <h2 id="task-title"></h2>
+                        <div id="popup-text"></div>
+                        <div id="question-text"></div>
+                        <div id="choices"></div>
+                        <button id="submit-answer">Odoslať</button>
+                        <div id="feedback"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="aside">
+    <div class="text-illustration">
+        <h3>ukážka</h3>
+        <p class="text"></p>
+    </div>
+
+    <div id="sidebar">
+        <h3><i class="fa-solid fa-trophy"></i> Leaderboard</h3>
+
+        <!-- Logged IN: beautiful profile card -->
+        <div id="sidebar-logged-in" style="display:none">
+            <div class="profile-card">
+                <div class="profile-card-bg"></div>
+                <div class="profile-card-content">
+                    <div class="profile-avatar-wrap">
+                        <div class="profile-avatar" id="profile-avatar-letter" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;"></div>
+                        <div class="profile-rank-badge" id="profile-rank-badge" style="display:none">#<span id="profile-rank-num">-</span></div>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="auth-display-name">Hrac</div>
+                        <div class="profile-email" id="auth-display-email"></div>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-icon"><i class="fa-solid fa-map"></i></div>
+                        <div class="profile-stat-val" id="profile-best-map">-</div>
+                        <div class="profile-stat-label"><i class="fa-solid fa-coins"></i> Mince</div>
+                    </div>
+                    <div class="profile-stat-divider"></div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-icon"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="profile-stat-val" id="profile-place">-</div>
+                        <div class="profile-stat-label">Miesto</div>
+                    </div>
+                </div>
+                <button id="profile-logout-btn" type="button" class="profile-logout-btn">Odhlasit sa</button>
+            </div>
+            <div id="name-status" class="auth-status" style="text-align:center;margin-top:4px"></div>
+        </div>
+
+        <!-- hidden input kept for compatibility with existing upsertScore logic -->
+        <input id="player-name" type="hidden" />
+
+        <!-- Leaderboard with blur overlay when logged out -->
+        <div id="leaderboard-wrap" style="position:relative">
+            <ul id="leaderboard"></ul>
+            <div id="leaderboard-blur-overlay">
+                <div class="lb-blur-msg">
+                    <span><i class="fa-solid fa-lock"></i></span>
+                    <p>Prihláste sa pre zobrazenie rebríčka</p>
+                    <button class="btn btn-auth" type="button" onclick="openAuthModal('login')"><i class="fa-solid fa-key"></i> Prihlásiť sa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        </div>
+    </div>
+
+    <div class="footer">
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <span class="footer-logo"><i class="fa-solid fa-rocket"></i></span>
+                    <span class="footer-name">MaturitaBoost</span>
+                </div>
+                <div class="footer-tagline">Priprav sa na maturitu. Hravo.</div>
+                <div class="footer-divider"></div>
+                <div class="footer-links">
+                    <span class="footer-school"><i class="fa-solid fa-location-dot"></i> SPŠD Košice · Hlavná 113</span>
+                    <span class="footer-sep">·</span>
+                    <button type="button" class="footer-email" id="copy-email-btn" onclick="
+                        navigator.clipboard.writeText('maturitaboostsupport@gmail.com').then(() => {
+                            const btn = document.getElementById('copy-email-btn');
+                            btn.innerHTML = '<i class=\'fa-solid fa-check\'></i> <strong>Skopírované!</strong>';
+                            setTimeout(() => { btn.innerHTML = '<i class=\'fa-solid fa-envelope\'></i> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>'; }, 2000);
+                        });
+                    ">
+                        <i class="fa-solid fa-envelope"></i> Našiel si chybu? Napíš nám na <strong>maturitaboostsupport@gmail.com</strong>
+                    </button>
+                </div>
+                <div class="footer-copy">© 2025 MaturitaBoost. Všetky práva vyhradené.</div>
+            </div>
+        </footer>
+    </div>
+    <script>
+    /* ===== THEME TOGGLE ===== */
+    function applyMapTheme(theme) {
+        const mapImg = document.querySelector('.map-image');
+        if (mapImg) {
+            mapImg.src = theme === 'light' ? './assets/image_light.png' : './assets/image.png';
+        }
+    }
+
+    (function initTheme() {
+        const saved = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", saved);
+        const icon = document.getElementById("theme-icon");
+        if (icon) icon.innerHTML = saved === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        applyMapTheme(saved);
+    })();
+
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        const next = cur === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        document.getElementById("theme-icon").innerHTML = next === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        applyMapTheme(next);
+    });
+
+    /* ===== RULES MODAL ===== */
+    function openRules() { document.getElementById("rules-popup").style.display = "flex"; }
+    function closeRules() { document.getElementById("rules-popup").style.display = "none"; }
+    window.closeRules = closeRules;
+    document.getElementById("rules-btn")?.addEventListener("click", openRules);
+    document.getElementById("rules-popup")?.addEventListener("click", (e) => {
+        if (e.target.id === "rules-popup") closeRules();
+    });
+
+    let questions = {};
+    let score = 0;
+    let visitedCities = new Set();
+    let answeredCities = new Set();
+    let attempts = {};
+    let wrongChoices = {};
+    let correctChoices = {};
+    let currentCity = null;
+    let currentPoint = null;
+    
+
+    const $ = id => document.getElementById(id); 
+
+    function markPointsWithoutQuestions() {
+        document.querySelectorAll(".point").forEach(p => {
+            const city = p.dataset.city;
+            const hasQuestion = !!(questions && questions[city]);
+            p.classList.toggle("no-question", !hasQuestion);
+        });
+        }
+    function normalizeText(s) {
+            return String(s || "")
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, " ");
+        }
+
+        function levenshtein(a, b) {
+            a = normalizeText(a);
+            b = normalizeText(b);
+            const n = a.length, m = b.length;
+            if (!n) return m;
+            if (!m) return n;
+
+            const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+            for (let i = 0; i <= n; i++) dp[i][0] = i;
+            for (let j = 0; j <= m; j++) dp[0][j] = j;
+
+            for (let i = 1; i <= n; i++) {
+                for (let j = 1; j <= m; j++) {
+                    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                    dp[i][j] = Math.min(
+                        dp[i - 1][j] + 1,
+                        dp[i][j - 1] + 1,
+                        dp[i - 1][j - 1] + cost
+                    );
+                }
+            }
+            return dp[n][m];
+        }
+
+        function similarity(a, b) {
+            const A = normalizeText(a);
+            const B = normalizeText(b);
+            const maxLen = Math.max(A.length, B.length);
+            if (!maxLen) return 1;
+            const sim = 1 - levenshtein(A, B) / maxLen;
+            return Math.max(0, Math.min(1, sim));
+        }
+
+        function bestAnswerMatch(userInput, answers) {
+            let best = 0;
+            for (const a of answers || []) {
+                best = Math.max(best, similarity(userInput, a));
+            }
+            return best;
+        }
+
+    function updateUI() {
+        $("score").innerText = score;
+        $("score").classList.remove("score-anim");
+        void $("score").offsetWidth;
+        $("score").classList.add("score-anim");
+    }
+
+    function resetMapState() {
+        attempts = {};
+        wrongChoices = {};
+        correctChoices = {};
+        answeredCities = new Set();
+        visitedCities = new Set();
+        currentCity = null;
+        currentPoint = null;
+        document.querySelectorAll(".point").forEach(p => {
+            p.classList.remove("correct", "wrong");
+        });
+        const banner = document.getElementById("next-ukazka-banner");
+        if (banner) banner.style.display = "none";
+    }
+
+    function checkAllAnswered() {
+        const cityKeys = Object.keys(questions).filter(k => k !== "text");
+        if (cityKeys.length === 0) return;
+        const allDone = cityKeys.every(k => answeredCities.has(k));
+        const banner = document.getElementById("next-ukazka-banner");
+        if (banner) banner.style.display = allDone ? "flex" : "none";
+    }
+
+    function useQuestionSet(setObj) {
+        resetMapState();
+        if (setObj) questions = setObj;
+        document.querySelectorAll(".text").forEach(p => {
+            p.innerHTML = (questions && questions.text) ? questions.text : "";
+        });
+        markPointsWithoutQuestions();
+    }
+    window.markPointsWithoutQuestions = markPointsWithoutQuestions;
+    window.useQuestionSet = useQuestionSet;
+
+    // Next ukážka button
+    document.getElementById("next-ukazka-btn")?.addEventListener("click", () => {
+        const sel = document.getElementById("question-set-select");
+        if (!sel) return;
+        const idx = sel.selectedIndex;
+        if (idx < sel.options.length - 1) {
+            sel.selectedIndex = idx + 1;
+            sel.dispatchEvent(new Event("change"));
+        } else {
+            // last one - wrap to first
+            sel.selectedIndex = 0;
+            sel.dispatchEvent(new Event("change"));
+        }
+    });
+
+    document.querySelectorAll(".point").forEach(p => {
+        p.addEventListener("click", () => showTask(p.dataset.city, p));
+    });
+
+    function showTask(city, el) {
+        currentCity = city;
+        currentPoint = el;
+        if (!attempts[city]) attempts[city] = 0;
+        visitedCities.add(city);
+        updateUI();
+        renderQuestion(city);
+        $("popup").style.display = "flex";
+    }
+
+    function closePopup() {
+        $("popup").style.display = "none";
+        $("choices").innerHTML = "";
+        $("feedback").innerText = "";
+    }
+
+    function renderQuestion(city) {
+        const cityQuestions = questions[city];
+        if (!cityQuestions) return;
+
+        const q = Array.isArray(cityQuestions)
+            ? cityQuestions[Math.floor(Math.random() * cityQuestions.length)]
+            : cityQuestions;
+
+        $("task-title").innerText = "Úloha pre mesto " + city.replace(/BanskaBystrica/g, "Banska Bystrica");
+        $("question-text").innerText = q.question;
+        $("choices").innerHTML = "";
+        $("feedback").innerText = "";
+
+        if (q.type === "choice") renderChoiceQuestion(q);
+        if (q.type === "fill") renderFillQuestion(q);
+        if (q.type === "openAnswer") renderOpenAnswerQuestion(q);
+    }
+
+    function calcPoints() {
+        if (attempts[currentCity] === 1) return 10;
+        if (attempts[currentCity] === 2) return 5;
+        if (attempts[currentCity] === 3) return 2;
+        return 0;
+    }
+
+    /* ===== CHOICE ===== */
+    function renderChoiceQuestion(q) {
+        for (const key in q.choices) {
+            $("choices").innerHTML += `
+                <label class="choice">
+                  <input type="radio" name="answer" value="${key}">
+                  <span>${key}: ${q.choices[key]}</span>
+                </label>`;
+        }
+
+        // Already answered correctly — show result, hide submit
+        if (answeredCities.has(currentCity) && correctChoices[currentCity]) {
+            $("submit-answer").style.display = "none";
+            const prevInput = document.querySelector(`input[name="answer"][value="${correctChoices[currentCity]}"]`);
+            if (prevInput) {
+                prevInput.checked = true;
+                prevInput.closest(".choice").classList.add("correct");
+                document.querySelectorAll('input[name="answer"]').forEach(i => i.disabled = true);
+            }
+            $("feedback").innerHTML = '<span style="color:var(--point-correct,#059669);font-weight:700">✔ Táto otázka je už splnená</span>';
+            return;
+        }
+
+        $("submit-answer").style.display = "inline-block";
+
+        // Restore previous wrong pick when re-opening the question
+        if (wrongChoices[currentCity] && !answeredCities.has(currentCity)) {
+            const prevInput = document.querySelector(`input[name="answer"][value="${wrongChoices[currentCity]}"]`);
+            if (prevInput) {
+                prevInput.checked = true;
+                prevInput.closest(".choice").classList.add("wrong");
+            }
+            const nextPts = calcPoints();
+            $("feedback").innerText = nextPts > 0
+                ? `Nesprávne, skús znova (ďalší pokus: ★${nextPts})`
+                : "Nesprávne (0 ★)";
+        }
+
+        $("submit-answer").onclick = function () {
+            if (answeredCities.has(currentCity)) return;
+
+            const selected = document.querySelector('input[name="answer"]:checked');
+            if (!selected) return;
+
+            attempts[currentCity]++;
+
+            const chosen = selected.closest(".choice");
+
+            if (selected.value === q.correct) {
+                let pts = calcPoints();
+                score += pts;
+
+                if (pts > 0 && window.upsertScore) window.upsertScore(pts);
+
+                chosen.classList.add("correct");
+                currentPoint.classList.remove("wrong");
+                currentPoint.classList.add("correct");
+                $("feedback").innerText = pts ? `Správne! ★+${pts}` : "Správne! (0 ★)";
+                correctChoices[currentCity] = selected.value;
+                answeredCities.add(currentCity); checkAllAnswered();
+            } else {
+                chosen.classList.add("wrong");
+                currentPoint.classList.add("wrong");
+                wrongChoices[currentCity] = selected.value;
+                const nextPts = calcPoints();
+                if (nextPts > 0) {
+                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: ★${nextPts})`;
+                } else {
+                    $("feedback").innerText = "Nesprávne (0 ★)";
+                    answeredCities.add(currentCity); checkAllAnswered();
+                }
+            }
+
+            updateUI();
+        };
+    }
+
+    /* ===== FILL ===== */
+    function renderFillQuestion(q) {
+    $("submit-answer").style.display = "inline-block";
+
+    const parts = q.sentence.split("___");
+    let html = "<p>";
+    parts.forEach((p, i) => {
+        html += p;
+        if (i < q.answers.length) html += `<input class="fill-input">`;
+    });
+    html += `</p><div id="sim-info" style="font-size:12px;opacity:.7;margin-top:6px"></div>`;
+    $("choices").innerHTML = html;
+
+    const OK = 0.7;
+
+    $("submit-answer").onclick = function () {
+        if (answeredCities.has(currentCity)) return;
+        attempts[currentCity]++;
+
+        const inputs = document.querySelectorAll(".fill-input");
+        const info = document.getElementById("sim-info");
+        let okAll = true;
+
+        const singleInputAlternatives =
+            inputs.length === 1 &&
+            Array.isArray(q.answers) &&
+            q.answers.length > 1 &&
+            !q.sentence.includes("___");
+
+        let sims = [];
+
+        inputs.forEach((inp, i) => {
+            const userVal = inp.value.trim();
+            if (!userVal) { okAll = false; inp.style.background = "#ffcdd2"; sims.push(0); return; }
+
+            let candidates;
+
+            if (singleInputAlternatives) {
+                candidates = q.answers;
+            } else {
+                const expected = q.answers[i];
+                candidates = Array.isArray(expected) ? expected : [expected];
+            }
+
+            const sim = bestAnswerMatch(userVal, candidates);
+            sims.push(sim);
+
+            if (sim >= OK) {
+                inp.style.background = "#c8e6c9";
+            } else {
+                okAll = false;
+                inp.style.background = "#ffcdd2";
+            }
+        });
+
+        const percent = Math.round(Math.min(...sims) * 100);
+        if (info) info.textContent = `Podobnosť: ${percent}%`;
+
+        if (okAll) {
+            const mult = Math.min(...sims);
+            let pts = Math.round(calcPoints() * mult);
+            score += pts;
+
+            if (pts > 0 && window.upsertScore) window.upsertScore(pts);
+
+            currentPoint.classList.remove("wrong");
+            currentPoint.classList.add("correct");
+            $("feedback").innerText = `Správne (${percent}%)! ★+${pts}`;
+            answeredCities.add(currentCity); checkAllAnswered();
+        } else {
+            currentPoint.classList.add("wrong");
+            const nextPts = calcPoints();
+            if (nextPts > 0) {
+                $("feedback").innerText = `Niektoré odpovede sú zlé (ďalší pokus: ★${nextPts})`;
+            } else {
+                $("feedback").innerText = "Nesprávne (0 ★)";
+                answeredCities.add(currentCity); checkAllAnswered();
+            }
+        }
+
+            updateUI();
+        };
+    }
+
+    /* ===== OPEN ===== */
+    function renderOpenAnswerQuestion(q) {
+        $("submit-answer").style.display = "inline-block";
+        $("choices").innerHTML = `<input class="open-answer-input" placeholder="Napíš odpoveď">`;
+
+        $("submit-answer").onclick = function () {
+            if (answeredCities.has(currentCity)) return;
+            attempts[currentCity]++;
+
+            const inp = document.querySelector(".open-answer-input");
+            const val = inp.value.trim().toLowerCase();
+            const ok = q.answers.map(a => a.toLowerCase()).includes(val);
+
+            if (ok) {
+                let pts = calcPoints();
+                score += pts;
+
+                if (pts > 0 && window.upsertScore) window.upsertScore(pts);
+
+                inp.style.background = "#c8e6c9";
+                currentPoint.classList.remove("wrong");
+                currentPoint.classList.add("correct");
+                $("feedback").innerText = `Správne! ★+${pts}`;
+                answeredCities.add(currentCity); checkAllAnswered();
+            } else {
+                inp.style.background = "#ffcdd2";
+                currentPoint.classList.add("wrong");
+                const nextPts = calcPoints();
+                if (nextPts > 0) {
+                    $("feedback").innerText = `Nesprávne, skús znova (ďalší pokus: ★${nextPts})`;
+                } else {
+                    $("feedback").innerText = "Nesprávne (0 ★)";
+                    answeredCities.add(currentCity); checkAllAnswered();
+                }
+            }
+
+            updateUI();
+        };
+    }
+</script>
+    <script type="module">
+import { SKINS, drawCharacter, drawAvatar, getOwnedSkins, getActiveSkin, setActiveSkin, buySkin, unlockSecretSkin, RARITY_COLORS } from "./character.js";
+
+// ---------- CHARACTER HELPERS ----------
+function refreshAllAvatars() {
+  const active = getActiveSkin();
+  // Header avatar — draw at 2x (56px) display at 28px for crisp pixels
+  const hdr = document.getElementById("header-profile-avatar");
+  if (hdr) {
+    const c = document.createElement("canvas");
+    drawAvatar(c, active, 56);
+    hdr.innerHTML = "";
+    hdr.appendChild(c);
+  }
+  // Sidebar avatar — draw at 2x (104px) display at 52px
+  const sav = document.getElementById("profile-avatar-letter");
+  if (sav) {
+    const c = document.createElement("canvas");
+    drawAvatar(c, active, 104);
+    sav.innerHTML = "";
+    sav.appendChild(c);
+  }
+  // Profile modal avatar — draw at 2x (144px) display at 72px
+  const mav = document.getElementById("pm-avatar-letter");
+  if (mav) {
+    const c = document.createElement("canvas");
+    drawAvatar(c, active, 144);
+    mav.innerHTML = "";
+    mav.appendChild(c);
+  }
+  // Big character preview in shop
+  const preview = document.getElementById("char-preview-canvas");
+  if (preview) drawCharacter(preview, active, 5);
+}
+
+function buildShop(coins) {
+  const owned  = getOwnedSkins();
+  const active = getActiveSkin();
+  const grid   = document.getElementById("skin-shop-grid");
+  if (!grid) return;
+
+  // Update coins display (profile modal + header)
+  const coinsEl = document.getElementById("pm-coins-display");
+  if (coinsEl) coinsEl.textContent = coins;
+  const hdrCoins = document.getElementById("header-coins-display");
+  if (hdrCoins) hdrCoins.textContent = coins;
+  const hdrWidget = document.getElementById("header-coins-widget");
+  if (hdrWidget) hdrWidget.style.display = "flex";
+
+  // Update active skin name badge
+  const activeSkin = SKINS.find(s => s.id === active);
+  const nameBadge = document.getElementById("pm-active-skin-name");
+  if (nameBadge && activeSkin) nameBadge.textContent = activeSkin.name;
+
+  grid.innerHTML = "";
+  // Group by rarity
+  const RARITY_ORDER = ["free","common","rare","epic","legendary","secret"];
+  const RARITY_ICONS = { free:"○", common:"●", rare:"◆", epic:"◈", legendary:"★", secret:"?" };
+  const byRarity = {};
+  SKINS.forEach(s => { (byRarity[s.rarity] = byRarity[s.rarity]||[]).push(s); });
+
+  RARITY_ORDER.forEach(rarity => {
+    const group = byRarity[rarity];
+    if (!group || group.length === 0) return;
+
+    // Section header
+    const header = document.createElement("div");
+    header.className = "pm-rarity-header";
+    header.dataset.rarity = rarity;
+    header.textContent = RARITY_ICONS[rarity] + " " + (RARITY_COLORS[rarity]?.label || rarity.toUpperCase());
+    grid.insertAdjacentElement("beforeend", header);
+
+    // Row grid
+    const row = document.createElement("div");
+    row.className = "pm-rarity-row";
+    grid.insertAdjacentElement("beforeend", row);
+
+    group.forEach(skin => {
+      const isOwned  = owned.includes(skin.id);
+      const isActive = skin.id === active;
+      const rar      = RARITY_COLORS[skin.rarity];
+      const card     = document.createElement("div");
+      card.className = "skin-card-fs" + (isActive ? " skin-active" : "");
+      card.dataset.skinId = skin.id;
+      card.dataset.rarity = skin.rarity;
+
+      const previewC = document.createElement("canvas");
+      drawCharacter(previewC, skin.id, 2);
+
+      const rarBadge = `<span class="skin-rarity" style="background:${rar.bg};color:${rar.text}">${rar.label}</span>`;
+      const btnHtml  = isActive
+        ? `<button class="skin-btn equipped" disabled>✓ Equipped</button>`
+        : isOwned
+          ? `<button class="skin-btn owned" data-id="${skin.id}">Equip</button>`
+          : skin.secret
+            ? `<button class="skin-btn" disabled style="background:rgba(255,255,255,0.05);color:#555;cursor:default;font-size:0.65rem;padding:3px 6px">🔒 ${skin.unlockHint}</button>`
+            : `<button class="skin-btn buy" data-id="${skin.id}" data-price="${skin.price}">★ ${skin.price}</button>`;
+
+      card.innerHTML = `<div class="skin-preview"></div>${rarBadge}<div class="skin-name">${skin.name}</div>${btnHtml}`;
+      card.querySelector(".skin-preview").appendChild(previewC);
+      row.appendChild(card);
+
+      // Click card = preview in big showcase
+      card.addEventListener("click", (e) => {
+        if (e.target.classList.contains("skin-btn")) return;
+        const previewBig = document.getElementById("char-preview-canvas");
+        if (previewBig) {
+          previewBig.style.filter = "drop-shadow(0 0 0 transparent)";
+          setTimeout(() => { drawCharacter(previewBig, skin.id, 5); previewBig.style.filter = ""; }, 60);
+        }
+        const nb = document.getElementById("pm-active-skin-name");
+        if (nb) nb.textContent = skin.name;
+      });
+    });
+  });
+
+  // Update big preview
+  const previewBig = document.getElementById("char-preview-canvas");
+  if (previewBig) drawCharacter(previewBig, active, 5);
+
+  // Equip buttons
+  document.querySelectorAll("#skin-shop-grid .skin-btn.owned").forEach(btn => {
+    btn.addEventListener("click", () => {
+      setActiveSkin(btn.dataset.id);
+      buildShop(coins);
+      refreshAllAvatars();
+      saveActiveSkinToDb(btn.dataset.id);
+    });
+  });
+
+  // Buy buttons
+  document.querySelectorAll("#skin-shop-grid .skin-btn.buy").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const result = buySkin(btn.dataset.id, coins);
+      if (!result.ok) {
+        if (result.reason === "Not enough coins") {
+          btn.textContent = "❌ Málo ★";
+          setTimeout(() => { btn.textContent = "★ " + btn.dataset.price; }, 1500);
+        }
+        return;
+      }
+
+      // Deduct coins in Supabase
+      btn.textContent = "⏳...";
+      btn.disabled = true;
+      const spent = await window.spendCoins(result.cost);
+      if (!spent.ok) {
+        // Rollback localStorage purchase
+        const owned = JSON.parse(localStorage.getItem("mb_owned_skins") || '["default"]');
+        const idx = owned.indexOf(btn.dataset.id);
+        if (idx > -1) owned.splice(idx, 1);
+        localStorage.setItem("mb_owned_skins", JSON.stringify(owned));
+        btn.textContent = "❌ Chyba";
+        setTimeout(() => { btn.textContent = "★ " + btn.dataset.price; btn.disabled = false; }, 2000);
+        return;
+      }
+
+      coins -= result.cost;
+      setActiveSkin(btn.dataset.id);
+      buildShop(coins);
+      refreshAllAvatars();
+      saveActiveSkinToDb(btn.dataset.id);
+    });
+  });
+}
+
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+        const SUPABASE_URL = "https://yyzvddiorocquktqlpep.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5enZkZGlvcm9jcXVrdHFscGVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0Njc1NjAsImV4cCI6MjA4NjA0MzU2MH0._Xpv1TDkXCYjA34CPnXzqDOIX84-0KRYpISoqZcid64";
+
+        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.sb = sb;
+
+        // ===================== SESSION ID =====================
+        const SESSION_KEY = "leaderboard_session_id";
+        let sessionId = localStorage.getItem(SESSION_KEY);
+        if (!sessionId) {
+            sessionId = crypto.randomUUID();
+            localStorage.setItem(SESSION_KEY, sessionId);
+        }
+
+        // ===================== AUTH MODAL =====================
+        window.openAuthModal = function(tab) {
+            document.getElementById("auth-modal").style.display = "flex";
+            switchModalTab(tab || "login");
+        };
+        window.closeAuthModal = function() {
+            document.getElementById("auth-modal").style.display = "none";
+        };
+        document.getElementById("auth-modal")?.addEventListener("click", (e) => {
+            if (e.target.id === "auth-modal") closeAuthModal();
+        });
+
+        window.switchModalTab = function(tab) {
+            document.getElementById("modal-form-login").style.display = tab === "login" ? "block" : "none";
+            document.getElementById("modal-form-register").style.display = tab === "register" ? "block" : "none";
+            document.getElementById("modal-form-forgot").style.display = "none";
+            document.getElementById("modal-tab-login").classList.toggle("active", tab === "login");
+            document.getElementById("modal-tab-register").classList.toggle("active", tab === "register");
+        };
+
+        function setModalStatus(form, msg, isError = false) {
+            const idMap = { login: "modal-status-login", register: "modal-status-register", forgot: "modal-status-forgot" };
+            const el = document.getElementById(idMap[form] || "modal-status-login");
+            if (!el) return;
+            el.textContent = msg;
+            el.style.color = isError ? "var(--color-wrong, #e53935)" : "var(--color-text-muted, #888)";
+        }
+
+        // LOGIN via modal
+        document.getElementById("modal-login-btn")?.addEventListener("click", async () => {
+            const email = document.getElementById("modal-email-login").value.trim();
+            const password = document.getElementById("modal-password-login").value;
+            if (!email || !password) { setModalStatus("login", "Vyplň e-mail a heslo.", true); return; }
+            setModalStatus("login", "Prihlasovanie…");
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) {
+                let msg = error.message;
+                if (msg.toLowerCase().includes("invalid login credentials") || msg.toLowerCase().includes("invalid credentials") || msg.toLowerCase().includes("wrong email or password")) {
+                    msg = "Nesprávny e-mail alebo heslo.";
+                } else if (msg.toLowerCase().includes("email not confirmed")) {
+                    msg = "E-mail nebol potvrdený. Skontrolujte svoju poštu.";
+                } else if (msg.toLowerCase().includes("too many requests")) {
+                    msg = "Príliš veľa pokusov. Skúste neskôr.";
+                }
+                setModalStatus("login", msg, true);
+                return;
+            }
+            setModalStatus("login", "");
+            updateAuthUI(data.user);
+            closeAuthModal();
+        });
+
+        // REGISTER via modal
+        document.getElementById("modal-register-btn")?.addEventListener("click", async () => {
+            const name = document.getElementById("modal-name-register").value.trim();
+            const email = document.getElementById("modal-email-register").value.trim();
+            const password = document.getElementById("modal-password-register").value;
+            if (!name) { setModalStatus("register", "Zadaj meno hráča.", true); return; }
+            if (!email) { setModalStatus("register", "Zadaj e-mail.", true); return; }
+            if (password.length < 6) { setModalStatus("register", "Heslo musí mať aspoň 6 znakov.", true); return; }
+
+            // Check nick uniqueness in leaderboard table
+            setModalStatus("register", "Kontrolujem meno…");
+            const { data: existing } = await sb
+                .from("leaderboard")
+                .select("name")
+                .ilike("name", name)
+                .maybeSingle();
+            if (existing) {
+                setModalStatus("register", "Toto meno je už obsadené. Vyber iné.", true);
+                return;
+            }
+
+            setModalStatus("register", "Registrujem…");
+            const { data, error } = await sb.auth.signUp({
+                email, password,
+                options: { data: { display_name: name } }
+            });
+            if (error) {
+                // Translate common errors to Slovak
+                let msg = error.message;
+                if (msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("user already exists") || msg.toLowerCase().includes("email address is already")) {
+                    msg = "Tento e-mail je už zaregistrovaný. Skúste sa prihlásiť.";
+                } else if (msg.toLowerCase().includes("invalid email")) {
+                    msg = "Neplatný e-mail.";
+                } else if (msg.toLowerCase().includes("password")) {
+                    msg = "Heslo musí mať aspoň 6 znakov.";
+                }
+                setModalStatus("register", msg, true);
+                return;
+            }
+            // Supabase sometimes returns a user but no error even if email exists (email confirmation flow)
+            // Check if identities array is empty — means email already registered
+            if (data.user && data.user.identities && data.user.identities.length === 0) {
+                setModalStatus("register", "Tento e-mail je už zaregistrovaný. Skúste sa prihlásiť.", true);
+                return;
+            }
+            if (data.user && !data.session) {
+                setModalStatus("register", "");
+                closeAuthModal();
+                const toast = document.getElementById("email-confirm-toast");
+                if (toast) {
+                    toast.style.display = "flex";
+                    setTimeout(() => { toast.style.display = "none"; }, 8000);
+                }
+            } else if (data.session) {
+                setModalStatus("register", "");
+                updateAuthUI(data.user);
+                closeAuthModal();
+            }
+        });
+
+        // Enter key support
+        document.getElementById("modal-password-login")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") document.getElementById("modal-login-btn")?.click();
+        });
+        document.getElementById("modal-password-register")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") document.getElementById("modal-register-btn")?.click();
+        });
+
+        // FORGOT PASSWORD – show form
+        document.getElementById("modal-forgot-link")?.addEventListener("click", () => {
+            document.getElementById("modal-form-login").style.display = "none";
+            document.getElementById("modal-form-forgot").style.display = "";
+            document.getElementById("modal-tab-login").classList.remove("active");
+            document.getElementById("modal-tab-register").classList.remove("active");
+        });
+
+        // FORGOT PASSWORD – back to login
+        document.getElementById("modal-back-to-login")?.addEventListener("click", () => {
+            document.getElementById("modal-form-forgot").style.display = "none";
+            document.getElementById("modal-form-login").style.display = "";
+            document.getElementById("modal-tab-login").classList.add("active");
+        });
+
+        // FORGOT PASSWORD – send reset email
+        document.getElementById("modal-forgot-btn")?.addEventListener("click", async () => {
+            const email = document.getElementById("modal-email-forgot").value.trim();
+            if (!email) { setModalStatus("forgot", "Zadajte e-mail.", true); return; }
+            setModalStatus("forgot", "Odosielam…");
+            const { error } = await sb.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + window.location.pathname
+            });
+            if (error) {
+                setModalStatus("forgot", "Chyba: " + error.message, true);
+            } else {
+                setModalStatus("forgot", "✅ Odkaz na obnovenie hesla bol odoslaný na váš e-mail.");
+                document.getElementById("modal-email-forgot").value = "";
+            }
+        });
+
+        document.getElementById("modal-email-forgot")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") document.getElementById("modal-forgot-btn")?.click();
+        });
+
+        // HEADER LOGOUT
+        document.getElementById("header-logout-btn")?.addEventListener("click", async () => {
+            await sb.auth.signOut();
+            updateAuthUI(null);
+        });
+
+        // PROFILE LOGOUT (sidebar card)
+        document.getElementById("profile-logout-btn")?.addEventListener("click", async () => {
+            await sb.auth.signOut();
+            updateAuthUI(null);
+        });
+
+        // ===================== PROFILE MODAL =====================
+        window.openProfileModal = function() {
+            const modal = document.getElementById("profile-modal");
+            if (!modal || !currentUser) return;
+            const displayName = currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Hráč";
+            // Populate fields
+            document.getElementById("pm-avatar-letter").textContent = "";
+            refreshAllAvatars();
+            document.getElementById("pm-username").textContent = displayName;
+            document.getElementById("pm-email").textContent = currentUser.email;
+            document.getElementById("pm-nick-input").value = displayName;
+            document.getElementById("pm-status").textContent = "";
+            document.getElementById("pm-nick-hint").textContent = "";
+            document.getElementById("pm-nick-check").textContent = "";
+            document.getElementById("pm-new-password").value = "";
+            document.getElementById("pm-confirm-password").value = "";
+            // Load stats + sync active skin to DB
+            loadProfileModalStats(displayName);
+            saveActiveSkinToDb(getActiveSkin());
+            const mapCoins = parseInt(document.getElementById("profile-best-map")?.textContent) || 0;
+            buildShop(mapCoins);
+            refreshAllAvatars();
+            modal.style.display = "flex";
+            modal.style.alignItems = "stretch";
+        };
+
+        window.closeProfileModal = function() {
+            document.getElementById("profile-modal").style.display = "none";
+        };
+
+        document.getElementById("profile-modal")?.addEventListener("click", (e) => {
+            if (e.target.id === "profile-modal") closeProfileModal();
+        });
+
+        // PM LOGOUT
+        document.getElementById("pm-logout-btn")?.addEventListener("click", async () => {
+            await sb.auth.signOut();
+            closeProfileModal();
+            updateAuthUI(null);
+        });
+
+        // Nick availability check with debounce
+        let nickCheckTimer = null;
+        document.getElementById("pm-nick-input")?.addEventListener("input", () => {
+            clearTimeout(nickCheckTimer);
+            const val = document.getElementById("pm-nick-input").value.trim();
+            const hint = document.getElementById("pm-nick-hint");
+            const check = document.getElementById("pm-nick-check");
+            if (!val) { hint.textContent = ""; check.textContent = ""; return; }
+            const currentName = currentUser?.user_metadata?.display_name || "";
+            if (val.toLowerCase() === currentName.toLowerCase()) {
+                hint.textContent = "Toto je vaše súčasné meno.";
+                hint.style.color = "rgba(255,255,255,0.4)";
+                check.textContent = "✓";
+                check.style.color = "#43a047";
+                return;
+            }
+            check.textContent = "…";
+            check.style.color = "rgba(255,255,255,0.4)";
+            nickCheckTimer = setTimeout(async () => {
+                const { data } = await sb.from("leaderboard").select("name").ilike("name", val).maybeSingle();
+                if (data) {
+                    hint.textContent = "Toto meno je už obsadené.";
+                    hint.style.color = "#e53935";
+                    check.textContent = "✗";
+                    check.style.color = "#e53935";
+                } else {
+                    hint.textContent = "Meno je voľné!";
+                    hint.style.color = "#43a047";
+                    check.textContent = "✓";
+                    check.style.color = "#43a047";
+                }
+            }, 500);
+        });
+
+        // Save nick
+        document.getElementById("pm-save-nick-btn")?.addEventListener("click", async () => {
+            const newName = document.getElementById("pm-nick-input").value.trim();
+            const pmStatus = document.getElementById("pm-status");
+            if (!newName) { pmStatus.textContent = "Zadaj meno."; pmStatus.style.color = "#e53935"; return; }
+            const currentName = currentUser?.user_metadata?.display_name || "";
+            if (newName.toLowerCase() === currentName.toLowerCase()) {
+                pmStatus.textContent = "Meno je rovnaké.";
+                pmStatus.style.color = "rgba(255,255,255,0.5)";
+                return;
+            }
+            // Check uniqueness
+            const { data: taken } = await sb.from("leaderboard").select("name").ilike("name", newName).maybeSingle();
+            if (taken) {
+                pmStatus.textContent = "Toto meno je obsadené.";
+                pmStatus.style.color = "#e53935";
+                return;
+            }
+            pmStatus.textContent = "Ukladám…";
+            pmStatus.style.color = "rgba(255,255,255,0.5)";
+
+            // Update auth metadata
+            const { error: authErr } = await sb.auth.updateUser({ data: { display_name: newName } });
+            if (authErr) { pmStatus.textContent = authErr.message; pmStatus.style.color = "#e53935"; return; }
+
+            // Update leaderboard name if exists
+            await sb.from("leaderboard").update({ name: newName }).eq("name", currentName).catch(() => {});
+
+            // Refresh user
+            const { data: { user } } = await sb.auth.getUser();
+            updateAuthUI(user);
+            document.getElementById("pm-username").textContent = newName;
+            refreshAllAvatars();
+            pmStatus.textContent = "✅ Meno bolo zmenené!";
+            pmStatus.style.color = "#43a047";
+            setTimeout(() => { if(pmStatus) pmStatus.textContent = ""; }, 3000);
+        });
+
+        // Save password
+        document.getElementById("pm-save-pass-btn")?.addEventListener("click", async () => {
+            const pass1 = document.getElementById("pm-new-password").value;
+            const pass2 = document.getElementById("pm-confirm-password").value;
+            const pmStatus = document.getElementById("pm-status");
+            if (pass1.length < 6) { pmStatus.textContent = "Heslo musí mať aspoň 6 znakov."; pmStatus.style.color = "#e53935"; return; }
+            if (pass1 !== pass2) { pmStatus.textContent = "Heslá sa nezhodujú."; pmStatus.style.color = "#e53935"; return; }
+            pmStatus.textContent = "Mením heslo…";
+            pmStatus.style.color = "rgba(255,255,255,0.5)";
+            const { error } = await sb.auth.updateUser({ password: pass1 });
+            if (error) { pmStatus.textContent = error.message; pmStatus.style.color = "#e53935"; return; }
+            document.getElementById("pm-new-password").value = "";
+            document.getElementById("pm-confirm-password").value = "";
+            pmStatus.textContent = "✅ Heslo bolo zmenené!";
+            pmStatus.style.color = "#43a047";
+            setTimeout(() => { if(pmStatus) pmStatus.textContent = ""; }, 3000);
+        });
+
+        async function loadProfileModalStats(name) {
+            const { data: lbData } = await sb.from("leaderboard").select("name, score, bio").order("score", { ascending: false });
+            if (lbData) {
+                const idx = lbData.findIndex(r => r.name === name);
+                const myRow = lbData[idx];
+                const mapEl = document.getElementById("pm-stat-map");
+                const rankEl = document.getElementById("pm-stat-rank");
+                if (mapEl) mapEl.textContent = myRow ? myRow.score : "0";
+                if (idx >= 0) {
+                    const rank = idx + 1;
+                    if (rankEl) rankEl.textContent = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+                } else {
+                    if (rankEl) rankEl.textContent = "–";
+                }
+                // Load bio into textarea
+                const bioInput = document.getElementById("pm-bio-input");
+                const bioCount = document.getElementById("pm-bio-count");
+                if (bioInput && myRow) {
+                    bioInput.value = myRow.bio || "";
+                    if (bioCount) bioCount.textContent = bioInput.value.length;
+                }
+            }
+        }
+
+        // ===================== AUTH STATE =====================
+        let currentUser = null;
+
+        function updateAuthUI(user) {
+            currentUser = user;
+            const nameInput = document.getElementById("player-name");
+            const statusEl = document.getElementById("name-status");
+
+            const headerOut = document.getElementById("header-auth-logged-out");
+            const headerIn = document.getElementById("header-auth-logged-in");
+            const sidebarIn = document.getElementById("sidebar-logged-in");
+            const blurOverlay = document.getElementById("leaderboard-blur-overlay");
+
+            if (user) {
+                const displayName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Hrac";
+
+                // Header
+                if (headerOut) headerOut.style.display = "none";
+                if (headerIn) headerIn.style.display = "flex";
+                const headerUsername = document.getElementById("header-username");
+                if (headerUsername) headerUsername.textContent = displayName;
+                const headerProfileAvatar = document.getElementById("header-profile-avatar");
+                if (headerProfileAvatar) headerProfileAvatar.textContent = "";
+
+                // Sidebar profile card
+                if (sidebarIn) sidebarIn.style.display = "block";
+                document.getElementById("auth-display-name").textContent = displayName;
+                document.getElementById("auth-display-email").textContent = user.email;
+
+                // Avatar letter
+                const avatarEl = document.getElementById("profile-avatar-letter");
+                if (avatarEl) { avatarEl.textContent = ""; setTimeout(refreshAllAvatars, 50); }
+
+                // Remove leaderboard blur
+                if (blurOverlay) blurOverlay.style.display = "none";
+                const lbList = document.getElementById("leaderboard");
+                if (lbList) { lbList.style.filter = "none"; lbList.style.pointerEvents = ""; }
+
+                if (nameInput) nameInput.value = displayName;
+                localStorage.setItem("player_name", displayName);
+                if (statusEl) statusEl.textContent = "";
+
+                // Load profile stats async
+                loadProfileStats(displayName);
+
+                // Restore owned skins + active skin from DB (cross-device sync)
+                loadSkinsFromDb(displayName);
+            } else {
+                if (headerOut) headerOut.style.display = "flex";
+                if (headerIn) headerIn.style.display = "none";
+                if (sidebarIn) sidebarIn.style.display = "none";
+                if (blurOverlay) blurOverlay.style.display = "flex";
+                const lbList = document.getElementById("leaderboard");
+                if (lbList) { lbList.style.filter = "blur(6px)"; lbList.style.pointerEvents = "none"; }
+                if (nameInput) nameInput.value = "";
+            }
+        }
+
+        async function loadProfileStats(name) {
+            try {
+                // Best score in leaderboard (map game)
+                const { data: lbData } = await sb
+                    .from("leaderboard")
+                    .select("name, score")
+                    .order("score", { ascending: false });
+
+                if (lbData) {
+                    const idx = lbData.findIndex(r => r.name === name);
+                    const myRow = lbData[idx];
+
+                    // Best map score
+                    const mapVal = document.getElementById("profile-best-map");
+                    if (mapVal) mapVal.textContent = myRow ? myRow.score : "0";
+
+                    // Update header coins widget
+                    const userCoins = myRow ? myRow.score : 0;
+                    const hdrCoins = document.getElementById("header-coins-display");
+                    if (hdrCoins) hdrCoins.textContent = userCoins;
+                    const hdrWidget = document.getElementById("header-coins-widget");
+                    if (hdrWidget) hdrWidget.style.display = userCoins !== null ? "flex" : "none";
+
+                    // Rank
+                    const placeEl = document.getElementById("profile-place");
+                    const rankBadge = document.getElementById("profile-rank-badge");
+                    const rankNum = document.getElementById("profile-rank-num");
+                    if (idx >= 0) {
+                        const rank = idx + 1;
+                        const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+                        if (placeEl) placeEl.textContent = medal;
+                        if (rankBadge) { rankBadge.style.display = "flex"; }
+                        if (rankNum) rankNum.textContent = rank;
+                    } else {
+                        if (placeEl) placeEl.textContent = "-";
+                    }
+                }
+
+                // Fast game coins now go to main score
+            } catch(e) {
+                console.warn("loadProfileStats error:", e);
+            }
+        }
+
+        // Restore session on load
+        sb.auth.getSession().then(({ data: { session } }) => {
+            updateAuthUI(session?.user ?? null);
+        });
+
+        sb.auth.onAuthStateChange((event, session) => {
+            if (event === "PASSWORD_RECOVERY") {
+                // Show reset password modal instead of logging in normally
+                const modal = document.getElementById("reset-password-modal");
+                if (modal) modal.style.display = "flex";
+                return;
+            }
+            updateAuthUI(session?.user ?? null);
+        });
+
+        // RESET PASSWORD – save new password
+        document.getElementById("reset-save-btn")?.addEventListener("click", async () => {
+            const pass1 = document.getElementById("reset-new-password").value;
+            const pass2 = document.getElementById("reset-confirm-password").value;
+            const statusEl = document.getElementById("reset-status");
+            const setStatus = (msg, isError) => {
+                statusEl.textContent = msg;
+                statusEl.style.color = isError ? "var(--color-wrong, #e53935)" : "var(--color-text-muted, #888)";
+            };
+            if (pass1.length < 6) { setStatus("Heslo musí mať aspoň 6 znakov.", true); return; }
+            if (pass1 !== pass2) { setStatus("Heslá sa nezhodujú.", true); return; }
+            setStatus("Ukladám…");
+            const { error } = await sb.auth.updateUser({ password: pass1 });
+            if (error) { setStatus("Chyba: " + error.message, true); return; }
+            setStatus("✅ Heslo bolo úspešne zmenené!");
+            document.getElementById("reset-new-password").value = "";
+            document.getElementById("reset-confirm-password").value = "";
+            setTimeout(() => {
+                document.getElementById("reset-password-modal").style.display = "none";
+                // Refresh session state
+                sb.auth.getSession().then(({ data }) => updateAuthUI(data.session?.user ?? null));
+            }, 2000);
+        });
+
+        // ===================== PLAYER NAME (compat) =====================
+        const nameInput = document.getElementById("player-name");
+        const statusEl = document.getElementById("name-status");
+
+        function setStatus(msg) { if (statusEl) statusEl.textContent = msg || ""; }
+        function getPlayerName() { return (nameInput?.value || "").trim(); }
+
+        // ===================== LEADERBOARD =====================
+        async function loadLeaderboard() {
+            const { data, error } = await sb
+                .from("leaderboard")
+                .select("name, score, active_skin")
+                .order("score", { ascending: false });
+
+            if (error) { console.error("loadLeaderboard error:", error); return; }
+
+            // Deduplicate: keep best map score per name (first occurrence since sorted desc)
+            const seen = new Set();
+            const rows = [];
+            for (const row of (data || [])) {
+                if (!seen.has(row.name)) { seen.add(row.name); rows.push(row); }
+                if (rows.length >= 10) break;
+            }
+
+            const ul = document.getElementById("leaderboard");
+            if (!ul) return;
+            ul.innerHTML = `<li class="lb-header-row"><span class="lb-col-name"></span><span class="lb-col-map" title="Mapa">Mapa ★</span></li>`;
+            rows.forEach((row, i) => {
+                const li = document.createElement("li");
+                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
+                const avatarC = document.createElement("canvas");
+                const playerName = localStorage.getItem("player_name");
+                const lbSkin = (row.name === playerName) ? getActiveSkin() : (row.active_skin || "default");
+                drawAvatar(avatarC, lbSkin, 22);
+                avatarC.style.cssText = "border-radius:50%;flex-shrink:0;vertical-align:middle;";
+                li.innerHTML = `<span class="lb-col-name"></span><span class="lb-col-map">${row.score}</span>`;
+                const nameSpan = li.querySelector(".lb-col-name");
+                nameSpan.appendChild(avatarC);
+                nameSpan.insertAdjacentText("beforeend", " " + medal + " " + row.name);
+                li.style.cursor = "pointer";
+                li.title = "Zobraziť profil";
+                li.addEventListener("click", () => openPlayerProfile(row.name, row.score, i + 1, row.active_skin || "default"));
+                ul.appendChild(li);
+            });
+        }
+
+        let lastWriteAt = 0;
+
+        async function upsertScore(delta = 10) {
+            const name = getPlayerName();
+            if (!name) {
+                setStatus("Najprv sa prihlás.");
+                return;
+            }
+            if (!Number.isFinite(delta) || delta <= 0) return;
+            const now = Date.now();
+            if (now - lastWriteAt < 250) return;
+            lastWriteAt = now;
+
+            // Get current score from DB, then add delta
+            const { data: existing } = await sb
+                .from("leaderboard")
+                .select("id, score")
+                .eq("name", name)
+                .order("score", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            const newScore = (existing?.score ?? 0) + delta;
+
+            if (existing?.id) {
+                // Row exists — just increment
+                await sb
+                    .from("leaderboard")
+                    .update({ score: newScore })
+                    .eq("id", existing.id);
+            } else {
+                // No row yet — insert new (include active skin)
+                await sb
+                    .from("leaderboard")
+                    .insert({ name, score: delta, active_skin: getActiveSkin() });
+            }
+
+            setStatus(`★+${delta}`);
+            setTimeout(() => setStatus(""), 2000);
+            // Update header coins widget live
+            const hdrCoins = document.getElementById("header-coins-display");
+            if (hdrCoins) hdrCoins.textContent = newScore;
+            const hdrWidget = document.getElementById("header-coins-widget");
+            if (hdrWidget) hdrWidget.style.display = "flex";
+            await loadLeaderboard();
+            await checkSecretUnlocks();
+        }
+
+        // ===== PLAYER PROFILE MODAL =====
+        async function loadSkinsFromDb(name) {
+            try {
+                const { data: row } = await sb.from("leaderboard")
+                    .select("active_skin, owned_skins")
+                    .eq("name", name)
+                    .order("score", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                if (!row) return;
+
+                // Merge DB owned skins with localStorage (union, never lose local ones)
+                const dbOwned = Array.isArray(row.owned_skins) ? row.owned_skins : ["default"];
+                const localOwned = JSON.parse(localStorage.getItem("mb_owned_skins") || '["default"]');
+                const merged = [...new Set([...localOwned, ...dbOwned])];
+                localStorage.setItem("mb_owned_skins", JSON.stringify(merged));
+
+                // Restore active skin from DB
+                if (row.active_skin) {
+                    localStorage.setItem("mb_active_skin", row.active_skin);
+                }
+
+                refreshAllAvatars();
+            } catch(e) { console.warn("loadSkinsFromDb error:", e); }
+        }
+
+        async function saveActiveSkinToDb(skinId) {
+            try {
+                const name = localStorage.getItem("player_name");
+                if (!name) return;
+                const { data: topRow } = await sb.from("leaderboard").select("id").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
+                if (topRow) {
+                    const owned = getOwnedSkins();
+                    await sb.from("leaderboard").update({ active_skin: skinId, owned_skins: owned }).eq("id", topRow.id);
+                }
+            } catch(e) { console.warn("saveActiveSkinToDb error:", e); }
+        }
+
+        async function openPlayerProfile(name, score, rank, knownSkin) {
+            const modal = document.getElementById("player-profile-modal");
+            if (!modal) return;
+
+            document.getElementById("pp-name").textContent = name;
+            document.getElementById("pp-score").textContent = score != null ? score : "–";
+
+            const medals = ["🥇","🥈","🥉"];
+            const rankLabel = rank <= 3 ? medals[rank - 1] + " #" + rank : "#" + rank;
+            document.getElementById("pp-rank-badge").textContent = rankLabel;
+            document.getElementById("pp-place").textContent = rankLabel;
+
+            // Use knownSkin immediately (from leaderboard data), then fetch bio
+            let skin = knownSkin || "default";
+
+            // Draw immediately with known skin - no waiting
+            const avatarC = document.getElementById("pp-avatar");
+            drawAvatar(avatarC, skin, 64);
+            const charC = document.getElementById("pp-char-canvas");
+            if (charC) {
+                const scale = 5;
+                const charW = 16 * scale, charH = 32 * scale;
+                charC.width = charW; charC.height = charH;
+                charC.style.width = charW + "px"; charC.style.height = charH + "px";
+                drawCharacter(charC, skin, scale);
+            }
+
+            modal.style.display = "flex";
+            document.body.style.overflow = "hidden";
+
+            // Fetch bio, skin, owned_skins from Supabase in background
+            const bioEl = document.getElementById("pp-bio");
+            if (bioEl) bioEl.textContent = "…";
+            try {
+                const { data: row } = await sb.from("leaderboard").select("bio, active_skin, owned_skins").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
+                if (bioEl) bioEl.textContent = row?.bio || "—";
+                // If DB has a different skin than what we showed, update
+                const dbSkin = row?.active_skin || skin;
+                if (dbSkin !== skin) {
+                    drawAvatar(avatarC, dbSkin, 64);
+                    if (charC) drawCharacter(charC, dbSkin, 5);
+                }
+                // Render skins collection
+                const ownedRaw = row?.owned_skins || ["default"];
+                const owned = Array.isArray(ownedRaw) ? ownedRaw : JSON.parse(ownedRaw || '["default"]');
+                renderPlayerSkinsGrid(owned, dbSkin);
+            } catch(e) {
+                if (bioEl) bioEl.textContent = "—";
+                renderPlayerSkinsGrid(["default"], skin);
+            }
+        }
+
+        function renderPlayerSkinsGrid(owned, activeSkin) {
+            const grid = document.getElementById("pp-skins-grid");
+            if (!grid) return;
+            grid.innerHTML = "";
+            // Show only owned non-secret skins
+            const ownedSkins = SKINS.filter(s => owned.includes(s.id) && !s.secret);
+            if (ownedSkins.length === 0) {
+                grid.innerHTML = "<span style='color:#555;font-size:0.75rem'>Žiadne skiny</span>";
+                return;
+            }
+            ownedSkins.forEach(skin => {
+                const wrap = document.createElement("div");
+                wrap.className = "pp-skin-thumb" + (skin.id === activeSkin ? " pp-skin-active" : "");
+                wrap.title = skin.name;
+                const c = document.createElement("canvas");
+                drawAvatar(c, skin.id, 32);
+                wrap.appendChild(c);
+                grid.appendChild(wrap);
+            });
+        }
+
+        function closePlayerProfile() {
+            const modal = document.getElementById("player-profile-modal");
+            if (modal) modal.style.display = "none";
+            document.body.style.overflow = "";
+        }
+        window.closePlayerProfile = closePlayerProfile;
+        window.openPlayerProfile = openPlayerProfile;
+
+        // ===== SECRET SKIN UNLOCK CHECKS =====
+        async function checkSecretUnlocks() {
+            const name = localStorage.getItem("player_name");
+            if (!name) return;
+
+            // Fetch player score and rank
+            const { data } = await sb.from("leaderboard")
+                .select("name, score")
+                .order("score", { ascending: false });
+            if (!data) return;
+
+            const seen = new Set();
+            const ranked = [];
+            for (const row of data) {
+                if (!seen.has(row.name)) { seen.add(row.name); ranked.push(row); }
+            }
+            const myEntry = ranked.find(r => r.name === name);
+            if (!myEntry) return;
+
+            const myRank = ranked.indexOf(myEntry) + 1;
+            const myScore = myEntry.score || 0;
+
+            // Secret 1: 1000+ coins total → unlock "secret_hacker_god"
+            if (myScore >= 1000) {
+                const unlocked = unlockSecretSkin("secret_hacker_god");
+                if (unlocked) {
+                    showSecretUnlockToast("💀 Matrix Hacker odomknutý!");
+                    await saveActiveSkinToDb(getActiveSkin()); // refresh
+                }
+            }
+
+            // Secret 2: #1 on leaderboard → unlock "secret_maturant"
+            if (myRank === 1) {
+                const unlocked = unlockSecretSkin("secret_maturant");
+                if (unlocked) {
+                    showSecretUnlockToast("👑 Legendárny Maturant odomknutý!");
+                    await saveActiveSkinToDb(getActiveSkin());
+                }
+            }
+        }
+
+        function showSecretUnlockToast(msg) {
+            let toast = document.getElementById("secret-unlock-toast");
+            if (!toast) {
+                toast = document.createElement("div");
+                toast.id = "secret-unlock-toast";
+                toast.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;padding:14px 28px;border-radius:16px;font-size:1rem;font-weight:700;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:fadeIn 0.3s ease;pointer-events:none;text-align:center;";
+                document.body.appendChild(toast);
+            }
+            toast.textContent = "🔓 Tajný skin " + msg;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 4000);
+        }
+
+        // Bio save
+        document.getElementById("pm-bio-input")?.addEventListener("input", function() {
+            const count = document.getElementById("pm-bio-count");
+            if (count) count.textContent = this.value.length;
+        });
+
+        document.getElementById("pm-save-bio-btn")?.addEventListener("click", async () => {
+            const bio = document.getElementById("pm-bio-input")?.value?.trim() ?? "";
+            const pmStatus = document.getElementById("pm-status");
+            const name = currentUser?.user_metadata?.display_name || localStorage.getItem("player_name");
+            if (!name) { if(pmStatus){ pmStatus.textContent = "Nie si prihlásený."; pmStatus.style.color="#e53935"; } return; }
+            if(pmStatus){ pmStatus.textContent = "Ukladám…"; pmStatus.style.color="rgba(255,255,255,0.5)"; }
+            try {
+                const { data: topRow } = await sb.from("leaderboard").select("id").eq("name", name).order("score", { ascending: false }).limit(1).maybeSingle();
+                if (topRow) {
+                    const { error } = await sb.from("leaderboard").update({ bio }).eq("id", topRow.id);
+                    if (error) throw error;
+                }
+                if(pmStatus){ pmStatus.textContent = "✅ Popis uložený!"; pmStatus.style.color="#4caf50"; }
+            } catch(e) {
+                if(pmStatus){ pmStatus.textContent = "Chyba: " + (e?.message || e); pmStatus.style.color="#e53935"; }
+            }
+        });
+        window.upsertScore = upsertScore;
+
+        // Deduct coins from leaderboard.score in Supabase when buying a skin
+        async function spendCoins(amount) {
+            try {
+                const name = getPlayerName();
+                if (!name) return { ok: false, reason: "Not logged in" };
+
+                // Get current best row for this player
+                const { data: row, error: fetchErr } = await sb
+                    .from("leaderboard")
+                    .select("id, score")
+                    .eq("name", name)
+                    .order("score", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (fetchErr || !row) return { ok: false, reason: "Row not found" };
+                if (row.score < amount) return { ok: false, reason: "Not enough coins" };
+
+                const { error: updateErr } = await sb
+                    .from("leaderboard")
+                    .update({ score: row.score - amount })
+                    .eq("id", row.id);
+
+                if (updateErr) return { ok: false, reason: updateErr.message };
+
+                return { ok: true };
+            } catch (e) {
+                return { ok: false, reason: e?.message || "Unknown error" };
+            }
+        }
+        window.spendCoins = spendCoins;
+
+        // ===================== UKAZKY (snippets) + QUESTIONS =====================
+        async function fetchUkazky() {
+            // tiahneme snippets + exams (pre pekné labelovanie)
+            const [snipsRes, examsRes] = await Promise.all([
+                sb.from("snippets")
+                    .select("id, exam_id, snippet_number, content")
+                    .order("exam_id", { ascending: true })
+                    .order("snippet_number", { ascending: true }),
+                sb.from("exams").select("id, title, year"),
+            ]);
+
+            const sel = document.getElementById("question-set-select");
+
+            if (snipsRes.error || !snipsRes.data || snipsRes.data.length === 0) {
+                console.error("fetchUkazky error:", snipsRes.error);
+                if (sel) sel.innerHTML = `<option value="">Žiadne ukážky</option>`;
+                return;
+            }
+
+            const examMap = {};
+            (examsRes.data || []).forEach(e => { examMap[e.id] = e; });
+
+            sel.innerHTML = "";
+            snipsRes.data.forEach(snip => {
+                const exam = examMap[snip.exam_id];
+                const yearPart = exam ? `${exam.year}` : "";
+                const titlePart = exam ? exam.title : "Ukážka";
+                const numPart = snip.snippet_number != null ? `Ukážka ${snip.snippet_number}` : `Ukážka #${snip.id}`;
+                const opt = document.createElement("option");
+                opt.value = snip.id;
+                opt.textContent = yearPart
+                    ? `${yearPart} · ${titlePart} · ${numPart}`
+                    : numPart;
+                opt.dataset.content = snip.content;
+                sel.appendChild(opt);
+            });
+
+            sel.addEventListener("change", async (e) => {
+                await loadQuestionsForSnippet(e.target.value);
+            });
+
+            await loadQuestionsForSnippet(snipsRes.data[0].id);
+        }
+
+        async function loadQuestionsForSnippet(snippetId) {
+            // text ukážky berieme z option.dataset.content (uložené pri fetchUkazky)
+            const sel = document.getElementById("question-set-select");
+            const opt = sel?.querySelector(`option[value="${snippetId}"]`);
+            const textContent = opt?.dataset?.content || "";
+
+            const { data: qData, error: qErr } = await sb
+                .from("questions")
+                .select("*")
+                .eq("snippet_id", snippetId);
+
+            if (qErr) { console.error("questions fetch error:", qErr); return; }
+
+            const newQuestions = { text: textContent };
+            (qData || []).forEach(row => {
+                const qObj = {
+                    type: row.question_type,
+                    question: row.question_text,
+                    sentence: row.context_sentence,
+                    choices: row.options
+                };
+                if (qObj.type === "choice") {
+                    qObj.correct = Array.isArray(row.correct_answers) ? row.correct_answers[0] : row.correct_answers;
+                } else if (qObj.type === "openAnswer" || qObj.type === "fill") {
+                    qObj.answers = row.correct_answers;
+                }
+
+                if (newQuestions[row.city_key]) {
+                    if (Array.isArray(newQuestions[row.city_key])) {
+                        newQuestions[row.city_key].push(qObj);
+                    } else {
+                        newQuestions[row.city_key] = [newQuestions[row.city_key], qObj];
+                    }
+                } else {
+                    newQuestions[row.city_key] = qObj;
+                }
+            });
+
+            if (window.useQuestionSet) window.useQuestionSet(newQuestions);
+        }
+
+        window.addEventListener("load", async () => {
+            await loadLeaderboard();
+            await fetchUkazky();
+            await checkSecretUnlocks();
+        });
+    </script>
+
+        <!-- ===== PLAYER PROFILE MODAL ===== -->
+        <div id="player-profile-modal" class="popup" style="display:none" onclick="if(event.target===this)closePlayerProfile()">
+            <div class="pp-card-wrap" style="position:relative">
+            <div class="pp-card">
+                <button onclick="closePlayerProfile()" class="pp-close-btn" aria-label="Zavrieť" style="position:absolute;top:12px;right:12px;z-index:100;">×</button>
+
+                <!-- LEFT: info -->
+                <div class="pp-left">
+                    <!-- Banner with avatar -->
+                    <div class="pp-banner">
+                        <div class="pp-banner-blob"></div>
+                        <canvas id="pp-avatar" width="64" height="64" class="pp-avatar"></canvas>
+                        <div class="pp-banner-info">
+                            <div id="pp-name" class="pp-username"></div>
+                            <div id="pp-rank-badge" class="pp-rank-badge"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="pp-stats">
+                        <div class="pp-stat">
+                            <div class="pp-stat-val" id="pp-score">–</div>
+                            <div class="pp-stat-lbl"><i class="fa-solid fa-coins"></i> Mince</div>
+                        </div>
+                        <div class="pp-stat-sep"></div>
+                        <div class="pp-stat">
+                            <div class="pp-stat-val" id="pp-place">–</div>
+                            <div class="pp-stat-lbl"><i class="fa-solid fa-trophy"></i> Miesto</div>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="pp-bio-wrap">
+                        <div class="pp-bio-label"><i class="fa-solid fa-file-lines"></i> O hráčovi</div>
+                        <div id="pp-bio" class="pp-bio-text">—</div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: character + skins -->
+                <div class="pp-right">
+                    <div class="pp-right-bg"></div>
+                    <div class="pp-char-label">Charakter</div>
+                    <canvas id="pp-char-canvas" class="pp-char-canvas"></canvas>
+                    <div class="pp-skins-section">
+                        <div class="pp-skins-label"><i class="fa-solid fa-bag-shopping"></i> Kolekcia</div>
+                        <div id="pp-skins-grid" class="pp-skins-grid"></div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+</body>
+</html>

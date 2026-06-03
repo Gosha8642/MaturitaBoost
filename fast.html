@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Game · MaturitaBoost</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="fast-body">
+
+    <div class="container">
+        <header>
+            <h1><i class="fa-solid fa-bolt"></i> MaturitaBoost · Fast Game</h1>
+            <div class="header-actions">
+                <div id="header-coins-widget" class="header-coins-widget" style="display:none;">
+                    <i class="fa-solid fa-coins"></i> <span id="header-coins-display">0</span>
+                </div>
+                <a href="./index.html" class="btn btn-ghost" data-testid="back-to-map">
+                    <i class="fa-solid fa-map"></i><span>Späť na mapu</span>
+                </a>
+                <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" title="Prepnúť tému">
+                    <span id="theme-icon"><i class="fa-solid fa-moon"></i></span>
+                </button>
+            </div>
+        </header>
+    </div>
+
+    <main class="fast-main">
+
+        <!-- ====== LOADING ====== -->
+        <section id="screen-loading" class="fast-screen active">
+            <div class="loader-card">
+                <div class="loader-spinner"></div>
+                <p>Načítavam ukážku…</p>
+            </div>
+        </section>
+
+        <!-- ====== DIFFICULTY SELECT ====== -->
+        <section id="screen-difficulty" class="fast-screen">
+            <div class="difficulty-card">
+                <div class="difficulty-title">⚡ Vyber obtiažnosť</div>
+                <p class="difficulty-subtitle">Líšia sa iba časovým limitom na odpoveď</p>
+
+                <div class="diff-grid">
+                    <button class="diff-btn" data-diff="easy" type="button">
+                        <span class="diff-icon">🟢</span>
+                        <span class="diff-label">Ľahký</span>
+                        <span class="diff-time">25 sekúnd</span>
+                        <span class="diff-desc">Viac času na rozmyslenie</span>
+                    </button>
+                    <button class="diff-btn diff-btn--medium" data-diff="medium" type="button">
+                        <span class="diff-icon">🟡</span>
+                        <span class="diff-label">Stredný</span>
+                        <span class="diff-time">15 sekúnd</span>
+                        <span class="diff-desc">Klasická rýchlosť</span>
+                    </button>
+                    <button class="diff-btn diff-btn--hard" data-diff="hard" type="button">
+                        <span class="diff-icon">🔴</span>
+                        <span class="diff-label">Ťažký</span>
+                        <span class="diff-time">8 sekúnd</span>
+                        <span class="diff-desc">Len pre odvážnych</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== READING ====== -->
+        <section id="screen-reading" class="fast-screen">
+            <div class="reading-card">
+                <div class="reading-header">
+                    <div class="reading-badge">📖 Ukážka <span id="ukazka-number">1</span></div>
+                    <h2 id="ukazka-title">Prečítaj si ukážku</h2>
+                </div>
+
+                <div class="rules-panel">
+                    <div class="rules-panel-title"><i class="fa-solid fa-bolt"></i> Pravidlá Fast Game</div>
+                    <ul class="rules-list">
+                        <li><i class="fa-solid fa-stopwatch"></i> Máš <strong><span id="rules-time">15</span> sekúnd</strong> na každú otázku</li>
+                        <li><span class="zone-dot zone-green"></span> <strong>0–<span id="rules-z10">5</span>s</strong> → 10 <i class="fa-solid fa-coins"></i> · <span class="zone-dot zone-yellow"></span> <strong><span id="rules-z5">5–10</span>s</strong> → 5 <i class="fa-solid fa-coins"></i> · <span class="zone-dot zone-orange"></span> <strong><span id="rules-z2">10–13</span>s</strong> → 2 <i class="fa-solid fa-coins"></i> · <span class="zone-dot zone-red"></span> ostatné → 0</li>
+                        <li><i class="fa-solid fa-xmark" style="color:#f87171"></i> Nesprávna odpoveď → ďalšia otázka okamžite</li>
+                        <li><i class="fa-solid fa-fire" style="color:#fb923c"></i> <strong>Streak bonus</strong>: 2× za 2 správne v rade, max 5× · <i class="fa-solid fa-bullseye"></i> Obtiažnosť: Ľahký ×1, Stredný ×2, Ťažký ×3</li>
+                    </ul>
+                </div>
+
+                <div class="ukazka-text-wrap">
+                    <p id="ukazka-text" class="ukazka-text"></p>
+                </div>
+
+                <button id="start-game-btn" class="btn btn-large" type="button" data-testid="start-fast-game-btn">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>Prečítal som ukážku a som pripravený hrať</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ====== PLAYING ====== -->
+        <section id="screen-playing" class="fast-screen">
+            <div class="game-layout">
+
+                <!-- LEFT: ukážka column -->
+                <div class="ukazka-col" id="ukazka-col">
+                    <div class="ukazka-col-header"><i class="fa-solid fa-book-open"></i> Ukážka</div>
+                    <div class="ukazka-col-text" id="ukazka-hint-text"></div>
+                </div>
+
+                <!-- RIGHT: HUD + timer + question -->
+                <div class="game-col">
+                    <div class="game-hud">
+                        <div class="hud-pill">
+                            <div class="hud-label"><i class="fa-solid fa-coins"></i> MINCE</div>
+                            <div class="hud-value" id="hud-score">0</div>
+                        </div>
+                        <div class="hud-pill streak-pill" id="streak-pill">
+                            <div class="hud-label">STREAK</div>
+                            <div class="hud-value">
+                                <span id="hud-streak">0</span>
+                                <span class="streak-mult" id="hud-mult">×1</span>
+                            </div>
+                        </div>
+                        <div class="hud-pill">
+                            <div class="hud-label">OTÁZKA</div>
+                            <div class="hud-value"><span id="hud-q-current">1</span>/<span id="hud-q-total">5</span></div>
+                        </div>
+                    </div>
+
+                    <!-- TIMER BAR -->
+                    <div class="timer-wrap">
+                        <div class="timer-zones">
+                            <div class="timer-zone zone-0"  style="flex: 2"><span>0</span></div>
+                            <div class="timer-zone zone-2"  style="flex: 3"><span>2</span></div>
+                            <div class="timer-zone zone-5"  style="flex: 5"><span>5</span></div>
+                            <div class="timer-zone zone-10" style="flex: 5"><span>10</span></div>
+                        </div>
+                        <div class="timer-bar">
+                            <div class="timer-fill" id="timer-fill"></div>
+                        </div>
+                        <div class="timer-meta">
+                            <span class="timer-points-now">Aktuálne: <strong id="timer-points">10</strong> b</span>
+                            <span class="timer-seconds"><span id="timer-seconds">15.0</span>s</span>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="question-card">
+                        <div class="question-text" id="question-text"></div>
+                        <div class="choices-grid" id="choices-grid"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="floating-feedback" class="floating-feedback"></div>
+        </section>
+
+        <!-- ====== STATS ====== -->
+        <section id="screen-stats" class="fast-screen">
+            <div class="stats-card">
+                <div class="stats-trophy"><i class="fa-solid fa-trophy"></i></div>
+                <h2>Ukážka dokončená!</h2>
+                <p class="stats-subtitle">Tu sú tvoje výsledky:</p>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-box-icon"><i class="fa-solid fa-coins"></i></div>
+                        <div class="stat-box-label">Mince</div>
+                        <div class="stat-box-value" id="stats-score">0</div>
+                    </div>
+                    <div class="stat-box correct-box">
+                        <div class="stat-box-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-box-label">Správne</div>
+                        <div class="stat-box-value" id="stats-correct">0</div>
+                    </div>
+                    <div class="stat-box wrong-box">
+                        <div class="stat-box-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <div class="stat-box-label">Nesprávne</div>
+                        <div class="stat-box-value" id="stats-wrong">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon"><i class="fa-solid fa-fire"></i></div>
+                        <div class="stat-box-label">Najdlhší streak</div>
+                        <div class="stat-box-value" id="stats-streak">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                        <div class="stat-box-label">Priemerný čas</div>
+                        <div class="stat-box-value"><span id="stats-avg-time">0.0</span>s</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon"><i class="fa-solid fa-chart-bar"></i></div>
+                        <div class="stat-box-label">Úspešnosť</div>
+                        <div class="stat-box-value"><span id="stats-accuracy">0</span>%</div>
+                    </div>
+                </div>
+
+                <div class="stats-total-game">
+                    <div><i class="fa-solid fa-coins"></i> Zarobené mince:</div>
+                    <div class="stats-total-value" id="stats-total-session">0</div>
+                </div>
+
+                <div class="stats-actions">
+                    <button id="next-ukazka-btn" class="btn btn-large" type="button" data-testid="next-ukazka-btn">
+                        <i class="fa-solid fa-arrow-right"></i><span>Ďalšia ukážka</span>
+                    </button>
+                    <a href="./index.html" class="btn btn-ghost btn-large" data-testid="exit-to-map">
+                        <i class="fa-solid fa-map"></i><span>Späť na mapu</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Fire canvas for streak 3+ -->
+    <canvas id="streak-fire-canvas"></canvas>
+    <!-- Legacy divs hidden by CSS -->
+    <div id="streak-bg-overlay"></div>
+    <div id="streak-flash-left"  class="streak-flash left"></div>
+    <div id="streak-flash-right" class="streak-flash right"></div>
+
+    <script>
+        (function initTheme() {
+            const saved = localStorage.getItem("theme") || "dark";
+            document.documentElement.setAttribute("data-theme", saved);
+            const icon = document.getElementById("theme-icon");
+            if (icon) icon.innerHTML = saved === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        })();
+        document.getElementById("theme-toggle")?.addEventListener("click", () => {
+            const cur  = document.documentElement.getAttribute("data-theme") || "dark";
+            const next = cur === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            document.getElementById("theme-icon").innerHTML = next === "light" ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        });
+    </script>
+
+    <script type="module" src="./fast.js"></script>
+</body>
+</html>
